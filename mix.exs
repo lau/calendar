@@ -6,6 +6,8 @@ defmodule Kalends.Mixfile do
      name: "Kalends",
      version: "0.0.1",
      elixir: "~> 1.0.0 or ~> 0.15.1",
+     package: package,
+     description: description,
      deps: deps]
   end
 
@@ -16,5 +18,20 @@ defmodule Kalends.Mixfile do
   def deps do
     [{:earmark, "~> 0.1", only: :dev},
      {:ex_doc, "~> 0.6", only: :dev}]
+  end
+
+  defp package do
+    %{ licenses: ["MIT"],
+       contributors: ["Lau Taarnskov"],
+       links: %{ "GitHub" => "https://github.com/lau/kalends"},
+       files: ~w(lib priv mix.exs README* LICENSE*
+                    license* CHANGELOG* changelog* src tzdata) }
+  end
+
+  defp description do
+    """
+    Kalends is a datetime library in pure Elixir with up-to-date timezone
+    support using the Olson database.
+    """
   end
 end
