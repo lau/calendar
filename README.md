@@ -10,6 +10,9 @@ are supported.
 WARNING: Kalends is quite new, considered in a pre-alpha state and new
 versions might break the API.
 
+[![Build
+Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.org/lau/kalends)
+
 ## Usage examples
 
 Get a DateTime struct for the 4th of October 2014 at 23:44:32 in the city of
