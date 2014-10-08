@@ -63,8 +63,8 @@ used.
 
 ## Known bugs
 
-During period building: For time zones that change while DST is in effect, the
-transition does not happen at the correct time.
+There are no confirmed bugs as this is written. But if you do find a problem,
+please create an issue on the GitHub page.
 
 ## License
 
