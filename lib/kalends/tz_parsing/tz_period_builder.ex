@@ -1,6 +1,9 @@
-defmodule Kalends.TzPeriodBuilder do
+defmodule Kalends.TzParsing.TzPeriodBuilder do
   @moduledoc false
-  import Kalends.TzData
+  import Kalends.TzParsing.TzData
+  require Kalends.TzParsing.TzUtil
+  alias Kalends.TzParsing.TzUtil, as: TzUtil
+  alias Kalends.TzParsing.TzData, as: TzData
   @min_year 1900 # the first year to use when looking at rules
   @max_year 2203 # the last year to use when looking at rules
 
@@ -89,7 +92,7 @@ defmodule Kalends.TzPeriodBuilder do
     h_calc_periods_no_rules(period, until_utc, zone_line_tl, letter)
   end
   defp calc_rule_periods_h(:named_rules, rules_value, [zone_line_hd|zone_line_tl], from, utc_off, std_off, years_to_use, letter) do
-    {:ok, rules} = Kalends.TzData.rules(rules_value)
+    {:ok, rules} = TzData.rules(rules_value)
     calc_rule_periods([zone_line_hd|zone_line_tl], from, utc_off, std_off, years_to_use, rules, letter)
   end
 
@@ -106,7 +109,7 @@ defmodule Kalends.TzPeriodBuilder do
       utc_off: utc_off,
       from: %{utc: from, wall: from_wall_time, standard: from_standard_time},
       until: %{standard: :max, wall: :max, utc: :max},
-      zone_abbr: Kalends.TzUtil.period_abbrevation(zone_line[:format], std_off, letter)
+      zone_abbr: TzUtil.period_abbrevation(zone_line[:format], std_off, letter)
     }
     [period]
   end
@@ -123,7 +126,7 @@ defmodule Kalends.TzPeriodBuilder do
       utc_off: utc_off,
       from: %{utc: from, wall: from_wall_time, standard: from_standard_time},
       until: %{standard: until_standard_time, wall: until_wall_time, utc: until_utc},
-      zone_abbr: Kalends.TzUtil.period_abbrevation(zone_line[:format], std_off, letter)
+      zone_abbr: TzUtil.period_abbrevation(zone_line[:format], std_off, letter)
     }
     [ period |
       calc_periods(zone_line_tl, until_utc, hd(zone_line_tl)[:rules], letter)
@@ -131,8 +134,7 @@ defmodule Kalends.TzPeriodBuilder do
   end
 
   def calc_rule_periods(zone_lines, from, utc_off, std_off, [years_hd|years_tl], zone_rules, letter) do
-    rules_for_year = Kalends.TzUtil.rules_for_year(zone_rules, years_hd)
-    rules_for_year = rules_for_year |> sort_rules_by_time
+    rules_for_year = TzUtil.rules_for_year(zone_rules, years_hd) |> sort_rules_by_time
     # if there are no rules for the given year, continue with the remaining years
     if length(rules_for_year) == 0 do
       calc_rule_periods(zone_lines, from, utc_off, std_off, years_tl, zone_rules, letter)
@@ -147,7 +149,7 @@ defmodule Kalends.TzPeriodBuilder do
       rules_tail = rules_for_year |> tl
       from_standard_time = standard_time_from_utc(from, utc_off)
       from_wall_time = wall_time_from_utc(from, utc_off, std_off)
-      until_utc = datetime_to_utc(Kalends.TzUtil.time_for_rule(rule, year), utc_off, std_off)
+      until_utc = datetime_to_utc(TzUtil.time_for_rule(rule, year), utc_off, std_off)
       until_standard_time = standard_time_from_utc(until_utc, utc_off)
       until_wall_time = wall_time_from_utc(until_utc, utc_off, std_off)
       period =
@@ -156,7 +158,7 @@ defmodule Kalends.TzPeriodBuilder do
         utc_off: utc_off,
         from: %{utc: from, wall: from_wall_time, standard: from_standard_time},
         until: %{standard: until_standard_time, wall: until_wall_time, utc: until_utc},
-        zone_abbr: Kalends.TzUtil.period_abbrevation(zone_line[:format], std_off, letter)
+        zone_abbr: TzUtil.period_abbrevation(zone_line[:format], std_off, letter)
       }
 
       # Some times this will calculate periods with zero length.

@@ -1,6 +1,7 @@
-defmodule Kalends.TzParser do
+defmodule Kalends.TzParsing.TzParser do
   @moduledoc false
-  import Kalends.TzUtil
+  require Kalends.TzParsing.TzUtil
+  import Kalends.TzParsing.TzUtil
   def read_file(file_name, dir_prepend \\ "tzdata") do
     File.stream!("#{dir_prepend}/#{file_name}")
     |> process_file
@@ -144,7 +145,7 @@ defmodule Kalends.TzParser do
   # Converts keys to atoms. Discards "name"
   defp captured_zone_map_clean_up(captured) do
     until = transform_until_datetime(captured["until"])
-    map = %{gmtoff: Kalends.TzUtil.string_amount_to_secs(captured["gmtoff"]),
+    map = %{gmtoff: string_amount_to_secs(captured["gmtoff"]),
     rules: transform_zone_line_rules(captured["rules"]),
     format: captured["format"],
     until: until}

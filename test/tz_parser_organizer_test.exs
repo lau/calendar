@@ -1,6 +1,6 @@
 defmodule TzParserOrganizerTest do
   use ExUnit.Case, async: true
-  alias Kalends.TzParser, as: TzParser
+  alias Kalends.TzParsing.TzParser, as: TzParser
 
   test "Zone map" do
     europe = TzParser.read_file("europe_shortened", "test/tzdata_fixtures")

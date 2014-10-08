@@ -1,6 +1,6 @@
 defmodule TzDataTest do
   use ExUnit.Case, async: true
-  alias Kalends.TzData, as: TzData
+  alias Kalends.TzParsing.TzData, as: TzData
 
   test "Existing rule" do
     result = TzData.rules("Uruguay")

@@ -1,8 +1,9 @@
 defmodule TzUtilTest do
   use ExUnit.Case, async: true
-  alias Kalends.TzUtil, as: TzUtil
-  import Kalends.TzUtil
-  doctest Kalends.TzUtil
+  alias Kalends.TzParsing.TzUtil, as: TzUtil
+  alias Kalends.TzParsing.TzData, as: TzData
+  import TzUtil
+  doctest TzUtil
 
   test "get last weekday of month" do
     # last thursday of Aug 2014 should be on the 28th
@@ -30,7 +31,7 @@ defmodule TzUtilTest do
   end
 
   test "rules that apply for a certain year" do
-    {:ok, rules} = Kalends.TzData.rules("Denmark")
+    {:ok, rules} = TzData.rules("Denmark")
     assert TzUtil.rules_for_year(rules, 1800) == []
     assert TzUtil.rules_for_year(rules, 1915) |> length == 0
     assert TzUtil.rules_for_year(rules, 1916) |> length == 2

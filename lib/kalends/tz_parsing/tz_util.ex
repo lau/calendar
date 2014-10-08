@@ -1,4 +1,4 @@
-defmodule Kalends.TzUtil do
+defmodule Kalends.TzParsing.TzUtil do
   @moduledoc false
   @doc """
     Take strings of amounts and convert them to ints of seconds.

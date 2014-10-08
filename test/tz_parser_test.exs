@@ -1,6 +1,6 @@
 defmodule TzParserTest do
   use ExUnit.Case, async: true
-  alias Kalends.TzParser, as: TzParser
+  alias Kalends.TzParsing.TzParser, as: TzParser
 
   test "process rule" do
     zone_text = "Rule	EU	1977	1980	-	Apr	Sun>=1	 1:00u	1:00	S\n"

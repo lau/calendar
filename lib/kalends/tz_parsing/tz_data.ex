@@ -1,7 +1,7 @@
-defmodule Kalends.TzData do
+defmodule Kalends.TzParsing.TzData do
   @moduledoc false
-  alias Kalends.TzParser, as: Parser
-  alias Kalends.TzParser.Organizer, as: Organizer
+  alias Kalends.TzParsing.TzParser, as: Parser
+  alias Kalends.TzParsing.TzParser.Organizer, as: Organizer
   files = ~w(africa antarctica asia australasia backward etcetera europe northamerica pacificnew southamerica)s
   all_files_read = Enum.map(files, fn elem -> Parser.read_file(elem) end) |> List.flatten
   rules = Organizer.rules(all_files_read)

@@ -1,4 +1,4 @@
-defmodule Kalends.TzParser.Organizer do
+defmodule Kalends.TzParsing.TzParser.Organizer do
   @moduledoc false
   # List of zone names. Canonical zones only. No links.
   def zone_list(from_initial_pass) do

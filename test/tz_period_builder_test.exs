@@ -1,6 +1,6 @@
 defmodule TzPeriodBuilderTest do
   use ExUnit.Case, async: true
-  alias Kalends.TzPeriodBuilder, as: TzPeriodBuilder
+  alias Kalends.TzParsing.TzPeriodBuilder, as: TzPeriodBuilder
 
   test "get periods for a zone" do
     prds = TzPeriodBuilder.calc_periods("Europe/Copenhagen")
