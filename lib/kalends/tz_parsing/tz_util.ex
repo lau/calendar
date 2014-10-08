@@ -26,26 +26,18 @@ defmodule Kalends.TzParsing.TzUtil do
     |> String.split(":")
     |> _string_amount_to_secs
   end
-  # If there is only one element, add 0 minutes and send to "normal" 2 parts
-  # function
-  defp _string_amount_to_secs(list) when length(list) == 1 do
-    _string_amount_to_secs([hd(list), "00"])
+  # If there is only one or two elements, add 00 minutes or 00 seconds
+  # until we have a 3 element list
+  defp _string_amount_to_secs(list) when length(list) == 1 or length(list) == 2 do
+    list ++ ["00"] |> _string_amount_to_secs
   end
-  # If there are 3 parts, the last one is seconds. We calculate the seconds
-  # and send them to the "normal" function for 2 parts
   defp _string_amount_to_secs(list) when length(list) == 3 do
-    secs_string = hd(Enum.reverse list)
-    {secs, ""} = Integer.parse(secs_string)
-    # remove seconds part from list
-    list = List.delete_at(list, 2)
-    _string_amount_to_secs(list, secs)
-  end
-  defp _string_amount_to_secs(list, secs\\0) when length(list) == 2 do
     {hours, ""} = Integer.parse(hd(list))
-    {mins, ""} = Integer.parse(hd(Enum.reverse(list)))
-    # if hours are negative, use the absolute value in this calculation
+    {mins, ""} = Integer.parse(list|>Enum.at(1))
+    {secs, ""} = Integer.parse(list|>Enum.at(2))
+    # maybe the hours are negative, so use the absolute value in this calculation
     result = abs(hours)*3600+mins*60+secs
-    # if hours are negative, the whole result should be negative
+    # if hours are negative, the whole result should be negative: multiply by -1
     if Regex.match?(~r/-/, hd(list)), do: result = -1*result
     result
   end
