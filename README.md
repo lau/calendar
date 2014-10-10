@@ -39,7 +39,7 @@ In UTC:
      min: 44, month: 10, sec: 32, std_off: 0, timezone: "UTC", utc_off: 0,
      year: 2014}
 
-Transforming a DateTime to a string with the date in ISO 8601 format:
+Transforming a DateTime to a string in ISO 8601 format:
 
     mvd |> Kalends.Formatter.iso8601
     "2014-10-04T23:44:32-3:00"
