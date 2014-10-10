@@ -30,7 +30,7 @@ defmodule Kalends.DateTime do
 
   @doc """
   Takes a DateTime and the name of a new timezone.
-  The DateTime must be unaibiguous.
+  The DateTime must be unambiguous.
   Returns a DateTime with the equivalent time in the new timezone.
 
   Make sure that date_time is unambiguous and that timezone is valid.

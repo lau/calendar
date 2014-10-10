@@ -39,12 +39,22 @@ In UTC:
      min: 44, month: 10, sec: 32, std_off: 0, timezone: "UTC", utc_off: 0,
      year: 2014}
 
+Transforming a DateTime to a string with the date in ISO 8601 format:
+
+    mvd |> Kalends.Formatter.iso8601
+    "2014-10-04T23:44:32-3:00"
+
 The time right now for a specified time zone:
 
-    Kalends.DateTime.now "Europe/Copenhagen"
+    cph = Kalends.DateTime.now "Europe/Copenhagen"
     %Kalends.DateTime{abbr: "CEST", ambiguous: {false, nil}, date: 5, hour: 21,
      min: 59, month: 10, sec: 24, std_off: 3600, timezone: "Europe/Copenhagen",
      utc_off: 3600, year: 2014}
+
+Transform a DateTime struct to an Erlang style tuple:
+
+    cph |> Kalends.DateTime.to_erl
+    {{2014, 10, 5}, {21, 59, 24}}
 
 ## Raison d'être
 
