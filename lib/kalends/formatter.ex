@@ -20,7 +20,7 @@ defmodule Kalends.Formatter do
   end
 
   defp iso8601_offset_part(_, time_zone) when time_zone == "UTC" or time_zone == "Etc/UTC", do: "Z"
-  defp iso8601_offset_part(total_off, time_zone) do
+  defp iso8601_offset_part(total_off, _) do
     sign = sign_for_offset8601(total_off)
     offset_amount_string = total_off |> secs_to_hours_mins_string
     sign<>offset_amount_string
