@@ -1,4 +1,12 @@
 defmodule Kalends.DateTime do
+  @moduledoc """
+  DateTime provides a struct which represents a certain time and date in a
+  certain time zone. The time zone can also be left out - we call that a naive
+  date-time.
+
+  The functions in this module can be used to create and manipulate
+  DateTime structs.
+  """
   require Kalends.TimeZoneData
   require Kalends.TimeZonePeriods
   alias Kalends.TimeZoneData, as: TimeZoneData
@@ -17,7 +25,15 @@ defmodule Kalends.DateTime do
   Usually the list will only have a size of 1. But if for instance there is a
   shift from DST to winter time taking place, the list will have 2 elements.
 
-  Examples: now "UTC" or now "Europe/Copenhagen"
+  ## Examples
+  iex > Kalends.DateTime.now "UTC"
+      %Kalends.DateTime{abbr: "UTC", ambiguous: {false, nil}, date: 15, hour: 2,
+       min: 39, month: 10, sec: 53, std_off: 0, timezone: "UTC", utc_off: 0,
+       year: 2014}
+  iex > Kalends.DateTime.now "Europe/Copenhagen"
+      %Kalends.DateTime{abbr: "CEST", ambiguous: {false, nil}, date: 15, hour: 4,
+       min: 41, month: 10, sec: 1, std_off: 3600, timezone: "Europe/Copenhagen",
+       utc_off: 3600, year: 2014}
   """
   def now("UTC"), do: now_utc
   def now(timezone) do
@@ -95,6 +111,9 @@ defmodule Kalends.DateTime do
   The tag can be :ok, :ambiguous or :error. :ok is for an unambigous time.
   :ambiguous is for a time that could be two different times - usually either
   summer or winter time. See the examples below.
+
+  An erlang style date-time tuple has the following format:
+  {{year, month, date}, {hour, minute, second}}
 
   ## Examples
     Normal, non-ambigous time
@@ -174,6 +193,14 @@ defmodule Kalends.DateTime do
     %Kalends.DateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec, timezone: timezone, abbr: abbr, utc_off: utc_off, std_off: std_off, ambiguous: {false, nil}}
   end
 
+  @doc """
+  Takes a DateTime struct and returns an erlang style datetime tuple.
+
+  ## Examples
+
+    iex > Kalends.DateTime.now("UTC") |> Kalends.DateTime.to_erl
+        {{2014, 10, 15}, {2, 37, 22}}
+  """
   def to_erl(%Kalends.DateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec}) do
     {{year, month, date}, {hour, min, sec}}
   end
