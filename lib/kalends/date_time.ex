@@ -90,6 +90,11 @@ defmodule Kalends.DateTime do
   def from_erl(date_time), do: from_erl_naive(date_time)
   @doc """
   Takes an Erlang-style date-time tuple and additionally a timezone name.
+  Returns a tuple with a tag and a DateTime struct.
+
+  The tag can be :ok, :ambiguous or :error. :ok is for an unambigous time.
+  :ambiguous is for a time that could be two different times - usually either
+  summer or winter time. See the examples below.
 
   ## Examples
     Normal, non-ambigous time
@@ -103,7 +108,7 @@ defmodule Kalends.DateTime do
     The ambiguous field will be a list of tuples with zone abbreviation,
     UTC offset in seconds, standard offset in seconds.
     iex> from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo")
-    {:ok, %Kalends.DateTime{date: 9, hour: 1, min: 1, month: 3, sec: 1, year: 2014, timezone: "America/Montevideo", abbr: nil,
+    {:ambiguous, %Kalends.DateTime{date: 9, hour: 1, min: 1, month: 3, sec: 1, year: 2014, timezone: "America/Montevideo", abbr: nil,
      ambiguous: {true, [{"UYST", -10800, 3600}, {"UYT", -10800, 0}]}} }
 
     iex from_erl({{2014, 9, 26}, {17, 10, 20}}, "Non-existing timezone")
@@ -154,7 +159,7 @@ defmodule Kalends.DateTime do
                     |> Enum.map(fn period -> {period.zone_abbr, period.utc_off, period.std_off} end)
                     # sort by the first element - zone abbreviation
                     |> Enum.sort(&(elem(&1, 0) <= elem(&2, 0)))
-    {:ok, %Kalends.DateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec, timezone: timezone, abbr: nil, ambiguous: {true, abbreviations}} }
+    {:ambiguous, %Kalends.DateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec, timezone: timezone, abbr: nil, ambiguous: {true, abbreviations}} }
   end
 
   defp from_erl_naive({{year, month, date}, {hour, min, sec}}) do
