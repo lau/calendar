@@ -56,6 +56,10 @@ Transform a DateTime struct to an Erlang style tuple:
     cph |> Kalends.DateTime.to_erl
     {{2014, 10, 5}, {21, 59, 24}}
 
+## Documentation
+
+Documentation can be found at http://hexdocs.pm/kalends/
+
 ## Raison d'être
 
 There are many different rules for time zones all over the world and they change
