@@ -1,6 +1,7 @@
 defmodule TimeZoneDataTest do
   use ExUnit.Case, async: true
   alias Kalends.TimeZoneData, as: TimeZoneData
+  doctest Kalends.TimeZoneData
 
   test "get periods for a cononical zone name" do
     {:ok, periods} = TimeZoneData.periods("Europe/Copenhagen")

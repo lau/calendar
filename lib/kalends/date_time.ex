@@ -1,8 +1,10 @@
 defmodule Kalends.DateTime do
   @moduledoc """
   DateTime provides a struct which represents a certain time and date in a
-  certain time zone. The time zone can also be left out - we call that a naive
-  date-time.
+  certain time zone.
+  
+  DateTime can also represent a "naive time". That is a point in time without
+  a specified time zone.
 
   The functions in this module can be used to create and manipulate
   DateTime structs.
