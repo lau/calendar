@@ -4,7 +4,7 @@ defmodule Kalends.Mixfile do
   def project do
     [app: :kalends,
      name: "Kalends",
-     version: "0.0.1",
+     version: "0.0.2",
      elixir: "~> 1.0.0 or ~> 0.15.1",
      package: package,
      description: description,
