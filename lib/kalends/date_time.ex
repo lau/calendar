@@ -2,7 +2,7 @@ defmodule Kalends.DateTime do
   @moduledoc """
   DateTime provides a struct which represents a certain time and date in a
   certain time zone.
-  
+
   DateTime can also represent a "naive time". That is a point in time without
   a specified time zone.
 
@@ -91,6 +91,39 @@ defmodule Kalends.DateTime do
     gregorian_seconds
     |>:calendar.gregorian_seconds_to_datetime
     |>from_erl!(timezone, abbr, utc_off, std_off)
+  end
+
+
+  @doc """
+  Like from_erl/1 without "!", but returns the result directly without a tag.
+  Will raise if date is invalid. Only use this if you are sure the date is valid.
+
+  ## Examples
+
+      iex> from_erl!({{2014, 9, 26}, {17, 10, 20}})
+      %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil, ambiguous: nil}
+
+      iex from_erl!({{2014, 99, 99}, {17, 10, 20}})
+      # this will throw a MatchError
+  """
+  def from_erl!(date_time) do
+    {:ok, result} = from_erl(date_time)
+    result
+  end
+
+  @doc """
+  Like from_erl/2 without "!", but returns the result directly without a tag.
+  Will raise if date is ambiguous or invalid! Only use this if you are sure
+  the date is valid. Otherwise use "from_erl" without the "!".
+
+  Example:
+
+      iex> from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo")
+      %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: "America/Montevideo", abbr: "UYT", ambiguous: {false, nil}, utc_off: -10800, std_off: 0}
+  """
+  def from_erl!(date_time, time_zone) do
+    {:ok, result} = from_erl(date_time, time_zone)
+    result
   end
 
   @doc """

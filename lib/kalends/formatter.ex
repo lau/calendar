@@ -7,7 +7,7 @@ defmodule Kalends.Formatter do
   Returns a string with the time in ISO 8601
 
   ## Example
-    iex> Kalends.DateTime.from_erl({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> elem(1) |> Kalends.Formatter.iso8601
+    iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Kalends.Formatter.iso8601
     "2014-09-26T17:10:20-3:00"
   """
   def iso8601(dt) do
