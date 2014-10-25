@@ -89,4 +89,15 @@ defmodule Kalends.TimeZoneData do
       "Europe/London"
   """
   def links, do: unquote(Macro.escape(TzData.links))
+
+
+  @doc """
+  Returns tzdata release version as a string.
+
+  Example:
+
+      Kalends.TimeZoneData.tzdata_version
+      "2014i"
+  """
+  def tzdata_version, do: unquote(Macro.escape(Kalends.TzParsing.TzReleaseParser.tzdata_version))
 end

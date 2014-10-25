@@ -2,9 +2,15 @@
 # This script downloads the latest tzdata files from ftp.iana.org and puts them
 # in the tzdata directory, overwriting the existing ones.
 # We do not need all the files, so we delete the ones we do not use.
+#
+# Using grep, the first release line is extracted from the NEWS file and
+# put in the file RELEASE_LINE_FROM_NEWS. This way we know which release
+# the tzdata is from.
 mkdir -p tzdata/       \
   && cd tzdata/        \
   && wget 'ftp://ftp.iana.org/tz/tzdata-latest.tar.gz' \
   && tar -zxvf tzdata-latest.tar.gz                    \
   && rm tzdata-latest.tar.gz                           \
-  && rm factory leap-seconds.* leapseconds leapseconds.* Makefile iso3166.tab README systemv yearistype.sh zone.tab zone1970.tab backzone checktab.awk CONTRIBUTING NEWS Theory zoneinfo2tdf.pl
+  && rm factory leap-seconds.* leapseconds leapseconds.* Makefile iso3166.tab README systemv yearistype.sh zone.tab zone1970.tab backzone checktab.awk CONTRIBUTING Theory zoneinfo2tdf.pl \
+  && grep -o 'Release [0-9]\{4\}.*' NEWS | head -1 > RELEASE_LINE_FROM_NEWS \
+  && rm NEWS

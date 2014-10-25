@@ -51,4 +51,9 @@ defmodule TimeZoneDataTest do
     assert TimeZoneData.zone_alias? "Europe/Jersey"
     assert !(TimeZoneData.zone_alias? "Fantasy/Narnia")
   end
+
+  test "tzdata release version" do
+    version =  TimeZoneData.tzdata_version
+    assert String.length(version) == 5 # should be 5 chars long e.g. 2013a or 2014i
+  end
 end
