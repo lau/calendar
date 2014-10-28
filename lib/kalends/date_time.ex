@@ -159,11 +159,12 @@ defmodule Kalends.DateTime do
                             utc_off: -10800, std_off: 0} }
 
     Switching from summer to wintertime in the fall means an ambigous time.
-    The ambiguous field will be a list of tuples with zone abbreviation,
-    UTC offset in seconds, standard offset in seconds.
     iex> from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo")
-    {:ambiguous, %Kalends.DateTime{date: 9, hour: 1, min: 1, month: 3, sec: 1, year: 2014, timezone: "America/Montevideo", abbr: nil,
-     ambiguous: {true, [{"UYST", -10800, 3600}, {"UYT", -10800, 0}]}} }
+    {:ambiguous, %Kalends.AmbiguousDateTime{possible_date_times:
+      [%Kalends.DateTime{date: 9, hour: 1, min: 1, month: 3, sec: 1, year: 2014, timezone: "America/Montevideo", abbr: "UYST", utc_off: -10800, std_off: 3600},
+       %Kalends.DateTime{date: 9, hour: 1, min: 1, month: 3, sec: 1, year: 2014, timezone: "America/Montevideo", abbr: "UYT", utc_off: -10800, std_off: 0},
+      ]}
+    }
 
     iex from_erl({{2014, 9, 26}, {17, 10, 20}}, "Non-existing timezone")
         {:error, :timezone_not_found}
@@ -209,11 +210,16 @@ defmodule Kalends.DateTime do
   end
   # When a time is ambigous (for instance switching from summer- to winter-time)
   defp from_erl_periods({{year, month, date}, {hour, min, sec}}, timezone, periods) when length(periods) == 2 do
-    abbreviations = periods
-                    |> Enum.map(fn period -> {period.zone_abbr, period.utc_off, period.std_off} end)
-                    # sort by the first element - zone abbreviation
-                    |> Enum.sort(&(elem(&1, 0) <= elem(&2, 0)))
-    {:ambiguous, %Kalends.DateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec, timezone: timezone, abbr: nil, ambiguous: {true, abbreviations}} }
+    possible_date_times =
+    Enum.map(periods, fn period ->
+           %Kalends.DateTime{year: year, month: month, date: date, hour: hour,
+           min: min, sec: sec, timezone: timezone, abbr: period.zone_abbr,
+           utc_off: period.utc_off, std_off: period.std_off }
+       end )
+    # sort by abbreviation
+    |> Enum.sort(fn dt1, dt2 -> dt1.abbr <= dt2.abbr end)
+
+    {:ambiguous, %Kalends.AmbiguousDateTime{ possible_date_times: possible_date_times} }
   end
 
   defp from_erl_naive({{year, month, date}, {hour, min, sec}}) do
