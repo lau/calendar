@@ -17,7 +17,7 @@ defmodule DateTimeTest do
 
   test "from erl" do
     result = DateTime.from_erl({{2014, 9, 26}, {17, 10, 20}})
-    assert result == {:ok, %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil, ambiguous: nil} }
+    assert result == {:ok, %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil} }
   end
 
   test "from_erl invalid datetime" do

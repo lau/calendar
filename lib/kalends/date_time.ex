@@ -6,7 +6,7 @@ defmodule Kalends.DateTime do
   DateTime can also represent a "naive time". That is a point in time without
   a specified time zone.
 
-  The functions in this module can be used to create and manipulate
+  The functions in this module can be used to create and transform
   DateTime structs.
   """
   require Kalends.TimeZoneData
@@ -14,7 +14,7 @@ defmodule Kalends.DateTime do
   alias Kalends.TimeZoneData, as: TimeZoneData
   alias Kalends.TimeZonePeriods, as: TimeZonePeriods
 
-  defstruct [:year, :month, :date, :hour, :min, :sec, :timezone, :abbr, :ambiguous, :utc_off, :std_off]
+  defstruct [:year, :month, :date, :hour, :min, :sec, :timezone, :abbr, :utc_off, :std_off]
 
   defp now_utc do
     from_erl!(:erlang.universaltime, "UTC", "UTC", 0, 0)
@@ -29,11 +29,11 @@ defmodule Kalends.DateTime do
 
   ## Examples
   iex > Kalends.DateTime.now "UTC"
-      %Kalends.DateTime{abbr: "UTC", ambiguous: {false, nil}, date: 15, hour: 2,
+      %Kalends.DateTime{abbr: "UTC", date: 15, hour: 2,
        min: 39, month: 10, sec: 53, std_off: 0, timezone: "UTC", utc_off: 0,
        year: 2014}
   iex > Kalends.DateTime.now "Europe/Copenhagen"
-      %Kalends.DateTime{abbr: "CEST", ambiguous: {false, nil}, date: 15, hour: 4,
+      %Kalends.DateTime{abbr: "CEST", date: 15, hour: 4,
        min: 41, month: 10, sec: 1, std_off: 3600, timezone: "Europe/Copenhagen",
        utc_off: 3600, year: 2014}
   """
@@ -55,7 +55,7 @@ defmodule Kalends.DateTime do
 
   ## Example
     iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone!(nyc, "Europe/Copenhagen")
-    %Kalends.DateTime{abbr: "CEST", ambiguous: {false, nil}, date: 2, hour: 6, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014}
+    %Kalends.DateTime{abbr: "CEST", date: 2, hour: 6, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014}
   """
   def shift_zone!(date_time, timezone) do
     date_time
@@ -101,7 +101,7 @@ defmodule Kalends.DateTime do
   ## Examples
 
       iex> from_erl!({{2014, 9, 26}, {17, 10, 20}})
-      %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil, ambiguous: nil}
+      %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil}
 
       iex from_erl!({{2014, 99, 99}, {17, 10, 20}})
       # this will throw a MatchError
@@ -119,7 +119,7 @@ defmodule Kalends.DateTime do
   Example:
 
       iex> from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo")
-      %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: "America/Montevideo", abbr: "UYT", ambiguous: {false, nil}, utc_off: -10800, std_off: 0}
+      %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: "America/Montevideo", abbr: "UYT", utc_off: -10800, std_off: 0}
   """
   def from_erl!(date_time, time_zone) do
     {:ok, result} = from_erl(date_time, time_zone)
@@ -133,7 +133,7 @@ defmodule Kalends.DateTime do
 
   ## Examples
     iex from_erl({{2014, 9, 26}, {17, 10, 20}})
-        {:ok, %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil, ambiguous: nil} }
+        {:ok, %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil} }
 
     iex from_erl({{2014, 99, 99}, {17, 10, 20}})
         {:error, :invalid_datetime}
@@ -144,8 +144,8 @@ defmodule Kalends.DateTime do
   Returns a tuple with a tag and a DateTime struct.
 
   The tag can be :ok, :ambiguous or :error. :ok is for an unambigous time.
-  :ambiguous is for a time that could be two different times - usually either
-  summer or winter time. See the examples below.
+  :ambiguous is for a time that could have different UTC offsets and/or
+  standard offsets. Usually when switching from summer to winter time.
 
   An erlang style date-time tuple has the following format:
   {{year, month, date}, {hour, minute, second}}
@@ -155,7 +155,7 @@ defmodule Kalends.DateTime do
     iex> from_erl({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo")
     {:ok, %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20,
                             year: 2014, timezone: "America/Montevideo",
-                            abbr: "UYT", ambiguous: {false, nil},
+                            abbr: "UYT",
                             utc_off: -10800, std_off: 0} }
 
     Switching from summer to wintertime in the fall means an ambigous time.
@@ -206,7 +206,7 @@ defmodule Kalends.DateTime do
     period = periods |> hd
     {:ok, %Kalends.DateTime{year: year, month: month, date: date, hour: hour,
          min: min, sec: sec, timezone: timezone, abbr: period.zone_abbr,
-         ambiguous: {false, nil}, utc_off: period.utc_off, std_off: period.std_off } }
+         utc_off: period.utc_off, std_off: period.std_off } }
   end
   # When a time is ambigous (for instance switching from summer- to winter-time)
   defp from_erl_periods({{year, month, date}, {hour, min, sec}}, timezone, periods) when length(periods) == 2 do
@@ -231,7 +231,7 @@ defmodule Kalends.DateTime do
   end
 
   defp from_erl!({{year, month, date}, {hour, min, sec}}, timezone, abbr, utc_off, std_off) do
-    %Kalends.DateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec, timezone: timezone, abbr: abbr, utc_off: utc_off, std_off: std_off, ambiguous: {false, nil}}
+    %Kalends.DateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec, timezone: timezone, abbr: abbr, utc_off: utc_off, std_off: std_off}
   end
 
   @doc """
