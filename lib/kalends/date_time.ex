@@ -48,10 +48,9 @@ defmodule Kalends.DateTime do
 
   @doc """
   Takes a DateTime and the name of a new timezone.
-  The DateTime must be unambiguous.
   Returns a DateTime with the equivalent time in the new timezone.
 
-  Make sure that date_time is unambiguous and that timezone is valid.
+  Make sure that timezone is valid.
 
   ## Example
     iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone!(nyc, "Europe/Copenhagen")
