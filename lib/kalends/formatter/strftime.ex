@@ -2,17 +2,8 @@ defmodule Kalends.Formatter.Strftime do
   @moduledoc false
   require Kalends.DateTime
 
-  @doc """
-  Generate a string from a DateTime formatted by a format string. Similar to strftime known from UNIX.
-
-  # Example
-      iex> Kalends.DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC")|>Kalends.Formatter.Strftime.strftime "%Y-%m-%e %H:%M:%S"
-      "2014-09-6 17:10:20"
-
-      iex> Kalends.DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC")|>Kalends.Formatter.Strftime.strftime "%d.%m.%y"
-      "06.09.14"
-  """
-  def strftime(dt, string) do 
+  # documentation for this is in Kalends.Formatter
+  def strftime(dt, string) do
     parse_for_con_specs(string)
     |> Enum.reduce(string, fn(conv_spec, new_string) -> String.replace(new_string, "%#{conv_spec}", string_for_conv_spec(dt, conv_spec)) end)
   end
