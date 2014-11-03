@@ -56,14 +56,14 @@ defmodule Kalends.Parser do
     utc_dt |> DateTime.shift_zone time_zone
   end
 
-  def parse_rfc3339_as_utc_parsed_string(mapped, z, _offset_hours, _offset_mins) when z == "Z" or z=="z" do
+  defp parse_rfc3339_as_utc_parsed_string(mapped, z, _offset_hours, _offset_mins) when z == "Z" or z=="z" do
     parse_rfc3339_as_utc_parsed_string(mapped, "", "00", "00")
   end
-  def parse_rfc3339_as_utc_parsed_string(mapped, _z, offset_hours, offset_mins) when offset_hours == "00" and offset_mins == "00" do
+  defp parse_rfc3339_as_utc_parsed_string(mapped, _z, offset_hours, offset_mins) when offset_hours == "00" and offset_mins == "00" do
     {tag, dt} = DateTime.from_erl(erl_date_time_from_regex_map(mapped), "UTC")
     {tag, dt}
   end
-  def parse_rfc3339_as_utc_parsed_string(mapped, _z, offset_hours, offset_mins) do
+  defp parse_rfc3339_as_utc_parsed_string(mapped, _z, offset_hours, offset_mins) do
     offset_in_secs = hours_mins_to_secs!(offset_hours, offset_mins)
     if mapped["offset_sign"] == "-", do: offset_in_secs = offset_in_secs*-1
     erl_date_time = erl_date_time_from_regex_map(mapped)
