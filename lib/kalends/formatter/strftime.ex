@@ -40,6 +40,6 @@ defmodule Kalends.Formatter.Strftime do
     secs = abs(secs)
     hours = secs/3600.0 |> Float.floor |> trunc
     mins = rem(secs, 3600)/60.0 |> Float.floor |> trunc
-    "#{hours}:#{mins|>pad_with_zeroes(2)}"
+    "#{hours|>pad_with_zeroes(2)}:#{mins|>pad_with_zeroes(2)}"
   end
 end

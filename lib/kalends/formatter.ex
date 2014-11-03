@@ -22,7 +22,7 @@ defmodule Kalends.Formatter do
 
   ## Example
     iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Kalends.Formatter.iso8601
-    "2014-09-26T17:10:20-3:00"
+    "2014-09-26T17:10:20-03:00"
   """
   def iso8601(dt) do
     Kalends.Formatter.Strftime.strftime(dt, "%Y-%m-%dT%H:%M:%S")<>
