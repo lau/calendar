@@ -28,12 +28,11 @@ struct for the same time in the London time zone:
                       sec: 32, std_off: 3600, timezone: "Europe/London",
                       utc_off: 0, year: 2014}
 
-In UTC:
+...and then in UTC:
 
     london |> Kalends.DateTime.shift_zone! "UTC"
-    %Kalends.DateTime{abbr: "UTC", ambiguous: {false, nil}, date: 5, hour: 2,
-     min: 44, month: 10, sec: 32, std_off: 0, timezone: "UTC", utc_off: 0,
-     year: 2014}
+    %Kalends.DateTime{abbr: "UTC", date: 5, hour: 2, min: 44, month: 10,
+                   sec: 32, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
 
 Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
 
