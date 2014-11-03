@@ -2,7 +2,7 @@ defmodule Kalends.Parser do
   require Kalends.DateTime
   alias Kalends.DateTime, as: DateTime
 
-  @doc """
+  @privatedoc """
   Parse RFC 3339 timestamp strings as UTC. If the timestamp is not in UTC it
   will be shifted to UTC.
 
@@ -17,7 +17,7 @@ defmodule Kalends.Parser do
       iex> parse_rfc3339_as_utc("1996-12-19T16:39:57-08:00")
       {:ok, %Kalends.DateTime{year: 1996, month: 12, date: 20, hour: 0, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
   """
-  def parse_rfc3339_as_utc(rfc3339_string) do
+  defp parse_rfc3339_as_utc(rfc3339_string) do
     parsed = rfc3339_string
     |> parse_rfc3339_string
     if parsed do
@@ -28,19 +28,25 @@ defmodule Kalends.Parser do
   end
 
   @doc """
-  Parses an RFC 3339 timestamp like parse_rfc3339_as_utc, but shifts it to
+  Parses an RFC 3339 timestamp and shifts it to
   the specified time zone.
 
-      iex> parse_rfc3339_with_time_zone("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
+      iex> parse_rfc3339("1996-12-19T16:39:57Z", "UTC")
+      {:ok, %Kalends.DateTime{year: 1996, month: 12, date: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+
+      iex> parse_rfc3339("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
       {:ok, %Kalends.DateTime{abbr: "PST", date: 19, hour: 16, min: 39, month: 12, sec: 57, std_off: 0, timezone: "America/Los_Angeles", utc_off: -28800, year: 1996}}
 
-      iex> parse_rfc3339_with_time_zone("invalid", "America/Los_Angeles")
+      iex> parse_rfc3339("invalid", "America/Los_Angeles")
       {:bad_format, nil}
 
-      iex> parse_rfc3339_with_time_zone("1996-12-19T16:39:57-08:00", "invalid time zone name")
+      iex> parse_rfc3339("1996-12-19T16:39:57-08:00", "invalid time zone name")
       {:invalid_time_zone, nil}
   """
-  def parse_rfc3339_with_time_zone(rfc3339_string, time_zone) do
+  def parse_rfc3339(rfc3339_string, "UTC") do
+    parse_rfc3339_as_utc(rfc3339_string)
+  end
+  def parse_rfc3339(rfc3339_string, time_zone) do
     parse_rfc3339_as_utc(rfc3339_string) |> do_parse_rfc3339_with_time_zone(time_zone)
   end
   defp do_parse_rfc3339_with_time_zone({utc_tag, _utc_dt}, _time_zone) when utc_tag != :ok do
