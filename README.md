@@ -48,6 +48,7 @@ Parsing the same string again back into a DateTime:
             utc_off: -10800, year: 2014}}
 
 Parsing a UTC RFC 3339 timestamp:
+
     Kalends.Parser.parse_rfc3339 "2014-10-04T23:44:32Z", "UTC"
     {:ok, %Kalends.DateTime{abbr: "UTC", date: 4, hour: 23, min: 44,
             month: 10, sec: 32, std_off: 0, timezone: "UTC",
