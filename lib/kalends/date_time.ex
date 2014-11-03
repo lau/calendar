@@ -47,10 +47,8 @@ defmodule Kalends.DateTime do
   end
 
   @doc """
-  Takes a DateTime and the name of a new timezone.
-  Returns a DateTime with the equivalent time in the new timezone.
-
-  Make sure that timezone is valid.
+  Like shift_zone without "!", but does not check that the time zone is valid
+  and just returns a DateTime struct instead of a tuple with a tag.
 
   ## Example
     iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone!(nyc, "Europe/Copenhagen")
@@ -60,6 +58,25 @@ defmodule Kalends.DateTime do
     date_time
     |>shift_to_utc
     |>shift_from_utc(timezone)
+  end
+
+  @doc """
+  Takes a DateTime and the name of a new timezone.
+  Returns a DateTime with the equivalent time in the new timezone.
+
+  ## Example
+    iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone(nyc, "Europe/Copenhagen")
+    {:ok, %Kalends.DateTime{abbr: "CEST", date: 2, hour: 6, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014}}
+
+    iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone(nyc, "Invalid timezone")
+    {:invalid_time_zone, nil}
+  """
+  def shift_zone(date_time, timezone) do
+    if TimeZoneData.zone_exists?(timezone) do
+      {:ok, shift_zone!(date_time, timezone)}
+    else
+      {:invalid_time_zone, nil}
+    end
   end
 
   defp shift_to_utc(date_time) do
