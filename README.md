@@ -36,8 +36,8 @@ struct for the same time in the London time zone:
 
 Formatting a DateTime using "strftime":
 
-   mvd |> Kalends.Formatter.strftime "The day is %A. The time in 12 hour notation is %I:%M:%S %p"
-   "The day is Saturday. The time in 12 hour notation is 11:44:32 PM"
+    mvd |> Kalends.Formatter.strftime "The day is %A. The time in 12 hour notation is %I:%M:%S %p"
+    "The day is Saturday. The time in 12 hour notation is 11:44:32 PM"
 
 Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
 
