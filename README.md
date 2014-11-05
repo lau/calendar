@@ -34,6 +34,11 @@ struct for the same time in the London time zone:
     %Kalends.DateTime{abbr: "UTC", date: 5, hour: 2, min: 44, month: 10,
                    sec: 32, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
 
+Formatting a DateTime using "strftime":
+
+   mvd |> Kalends.Formatter.strftime "The day is %A. The time in 12 hour notation is %I:%M:%S %p"
+   "The day is Saturday. The time in 12 hour notation is 11:44:32 PM"
+
 Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
 
     mvd |> Kalends.Formatter.iso8601

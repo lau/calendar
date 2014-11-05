@@ -4,20 +4,22 @@ defmodule Kalends.Formatter do
 
   @doc """
   Generate a string from a DateTime formatted by a format string. Similar to strftime known from UNIX.
+  A list of the letters and and what they do are available here: http://man7.org/linux/man-pages/man3/strftime.3.html
+  The following codes are implemented: %a, %A, %b, %h, %B, %j, %u, %w, %V, %G, %g, %y, %Y, %C, %I, %l, %P, %p, %r, %R, %T, %F, %m, %e, %d, %H, %k, %M, %S, %z, %Z
 
   # Example
-      iex> Kalends.DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC")|>Kalends.Formatter.Strftime.strftime "%Y-%m-%e %H:%M:%S"
-      "2014-09-6 17:10:20"
+      iex> Kalends.DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC")|>Kalends.Formatter.Strftime.strftime "%A %Y-%m-%e %H:%M:%S"
+      "Saturday 2014-09- 6 17:10:20"
 
-      iex> Kalends.DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC")|>Kalends.Formatter.Strftime.strftime "%d.%m.%y"
-      "06.09.14"
+      iex> Kalends.DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC")|>Kalends.Formatter.Strftime.strftime "%a %d.%m.%y"
+      "Sat 06.09.14"
   """
   def strftime(dt, string) do
     Kalends.Formatter.Strftime.strftime(dt, string)
   end
 
   @doc """
-  Takes an unambiguous DateTime.
+  Takes a DateTime.
   Returns a string with the time in ISO 8601
 
   ## Example
