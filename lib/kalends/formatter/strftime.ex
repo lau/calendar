@@ -3,7 +3,7 @@ defmodule Kalends.Formatter.Strftime do
   alias Kalends.DateTime, as: DateTime
 
   # documentation for this is in Kalends.Formatter
-  def strftime(dt, string, lang\\:en) do
+  def strftime!(dt, string, lang\\:en) do
     parse_for_con_specs(string)
     |> Enum.reduce(string, fn(conv_spec, new_string) -> String.replace(new_string, "%#{conv_spec}", string_for_conv_spec(dt, conv_spec, lang)) end)
   end
@@ -32,10 +32,10 @@ defmodule Kalends.Formatter.Strftime do
   defp string_for_conv_spec(dt, :l, _) do "#{dt.hour|>x24h_to_12_h|>elem(0)}"|>pad(2, hd ' ') end
   defp string_for_conv_spec(dt, :P, _) do "#{dt.hour|>x24h_to_12_h|>elem(1)}" end
   defp string_for_conv_spec(dt, :p, _) do "#{dt.hour|>x24h_to_12_h|>elem(1)}"|>String.upcase end
-  defp string_for_conv_spec(dt, :r, _) do strftime dt, "%I:%M:%S %p" end
-  defp string_for_conv_spec(dt, :R, _) do strftime dt, "%H:%M" end
-  defp string_for_conv_spec(dt, :T, _) do strftime dt, "%H:%M:%S" end
-  defp string_for_conv_spec(dt, :F, _) do strftime dt, "%Y-%m-%d" end
+  defp string_for_conv_spec(dt, :r, _) do strftime! dt, "%I:%M:%S %p" end
+  defp string_for_conv_spec(dt, :R, _) do strftime! dt, "%H:%M" end
+  defp string_for_conv_spec(dt, :T, _) do strftime! dt, "%H:%M:%S" end
+  defp string_for_conv_spec(dt, :F, _) do strftime! dt, "%Y-%m-%d" end
   defp string_for_conv_spec(dt, :m, _) do "#{dt.month}"|>pad end
   defp string_for_conv_spec(dt, :e, _) do "#{dt.date}"|>pad(2, hd ' ') end
   defp string_for_conv_spec(dt, :d, _) do "#{dt.date}"|>pad end
