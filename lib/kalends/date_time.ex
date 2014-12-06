@@ -3,16 +3,11 @@ defmodule Kalends.DateTime do
   DateTime provides a struct which represents a certain time and date in a
   certain time zone.
 
-  DateTime can also represent a "naive time". That is a point in time without
-  a specified time zone.
-
   The functions in this module can be used to create and transform
   DateTime structs.
   """
-  require Kalends.TimeZoneData
-  require Kalends.TimeZonePeriods
-  alias Kalends.TimeZoneData, as: TimeZoneData
-  alias Kalends.TimeZonePeriods, as: TimeZonePeriods
+  alias Kalends.TimeZoneData
+  alias Kalends.TimeZonePeriods
 
   defstruct [:year, :month, :date, :hour, :min, :sec, :timezone, :abbr, :utc_off, :std_off]
 
@@ -109,24 +104,6 @@ defmodule Kalends.DateTime do
     |>from_erl!(timezone, abbr, utc_off, std_off)
   end
 
-
-  @doc """
-  Like from_erl/1 without "!", but returns the result directly without a tag.
-  Will raise if date is invalid. Only use this if you are sure the date is valid.
-
-  ## Examples
-
-      iex> from_erl!({{2014, 9, 26}, {17, 10, 20}})
-      %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil}
-
-      iex from_erl!({{2014, 99, 99}, {17, 10, 20}})
-      # this will throw a MatchError
-  """
-  def from_erl!(date_time) do
-    {:ok, result} = from_erl(date_time)
-    result
-  end
-
   @doc """
   Like from_erl/2 without "!", but returns the result directly without a tag.
   Will raise if date is ambiguous or invalid! Only use this if you are sure
@@ -142,19 +119,6 @@ defmodule Kalends.DateTime do
     result
   end
 
-  @doc """
-  Takes an Erlang-style date-time tuple.
-  If the datetime is valid it returns a tuple with a tag and a naive DateTime.
-  Naive in this context means that it does not have any timezone data.
-
-  ## Examples
-    iex from_erl({{2014, 9, 26}, {17, 10, 20}})
-        {:ok, %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil} }
-
-    iex from_erl({{2014, 99, 99}, {17, 10, 20}})
-        {:error, :invalid_datetime}
-  """
-  def from_erl(date_time), do: from_erl_naive(date_time)
   @doc """
   Takes an Erlang-style date-time tuple and additionally a timezone name.
   Returns a tuple with a tag and a DateTime struct.
@@ -238,14 +202,6 @@ defmodule Kalends.DateTime do
     {:ambiguous, %Kalends.AmbiguousDateTime{ possible_date_times: possible_date_times} }
   end
 
-  defp from_erl_naive({{year, month, date}, {hour, min, sec}}) do
-    if validate_erl_datetime {{year, month, date}, {hour, min, sec}} do
-      {:ok, %Kalends.DateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec} }
-    else
-      {:error, :invalid_datetime}
-    end
-  end
-
   defp from_erl!({{year, month, date}, {hour, min, sec}}, timezone, abbr, utc_off, std_off) do
     %Kalends.DateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec, timezone: timezone, abbr: abbr, utc_off: utc_off, std_off: std_off}
   end
@@ -266,7 +222,7 @@ defmodule Kalends.DateTime do
   Takes a DateTime and returns an integer of gregorian seconds starting with
   year 0. This is done via the Erlang calendar module.
 
-    iex> elem(from_erl({{2014,9,26},{17,10,20}}),1) |> gregorian_seconds
+    iex> elem(from_erl({{2014,9,26},{17,10,20}}, "UTC"),1) |> gregorian_seconds
     63578970620
   """
   def gregorian_seconds(date_time) do

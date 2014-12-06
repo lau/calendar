@@ -1,7 +1,6 @@
 defmodule DateTimeTest do
   use ExUnit.Case, async: true
   import Kalends.DateTime
-  alias Kalends.DateTime, as: DateTime
   doctest Kalends.DateTime
 
   test "now" do
@@ -15,13 +14,8 @@ defmodule DateTimeTest do
     assert year > 1900
   end
 
-  test "from erl" do
-    result = DateTime.from_erl({{2014, 9, 26}, {17, 10, 20}})
-    assert result == {:ok, %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: nil, abbr: nil} }
-  end
-
   test "from_erl invalid datetime" do
-    result = from_erl({{2014, 99, 99}, {17, 10, 20}})
+    result = from_erl({{2014, 99, 99}, {17, 10, 20}}, "UTC")
     assert result == {:error, :invalid_datetime}
   end
 
