@@ -15,7 +15,7 @@ Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.
 Get a DateTime struct for the 4th of October 2014 at 23:44:32 in the city of
 Montevideo:
 
-    {:ok, mvd} = Kalends.DateTime.from_erl {{2014,10,4},{23,44,32}}, "America/Montevideo"
+    {:ok, mvd} = DateTime.from_erl {{2014,10,4},{23,44,32}}, "America/Montevideo"
     {:ok, %Kalends.DateTime{abbr: "UYT", date: 4, hour: 23, min: 44, month: 10,
                             sec: 32, std_off: 0, timezone: "America/Montevideo",
                             utc_off: -10800, year: 2014}}
@@ -23,51 +23,51 @@ Montevideo:
 A DateTime struct is now assigned to the variable `mvd`. Let's get a DateTime
 struct for the same time in the London time zone:
 
-    london = mvd |> Kalends.DateTime.shift_zone! "Europe/London"
+    london = mvd |> DateTime.shift_zone! "Europe/London"
     %Kalends.DateTime{abbr: "BST", date: 5, hour: 3, min: 44, month: 10,
                       sec: 32, std_off: 3600, timezone: "Europe/London",
                       utc_off: 0, year: 2014}
 
 ...and then in UTC:
 
-    london |> Kalends.DateTime.shift_zone! "UTC"
+    london |> DateTime.shift_zone! "UTC"
     %Kalends.DateTime{abbr: "UTC", date: 5, hour: 2, min: 44, month: 10,
                    sec: 32, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
 
 Formatting a DateTime using "strftime":
 
-    mvd |> Kalends.Formatter.strftime! "The day is %A. The time in 12 hour notation is %I:%M:%S %p"
+    mvd |> DateTime.Format.strftime! "The day is %A. The time in 12 hour notation is %I:%M:%S %p"
     "The day is Saturday. The time in 12 hour notation is 11:44:32 PM"
 
 Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
 
-    mvd |> Kalends.Formatter.iso8601
+    mvd |> DateTime.Format.iso8601
     "2014-10-04T23:44:32-03:00"
 
 Parsing the same string again back into a DateTime:
 
-    Kalends.Parser.parse_rfc3339 "2014-10-04T23:44:32-03:00", "America/Montevideo"
+    DateTime.Parse.rfc3339 "2014-10-04T23:44:32-03:00", "America/Montevideo"
     {:ok, %Kalends.DateTime{abbr: "UYT", date: 4, hour: 23, min: 44,
             month: 10, sec: 32, std_off: 0, timezone: "America/Montevideo",
             utc_off: -10800, year: 2014}}
 
 Parsing a UTC RFC 3339 timestamp:
 
-    Kalends.Parser.parse_rfc3339 "2014-10-04T23:44:32Z", "UTC"
+    DateTime.Parse.rfc3339 "2014-10-04T23:44:32Z", "UTC"
     {:ok, %Kalends.DateTime{abbr: "UTC", date: 4, hour: 23, min: 44,
             month: 10, sec: 32, std_off: 0, timezone: "UTC",
             utc_off: 0, year: 2014}}
 
 The time right now for a specified time zone:
 
-    cph = Kalends.DateTime.now "Europe/Copenhagen"
+    cph = DateTime.now "Europe/Copenhagen"
     %Kalends.DateTime{abbr: "CEST", date: 5, hour: 21,
      min: 59, month: 10, sec: 24, std_off: 3600, timezone: "Europe/Copenhagen",
      utc_off: 3600, year: 2014}
 
 Transform a DateTime struct to an Erlang style tuple:
 
-    cph |> Kalends.DateTime.to_erl
+    cph |> DateTime.to_erl
     {{2014, 10, 5}, {21, 59, 24}}
 
 ## Documentation

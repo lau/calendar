@@ -1,6 +1,6 @@
-defmodule Kalends.Formatter.Strftime do
+defmodule Kalends.DateTime.Format.Strftime do
   @moduledoc false
-  alias Kalends.DateTime, as: DateTime
+  alias Kalends.DateTime
 
   # documentation for this is in Kalends.Formatter
   def strftime!(dt, string, lang\\:en) do

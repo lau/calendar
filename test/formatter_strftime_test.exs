@@ -1,7 +1,7 @@
 defmodule FormatterStrfTimeTest do
   use ExUnit.Case, async: true
-  alias Kalends.Formatter.Strftime, as: Strftime
-  doctest Kalends.Formatter.Strftime
+  alias Kalends.DateTime.Format.Strftime
+  doctest Strftime
 
   test "strftime" do
     dt = Kalends.DateTime.from_erl!({{2014, 11, 3}, {1, 41, 2}}, "UTC")

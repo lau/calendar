@@ -1,6 +1,5 @@
-defmodule Kalends.Parser do
-  require Kalends.DateTime
-  alias Kalends.DateTime, as: DateTime
+defmodule Kalends.DateTime.Parse do
+  alias Kalends.DateTime
 
   @privatedoc """
   Parse RFC 3339 timestamp strings as UTC. If the timestamp is not in UTC it
