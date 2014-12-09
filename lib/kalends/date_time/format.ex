@@ -1,4 +1,5 @@
 defmodule Kalends.DateTime.Format do
+  alias Kalends.DateTime
   alias Kalends.DateTime.Format.Strftime
 
   @doc """
@@ -7,10 +8,10 @@ defmodule Kalends.DateTime.Format do
   The following codes are implemented: %a, %A, %b, %h, %B, %j, %u, %w, %V, %G, %g, %y, %Y, %C, %I, %l, %P, %p, %r, %R, %T, %F, %m, %e, %d, %H, %k, %M, %S, %z, %Z
 
   # Example
-      iex> Kalends.DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC")|>Kalends.DateTime.Format.strftime! "%A %Y-%m-%e %H:%M:%S"
+      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%A %Y-%m-%e %H:%M:%S"
       "Saturday 2014-09- 6 17:10:20"
 
-      iex> Kalends.DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC")|>Kalends.DateTime.Format.strftime! "%a %d.%m.%y"
+      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%a %d.%m.%y"
       "Sat 06.09.14"
   """
   def strftime!(dt, string) do
@@ -34,5 +35,22 @@ defmodule Kalends.DateTime.Format do
   defp iso8601_offset_part(_, time_zone) when time_zone == "UTC" or time_zone == "Etc/UTC", do: "Z"
   defp iso8601_offset_part(dt, _) do
     Strftime.strftime!(dt, "%z")
+  end
+
+  @doc """
+  Takes a DateTime.
+  Returns a string with the date-time in RFC 2616 format. This format is used in
+  the HTTP protocal. Note that the date-time will always be "shifted" to UTC.
+
+  ## Example
+
+      # The time is 6:09 in the morning in Montevideo, but 9:09 GMT/UTC.
+      iex> DateTime.from_erl!({{2014, 9, 6}, {6, 9, 8}}, "America/Montevideo") |> DateTime.Format.httpdate
+      "Sat, 06 Sep 2014 09:09:08 GMT"
+  """
+  def httpdate(dt) do
+    dt
+    |> DateTime.shift_zone!("UTC")
+    |> Strftime.strftime!("%a, %d %b %Y %H:%M:%S GMT")
   end
 end

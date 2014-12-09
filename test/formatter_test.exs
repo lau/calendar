@@ -1,5 +1,6 @@
 defmodule FormatterTest do
   use ExUnit.Case, async: true
+  alias Kalends.DateTime
   alias Kalends.DateTime.Format
   doctest Format
 
