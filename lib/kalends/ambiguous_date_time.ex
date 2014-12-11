@@ -29,7 +29,7 @@ defmodule Kalends.AmbiguousDateTime do
   ## Examples
 
       iex> {:ambiguous, am} = Kalends.DateTime.from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo"); am |> Kalends.AmbiguousDateTime.disamb_total_off(-10800)
-      {:ok, %Kalends.DateTime{abbr: "UYT", date: 9, hour: 1, min: 1, month: 3, sec: 1, std_off: 0, timezone: "America/Montevideo", utc_off: -10800, year: 2014}}
+      {:ok, %Kalends.DateTime{abbr: "UYT", day: 9, hour: 1, min: 1, month: 3, sec: 1, std_off: 0, timezone: "America/Montevideo", utc_off: -10800, year: 2014}}
 
       iex> {:ambiguous, am} = Kalends.DateTime.from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo"); am |> Kalends.AmbiguousDateTime.disamb_total_off(0)
       {:error, :no_matches}
@@ -48,7 +48,7 @@ defmodule Kalends.AmbiguousDateTime do
   We provide a function that returns true if the abbreviation is "UYT"
 
       iex> {:ambiguous, am} = Kalends.DateTime.from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo"); am |> Kalends.AmbiguousDateTime.disamb(fn(dt) -> dt.abbr == "UYT" end)
-      {:ok, %Kalends.DateTime{abbr: "UYT", date: 9, hour: 1, min: 1, month: 3, sec: 1, std_off: 0, timezone: "America/Montevideo", utc_off: -10800, year: 2014}}
+      {:ok, %Kalends.DateTime{abbr: "UYT", day: 9, hour: 1, min: 1, month: 3, sec: 1, std_off: 0, timezone: "America/Montevideo", utc_off: -10800, year: 2014}}
 
   A function that always returns false
 

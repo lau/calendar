@@ -11,10 +11,10 @@ defmodule Kalends.DateTime.Parse do
       {:bad_format, nil}
 
       iex> parse_rfc3339_as_utc("1996-12-19T16:39:57Z")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, date: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
       iex> parse_rfc3339_as_utc("1996-12-19T16:39:57-08:00")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, date: 20, hour: 0, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
   """
   defp parse_rfc3339_as_utc(rfc3339_string) do
     parsed = rfc3339_string
@@ -31,10 +31,10 @@ defmodule Kalends.DateTime.Parse do
   the specified time zone.
 
       iex> rfc3339("1996-12-19T16:39:57Z", "UTC")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, date: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
       iex> rfc3339("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
-      {:ok, %Kalends.DateTime{abbr: "PST", date: 19, hour: 16, min: 39, month: 12, sec: 57, std_off: 0, timezone: "America/Los_Angeles", utc_off: -28800, year: 1996}}
+      {:ok, %Kalends.DateTime{abbr: "PST", day: 19, hour: 16, min: 39, month: 12, sec: 57, std_off: 0, timezone: "America/Los_Angeles", utc_off: -28800, year: 1996}}
 
       iex> rfc3339("invalid", "America/Los_Angeles")
       {:bad_format, nil}
@@ -77,7 +77,7 @@ defmodule Kalends.DateTime.Parse do
   end
 
   defp erl_date_time_from_regex_map(mapped) do
-    erl_date_time_from_strings({{mapped["year"],mapped["month"],mapped["date"]},{mapped["hour"],mapped["min"],mapped["sec"]}})
+    erl_date_time_from_strings({{mapped["year"],mapped["month"],mapped["day"]},{mapped["hour"],mapped["min"],mapped["sec"]}})
   end
 
   defp erl_date_time_from_strings({{year, month, date},{hour, min, sec}}) do
@@ -98,7 +98,7 @@ defmodule Kalends.DateTime.Parse do
   end
 
   defp parse_rfc3339_string(rfc3339_string) do
-    ~r/(?<year>[\d]{4})[^\d](?<month>[\d]{2})[^\d](?<date>[\d]{2})[^\d](?<hour>[\d]{2})[^\d](?<min>[\d]{2})[^\d](?<sec>[\d]{2})(\.(?<fraction>[\d]))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):(?<offset_mins>[\d]{2}))?/
+    ~r/(?<year>[\d]{4})[^\d](?<month>[\d]{2})[^\d](?<day>[\d]{2})[^\d](?<hour>[\d]{2})[^\d](?<min>[\d]{2})[^\d](?<sec>[\d]{2})(\.(?<fraction>[\d]))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):(?<offset_mins>[\d]{2}))?/
     |> Regex.named_captures rfc3339_string
   end
 end

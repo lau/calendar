@@ -37,8 +37,8 @@ defmodule Kalends.DateTime.Format.Strftime do
   defp string_for_conv_spec(dt, :T, _) do strftime! dt, "%H:%M:%S" end
   defp string_for_conv_spec(dt, :F, _) do strftime! dt, "%Y-%m-%d" end
   defp string_for_conv_spec(dt, :m, _) do "#{dt.month}"|>pad end
-  defp string_for_conv_spec(dt, :e, _) do "#{dt.date}"|>pad(2, hd ' ') end
-  defp string_for_conv_spec(dt, :d, _) do "#{dt.date}"|>pad end
+  defp string_for_conv_spec(dt, :e, _) do "#{dt.day}"|>pad(2, hd ' ') end
+  defp string_for_conv_spec(dt, :d, _) do "#{dt.day}"|>pad end
   defp string_for_conv_spec(dt, :H, _) do "#{dt.hour}"|>pad end
   defp string_for_conv_spec(dt, :k, _) do "#{dt.hour}"|>pad(2, hd ' ') end
   defp string_for_conv_spec(dt, :M, _) do "#{dt.min}"|>pad end
@@ -90,7 +90,7 @@ defmodule Kalends.DateTime.Format.Strftime do
         :calendar.last_day_of_the_month(dt.year, month)
       end)
     |> Enum.reduce(0, fn(day_count, acc) -> day_count + acc end)
-    day_count_previous_months+dt.date
+    day_count_previous_months+dt.day
   end
   # a list or range of previous month names
   defp previous_months_for_month(1), do: []

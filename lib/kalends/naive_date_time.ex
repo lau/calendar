@@ -3,7 +3,7 @@ defmodule Kalends.NaiveDateTime do
   NaiveDateTime can represents a "naive time". That is a point in time without
   a specified time zone.
   """
-  defstruct [:year, :month, :date, :hour, :min, :sec]
+  defstruct [:year, :month, :day, :hour, :min, :sec]
 
   @doc """
   Like from_erl/1 without "!", but returns the result directly without a tag.
@@ -12,7 +12,7 @@ defmodule Kalends.NaiveDateTime do
   ## Examples
 
       iex> from_erl!({{2014, 9, 26}, {17, 10, 20}})
-      %Kalends.NaiveDateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014}
+      %Kalends.NaiveDateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014}
 
       iex from_erl!({{2014, 99, 99}, {17, 10, 20}})
       # this will throw a MatchError
@@ -29,14 +29,14 @@ defmodule Kalends.NaiveDateTime do
 
   ## Examples
       iex> from_erl({{2014, 9, 26}, {17, 10, 20}})
-      {:ok, %Kalends.NaiveDateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014} }
+      {:ok, %Kalends.NaiveDateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014} }
 
       iex> from_erl({{2014, 99, 99}, {17, 10, 20}})
       {:error, :invalid_datetime}
   """
-  def from_erl({{year, month, date}, {hour, min, sec}}) do
-    if validate_erl_datetime {{year, month, date}, {hour, min, sec}} do
-      {:ok, %Kalends.NaiveDateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec} }
+  def from_erl({{year, month, day}, {hour, min, sec}}) do
+    if validate_erl_datetime {{year, month, day}, {hour, min, sec}} do
+      {:ok, %Kalends.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec} }
     else
       {:error, :invalid_datetime}
     end
@@ -54,7 +54,7 @@ defmodule Kalends.NaiveDateTime do
       iex> from_erl!({{2014, 10, 15}, {2, 37, 22}}) |> to_erl
       {{2014, 10, 15}, {2, 37, 22}}
   """
-  def to_erl(%Kalends.NaiveDateTime{year: year, month: month, date: date, hour: hour, min: min, sec: sec}) do
-    {{year, month, date}, {hour, min, sec}}
+  def to_erl(%Kalends.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec}) do
+    {{year, month, day}, {hour, min, sec}}
   end
 end

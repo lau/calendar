@@ -16,7 +16,7 @@ Get a DateTime struct for the 4th of October 2014 at 23:44:32 in the city of
 Montevideo:
 
     {:ok, mvd} = DateTime.from_erl {{2014,10,4},{23,44,32}}, "America/Montevideo"
-    {:ok, %Kalends.DateTime{abbr: "UYT", date: 4, hour: 23, min: 44, month: 10,
+    {:ok, %Kalends.DateTime{abbr: "UYT", day: 4, hour: 23, min: 44, month: 10,
                             sec: 32, std_off: 0, timezone: "America/Montevideo",
                             utc_off: -10800, year: 2014}}
 
@@ -24,14 +24,14 @@ A DateTime struct is now assigned to the variable `mvd`. Let's get a DateTime
 struct for the same time in the London time zone:
 
     london = mvd |> DateTime.shift_zone! "Europe/London"
-    %Kalends.DateTime{abbr: "BST", date: 5, hour: 3, min: 44, month: 10,
+    %Kalends.DateTime{abbr: "BST", day: 5, hour: 3, min: 44, month: 10,
                       sec: 32, std_off: 3600, timezone: "Europe/London",
                       utc_off: 0, year: 2014}
 
 ...and then in UTC:
 
     london |> DateTime.shift_zone! "UTC"
-    %Kalends.DateTime{abbr: "UTC", date: 5, hour: 2, min: 44, month: 10,
+    %Kalends.DateTime{abbr: "UTC", day: 5, hour: 2, min: 44, month: 10,
                    sec: 32, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
 
 Formatting a DateTime using "strftime":
@@ -47,21 +47,21 @@ Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
 Parsing the same string again back into a DateTime:
 
     DateTime.Parse.rfc3339 "2014-10-04T23:44:32-03:00", "America/Montevideo"
-    {:ok, %Kalends.DateTime{abbr: "UYT", date: 4, hour: 23, min: 44,
+    {:ok, %Kalends.DateTime{abbr: "UYT", day: 4, hour: 23, min: 44,
             month: 10, sec: 32, std_off: 0, timezone: "America/Montevideo",
             utc_off: -10800, year: 2014}}
 
 Parsing a UTC RFC 3339 timestamp:
 
     DateTime.Parse.rfc3339 "2014-10-04T23:44:32Z", "UTC"
-    {:ok, %Kalends.DateTime{abbr: "UTC", date: 4, hour: 23, min: 44,
+    {:ok, %Kalends.DateTime{abbr: "UTC", day: 4, hour: 23, min: 44,
             month: 10, sec: 32, std_off: 0, timezone: "UTC",
             utc_off: 0, year: 2014}}
 
 The time right now for a specified time zone:
 
     cph = DateTime.now "Europe/Copenhagen"
-    %Kalends.DateTime{abbr: "CEST", date: 5, hour: 21,
+    %Kalends.DateTime{abbr: "CEST", day: 5, hour: 21,
      min: 59, month: 10, sec: 24, std_off: 3600, timezone: "Europe/Copenhagen",
      utc_off: 3600, year: 2014}
 
