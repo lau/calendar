@@ -3,6 +3,10 @@ Kalends
 
 Kalends is a date and time library for Elixir.
 
+**kalends |ˈkalɪndz|**
+_plural noun_ -
+the first day of the month in the ancient Roman calendar. Agner Krarup Erlang was born on the first day of January 1878.
+
 It is a priority to provide timezone information that is as accurate as
 possible. The Olson/Eggert "Time Zone Database" is used. Years 1 through 2200
 are supported.
@@ -79,15 +83,16 @@ Documentation can be found at http://hexdocs.pm/kalends/
 There are many different rules for time zones all over the world and they change
 often. In order to correctly find out what time it is around the world, the
 "tz database" is invaluable. This is (AFAIK) the first pure Elixir library that
-uses the tz database and can easily be updated whenever a new version is
-released.
+uses the tz database correctly and can easily be updated whenever a new version
+is released.
 
 ## Time Zone Database updates
 
 The time zone database (tzdata) is regularly updated. When a new tzdata
 version is released, developers of Kalends can easily download the new version
 simply by running a command. Then when compiling Kalends, the new tzdata will be
-used.
+used. The function `Kalends.TimeZoneData.tzdata_version` tells you the tzdata
+release version in use.
 
 ## Known bugs
 
