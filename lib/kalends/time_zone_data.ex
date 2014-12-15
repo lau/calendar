@@ -90,6 +90,12 @@ defmodule Kalends.TimeZoneData do
   """
   def links, do: unquote(Macro.escape(TzData.links))
 
+  @doc """
+  Returns a map with keys being group names and the values lists of
+  time zone names. The group names mirror the file names used by the tzinfo
+  database.
+  """
+  def zone_lists_grouped, do: unquote(Macro.escape(TzData.zones_and_links_by_groups))
 
   @doc """
   Returns tzdata release version as a string.
