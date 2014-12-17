@@ -16,6 +16,10 @@ Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.
 
 ## Usage examples
 
+For these example first alias DateTime with this command:
+
+    alias Kalends.DateTime
+
 Get a DateTime struct for the 4th of October 2014 at 23:44:32 in the city of
 Montevideo:
 
