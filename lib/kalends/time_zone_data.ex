@@ -37,7 +37,7 @@ defmodule Kalends.TimeZoneData do
   def zone_list, do: unquote(Macro.escape(TzData.zone_and_link_list))
 
   @doc """
-  Like zone_list, but excludes aliases for zones. 
+  Like zone_list, but excludes aliases for zones.
   """
   def canonical_zone_list, do: unquote(Macro.escape(TzData.zone_list))
 
