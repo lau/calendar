@@ -4,7 +4,7 @@ defmodule Kalends.DateTime.Format do
 
   @doc """
   Generate a string from a DateTime formatted by a format string. Similar to strftime! known from UNIX.
-  A list of the letters and and what they do are available here: http://man7.org/linux/man-pages/man3/strftime!.3.html
+  A list of the letters and and what they do are available here: http://man7.org/linux/man-pages/man3/strftime.3.html
   The following codes are implemented: %a, %A, %b, %h, %B, %j, %u, %w, %V, %G, %g, %y, %Y, %C, %I, %l, %P, %p, %r, %R, %T, %F, %m, %e, %d, %H, %k, %M, %S, %z, %Z
 
   # Example
@@ -40,7 +40,7 @@ defmodule Kalends.DateTime.Format do
   @doc """
   Takes a DateTime.
   Returns a string with the date-time in RFC 2616 format. This format is used in
-  the HTTP protocal. Note that the date-time will always be "shifted" to UTC.
+  the HTTP protocol. Note that the date-time will always be "shifted" to UTC.
 
   ## Example
 

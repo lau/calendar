@@ -9,7 +9,7 @@ defmodule Kalends.DateTime do
   alias Kalends.TimeZoneData
   alias Kalends.TimeZonePeriods
 
-  defstruct [:year, :month, :day, :hour, :min, :sec, :timezone, :abbr, :utc_off, :std_off]
+  defstruct [:year, :month, :day, :hour, :min, :sec, :timezone, :abbr, :utc_off, :std_off, :frac_sec]
 
   defp now_utc do
     from_erl!(:erlang.universaltime, "UTC", "UTC", 0, 0)
@@ -119,8 +119,8 @@ defmodule Kalends.DateTime do
       iex> from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo")
       %Kalends.DateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: "America/Montevideo", abbr: "UYT", utc_off: -10800, std_off: 0}
   """
-  def from_erl!(date_time, time_zone) do
-    {:ok, result} = from_erl(date_time, time_zone)
+  def from_erl!(date_time, time_zone, frac_sec \\ nil) do
+    {:ok, result} = from_erl(date_time, time_zone, frac_sec)
     result
   end
 
@@ -143,7 +143,7 @@ defmodule Kalends.DateTime do
       {:ok, %Kalends.DateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20,
                               year: 2014, timezone: "America/Montevideo",
                               abbr: "UYT",
-                              utc_off: -10800, std_off: 0} }
+                              utc_off: -10800, std_off: 0, frac_sec: nil} }
 
     Switching from summer to wintertime in the fall means an ambigous time.
 
@@ -167,46 +167,54 @@ defmodule Kalends.DateTime do
       iex> from_erl({{2014, 3, 30}, {2, 20, 02}}, "Europe/Copenhagen")
       {:error, :invalid_datetime_for_timezone}
 
+    Time with fractional seconds. This represents the time 17:10:20.987654321
+
+      iex> from_erl({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo", 0.987654321)
+      {:ok, %Kalends.DateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20,
+                              year: 2014, timezone: "America/Montevideo",
+                              abbr: "UYT",
+                              utc_off: -10800, std_off: 0, frac_sec: 0.987654321} }
+
   """
-  def from_erl(date_time, timezone) do
+  def from_erl(date_time, timezone, frac_sec \\ nil) do
     validity = validate_erl_datetime date_time
-    from_erl_validity(date_time, timezone, validity)
+    from_erl_validity(date_time, timezone, validity, frac_sec)
   end
 
   # Date, time and timezone. Date and time is valid.
-  defp from_erl_validity(datetime, timezone, true) do
+  defp from_erl_validity(datetime, timezone, true, frac_sec) do
     # validate that timezone exists
-    from_erl_timezone_validity(datetime, timezone, TimeZoneData.zone_exists?(timezone))
+    from_erl_timezone_validity(datetime, timezone, TimeZoneData.zone_exists?(timezone), frac_sec)
   end
-  defp from_erl_validity(_, _, false) do
+  defp from_erl_validity(_, _, false, _) do
     {:error, :invalid_datetime}
   end
 
-  defp from_erl_timezone_validity(_, _, false), do: {:error, :timezone_not_found}
+  defp from_erl_timezone_validity(_, _, false, _), do: {:error, :timezone_not_found}
 
-  defp from_erl_timezone_validity({date, time}, timezone, true) do
+  defp from_erl_timezone_validity({date, time}, timezone, true, frac_sec) do
     # get periods for time
     greg_secs = :calendar.datetime_to_gregorian_seconds({date, time})
     periods = TimeZonePeriods.periods_for_time(timezone, greg_secs, :wall)
-    from_erl_periods({date, time}, timezone, periods)
+    from_erl_periods({date, time}, timezone, periods, frac_sec)
   end
 
-  defp from_erl_periods(_, _, periods) when periods == [] do
+  defp from_erl_periods(_, _, periods, _) when periods == [] do
     {:error, :invalid_datetime_for_timezone}
   end
-  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods) when length(periods) == 1 do
+  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, frac_sec) when length(periods) == 1 do
     period = periods |> hd
     {:ok, %Kalends.DateTime{year: year, month: month, day: day, hour: hour,
          min: min, sec: sec, timezone: timezone, abbr: period.zone_abbr,
-         utc_off: period.utc_off, std_off: period.std_off } }
+         utc_off: period.utc_off, std_off: period.std_off, frac_sec: frac_sec } }
   end
   # When a time is ambigous (for instance switching from summer- to winter-time)
-  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods) when length(periods) == 2 do
+  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, frac_sec) when length(periods) == 2 do
     possible_date_times =
     Enum.map(periods, fn period ->
            %Kalends.DateTime{year: year, month: month, day: day, hour: hour,
            min: min, sec: sec, timezone: timezone, abbr: period.zone_abbr,
-           utc_off: period.utc_off, std_off: period.std_off }
+           utc_off: period.utc_off, std_off: period.std_off, frac_sec: frac_sec }
        end )
     # sort by abbreviation
     |> Enum.sort(fn dt1, dt2 -> dt1.abbr <= dt2.abbr end)

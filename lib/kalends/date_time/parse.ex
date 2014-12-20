@@ -79,13 +79,11 @@ defmodule Kalends.DateTime.Parse do
   Parses an RFC 3339 timestamp and shifts it to
   the specified time zone.
 
-  Fractions of seconds are ignored.
-
       iex> rfc3339("1996-12-19T16:39:57Z", "UTC")
       {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
       iex> rfc3339("1996-12-19T16:39:57.1234Z", "UTC")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0, frac_sec: 0.1234}}
 
       iex> rfc3339("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
       {:ok, %Kalends.DateTime{abbr: "PST", day: 19, hour: 16, min: 39, month: 12, sec: 57, std_off: 0, timezone: "America/Los_Angeles", utc_off: -28800, year: 1996}}
@@ -113,8 +111,7 @@ defmodule Kalends.DateTime.Parse do
     parse_rfc3339_as_utc_parsed_string(mapped, "", "00", "00")
   end
   defp parse_rfc3339_as_utc_parsed_string(mapped, _z, offset_hours, offset_mins) when offset_hours == "00" and offset_mins == "00" do
-    {tag, dt} = DateTime.from_erl(erl_date_time_from_regex_map(mapped), "UTC")
-    {tag, dt}
+    DateTime.from_erl(erl_date_time_from_regex_map(mapped), "UTC", parse_fraction(mapped["fraction"]))
   end
   defp parse_rfc3339_as_utc_parsed_string(mapped, _z, offset_hours, offset_mins) do
     offset_in_secs = hours_mins_to_secs!(offset_hours, offset_mins)
@@ -122,6 +119,9 @@ defmodule Kalends.DateTime.Parse do
     erl_date_time = erl_date_time_from_regex_map(mapped)
     parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time)
   end
+
+  defp parse_fraction(""), do: nil
+  defp parse_fraction(string), do: "0.#{string}" |> String.to_float
 
   defp parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time) do
     greg_secs = :calendar.datetime_to_gregorian_seconds(erl_date_time)
