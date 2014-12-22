@@ -50,22 +50,22 @@ defmodule Kalends.DateTime.Parse do
   # exception when parsing an httpdate with an invalid month name.
   defp cap_month_number_for_month_name(_), do: 0
 
-  @privatedoc """
+  @doc """
   Parse RFC 3339 timestamp strings as UTC. If the timestamp is not in UTC it
   will be shifted to UTC.
 
   ## Examples
 
-      iex> parse_rfc3339_as_utc("fooo")
+      iex> rfc3339_utc("fooo")
       {:bad_format, nil}
 
-      iex> parse_rfc3339_as_utc("1996-12-19T16:39:57Z")
+      iex> rfc3339_utc("1996-12-19T16:39:57Z")
       {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
-      iex> parse_rfc3339_as_utc("1996-12-19T16:39:57-08:00")
+      iex> rfc3339_utc("1996-12-19T16:39:57-08:00")
       {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
   """
-  defp parse_rfc3339_as_utc(rfc3339_string) do
+  def rfc3339_utc(rfc3339_string) do
     parsed = rfc3339_string
     |> parse_rfc3339_string
     if parsed do
@@ -95,10 +95,10 @@ defmodule Kalends.DateTime.Parse do
       {:invalid_time_zone, nil}
   """
   def rfc3339(rfc3339_string, "UTC") do
-    parse_rfc3339_as_utc(rfc3339_string)
+    rfc3339_utc(rfc3339_string)
   end
   def rfc3339(rfc3339_string, time_zone) do
-    parse_rfc3339_as_utc(rfc3339_string) |> do_parse_rfc3339_with_time_zone(time_zone)
+    rfc3339_utc(rfc3339_string) |> do_parse_rfc3339_with_time_zone(time_zone)
   end
   defp do_parse_rfc3339_with_time_zone({utc_tag, _utc_dt}, _time_zone) when utc_tag != :ok do
     {utc_tag, nil}

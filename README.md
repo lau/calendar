@@ -57,11 +57,11 @@ Parsing the same string again back into a DateTime:
             month: 10, sec: 32, std_off: 0, timezone: "America/Montevideo",
             utc_off: -10800, year: 2014}}
 
-Parsing a UTC RFC 3339 timestamp:
+Parsing an RFC 3339 timestamp as UTC:
 
-    DateTime.Parse.rfc3339 "2014-10-04T23:44:32Z", "UTC"
-    {:ok, %Kalends.DateTime{abbr: "UTC", day: 4, hour: 23, min: 44,
-            month: 10, sec: 32, std_off: 0, timezone: "UTC",
+    DateTime.Parse.rfc3339_utc "2014-10-04T23:44:32.4999Z"
+    {:ok, %Kalends.DateTime{abbr: "UTC", day: 4, frac_sec: 0.4999, hour: 23,
+            min: 44, month: 10, sec: 32, std_off: 0, timezone: "UTC",
             utc_off: 0, year: 2014}}
 
 The time right now for a specified time zone:
