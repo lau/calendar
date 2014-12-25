@@ -8,8 +8,10 @@ defmodule Kalends.DateTime do
   """
   alias Kalends.TimeZoneData
   alias Kalends.TimeZonePeriods
+  require Kalends.Date
+  require Kalends.Time
 
-  defstruct [:year, :month, :day, :hour, :min, :sec, :timezone, :abbr, :utc_off, :std_off, :frac_sec]
+  defstruct [:year, :month, :day, :hour, :min, :sec, :frac_sec, :timezone, :abbr, :utc_off, :std_off]
 
   defp now_utc do
     from_erl!(:erlang.universaltime, "UTC", "UTC", 0, 0)
@@ -18,9 +20,6 @@ defmodule Kalends.DateTime do
   @doc """
   Takes a timezone name a returns a DateTime with the current time in
   that timezone. Timezone names must be in the TZ data format.
-
-  Usually the list will only have a size of 1. But if for instance there is a
-  shift from DST to winter time taking place, the list will have 2 elements.
 
   ## Examples
 
@@ -236,6 +235,49 @@ defmodule Kalends.DateTime do
   """
   def to_erl(%Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec}) do
     {{year, month, day}, {hour, min, sec}}
+  end
+
+  @doc """
+  Takes a DateTime struct and returns a Date struct representing the date part
+  of the provided DateTime.
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Kalends.DateTime.to_date
+      %Kalends.Date{day: 15, month: 10, year: 2014}
+  """
+  def to_date(dt) do
+    %Kalends.Date{year: dt.year, month: dt.month, day: dt.day}
+  end
+
+  @doc """
+  Takes a DateTime struct and returns a Time struct representing the time part
+  of the provided DateTime.
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Kalends.DateTime.to_time
+      %Kalends.Time{frac_sec: nil, hour: 2, min: 37, sec: 22}
+  """
+  def to_time(dt) do
+    %Kalends.Time{hour: dt.hour, min: dt.min, sec: dt.sec, frac_sec: dt.frac_sec}
+  end
+
+  @doc """
+  Returns a tuple with a Date struct and a Time struct.
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Kalends.DateTime.to_date_and_time
+      {%Kalends.Date{day: 15, month: 10, year: 2014}, %Kalends.Time{frac_sec: nil, hour: 2, min: 37, sec: 22}}
+  """
+  def to_date_and_time(dt) do
+    {to_date(dt), to_time(dt)}
+  end
+
+  @doc """
+  Takes an NaiveDateTime and a time zone identifier and returns a DateTime
+
+      iex> Kalends.NaiveDateTime.from_erl!({{2014,10,15},{2,37,22}}) |> from_naive "UTC"
+      {:ok, %Kalends.DateTime{abbr: "UTC", day: 15, frac_sec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}}
+  """
+  def from_naive(ndt, timezone) do
+    ndt |> Kalends.NaiveDateTime.to_erl
+    |> from_erl(timezone)
   end
 
   @doc """

@@ -7,6 +7,8 @@ defmodule Kalends do
       alias Kalends.DateTime
       alias Kalends.AmbiguousDateTime
       alias Kalends.NaiveDateTime
+      alias Kalends.Date
+      alias Kalends.Time
       alias Kalends.TimeZoneData
       alias Kalends.TimeZonePeriods
     end
