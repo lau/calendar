@@ -14,7 +14,12 @@ defmodule Kalends.DateTime do
   defstruct [:year, :month, :day, :hour, :min, :sec, :frac_sec, :timezone, :abbr, :utc_off, :std_off]
 
   defp now_utc do
-    from_erl!(:erlang.universaltime, "UTC", "UTC", 0, 0)
+    erl_now = :erlang.now
+    {_, _, microsecs} = erl_now
+    frac_sec = microsecs/1_000_000
+    erl_now
+    |> :calendar.now_to_datetime
+    |> from_erl!("UTC", "UTC", 0, 0, frac_sec)
   end
 
   @doc """
@@ -35,11 +40,11 @@ defmodule Kalends.DateTime do
   """
   def now("UTC"), do: now_utc
   def now(timezone) do
-    now_utc_secs = now_utc |> gregorian_seconds
+    {now_utc_secs, frac_sec} = now_utc |> gregorian_seconds_and_frac_sec
     period_list = TimeZonePeriods.periods_for_time(timezone, now_utc_secs, :utc)
     period = hd period_list
     now_utc_secs + period.utc_off + period.std_off
-    |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off)
+    |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off, frac_sec)
   end
 
   @doc """
@@ -102,10 +107,10 @@ defmodule Kalends.DateTime do
   #   %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, timezone: nil, year: 2014}
   #   iex> from_gregorian_seconds!(63578970620, "America/Montevideo")
   #   %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, timezone: "America/Montevideo", year: 2014}
-  defp from_gregorian_seconds!(gregorian_seconds, timezone, abbr, utc_off, std_off) do
+  defp from_gregorian_seconds!(gregorian_seconds, timezone, abbr, utc_off, std_off, frac_sec \\ nil) do
     gregorian_seconds
     |>:calendar.gregorian_seconds_to_datetime
-    |>from_erl!(timezone, abbr, utc_off, std_off)
+    |>from_erl!(timezone, abbr, utc_off, std_off, frac_sec)
   end
 
   @doc """
@@ -221,8 +226,8 @@ defmodule Kalends.DateTime do
     {:ambiguous, %Kalends.AmbiguousDateTime{ possible_date_times: possible_date_times} }
   end
 
-  defp from_erl!({{year, month, day}, {hour, min, sec}}, timezone, abbr, utc_off, std_off) do
-    %Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, timezone: timezone, abbr: abbr, utc_off: utc_off, std_off: std_off}
+  defp from_erl!({{year, month, day}, {hour, min, sec}}, timezone, abbr, utc_off, std_off, frac_sec \\ nil) do
+    %Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, timezone: timezone, abbr: abbr, utc_off: utc_off, std_off: std_off, frac_sec: frac_sec}
   end
 
   @doc """
@@ -290,6 +295,12 @@ defmodule Kalends.DateTime do
   def gregorian_seconds(date_time) do
     :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
   end
+
+  def gregorian_seconds_and_frac_sec(date_time) do
+    frac_sec = date_time.frac_sec
+    {gregorian_seconds(date_time), frac_sec}
+  end
+
 
   defp validate_erl_datetime({date, _}) do
     :calendar.valid_date date
