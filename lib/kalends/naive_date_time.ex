@@ -17,8 +17,8 @@ defmodule Kalends.NaiveDateTime do
       iex from_erl!({{2014, 99, 99}, {17, 10, 20}})
       # this will throw a MatchError
   """
-  def from_erl!(erl_date_time) do
-    {:ok, result} = from_erl(erl_date_time)
+  def from_erl!(erl_date_time, frac_sec \\ nil) do
+    {:ok, result} = from_erl(erl_date_time, frac_sec)
     result
   end
 

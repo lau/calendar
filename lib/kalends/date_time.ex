@@ -226,7 +226,7 @@ defmodule Kalends.DateTime do
     {:ambiguous, %Kalends.AmbiguousDateTime{ possible_date_times: possible_date_times} }
   end
 
-  defp from_erl!({{year, month, day}, {hour, min, sec}}, timezone, abbr, utc_off, std_off, frac_sec \\ nil) do
+  defp from_erl!({{year, month, day}, {hour, min, sec}}, timezone, abbr, utc_off, std_off, frac_sec) do
     %Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, timezone: timezone, abbr: abbr, utc_off: utc_off, std_off: std_off, frac_sec: frac_sec}
   end
 
@@ -283,6 +283,17 @@ defmodule Kalends.DateTime do
   def from_naive(ndt, timezone) do
     ndt |> Kalends.NaiveDateTime.to_erl
     |> from_erl(timezone)
+  end
+
+  @doc """
+  Takes a DateTime and returns a NaiveDateTime
+
+      iex> Kalends.DateTime.from_erl!({{2014,10,15},{2,37,22}}, "UTC", 0.55) |> to_naive
+      %Kalends.NaiveDateTime{day: 15, frac_sec: 0.55, hour: 2, min: 37, month: 10, sec: 22, year: 2014}
+  """
+  def to_naive(dt) do
+    dt |> to_erl
+    |> Kalends.NaiveDateTime.from_erl!(dt.frac_sec)
   end
 
   @doc """
