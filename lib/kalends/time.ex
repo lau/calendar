@@ -44,7 +44,7 @@ defmodule Kalends.Time do
   defp valid_time({hour, min, sec}) when (hour >=0 and hour <= 23 and min >= 0 and min < 60 and sec >=0 and sec <= 60) do
     true
   end
-  defp valid_time({hour, min, sec}) do
+  defp valid_time({_hour, _min, _sec}) do
     false
   end
 end

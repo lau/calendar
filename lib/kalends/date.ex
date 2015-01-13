@@ -26,4 +26,22 @@ defmodule Kalends.Date do
       {:error, :invalid_date}
     end
   end
+
+  def from_erl!(erl_date) do
+    {:ok, date} = from_erl(erl_date)
+    date
+  end
+
+  @doc """
+      iex> from_erl!({2014,12,27}) |> number_of_days_in_month
+      31
+      iex> from_erl!({2015,2,27}) |> number_of_days_in_month
+      28
+      iex> from_erl!({2012,2,27}) |> number_of_days_in_month
+      29
+  """
+  def number_of_days_in_month(date) do
+    {year, month, _} = date |> to_erl
+    :calendar.last_day_of_the_month(year, month)
+  end
 end
