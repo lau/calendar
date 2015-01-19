@@ -1,4 +1,7 @@
 defmodule Kalends.NaiveDateTime do
+  alias Kalends.DateTime
+  require Kalends.DateTime.Format
+
   @moduledoc """
   NaiveDateTime can represents a "naive time". That is a point in time without
   a specified time zone.
@@ -85,13 +88,42 @@ defmodule Kalends.NaiveDateTime do
   end
 
   @doc """
-  Returns a tuple with a Date struct and a Time struct.
+  For turning NaiveDateTime structs to into a DateTime.
 
-      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Kalends.NaiveDateTime.to_date_and_time
-      {%Kalends.Date{day: 15, month: 10, year: 2014}, %Kalends.Time{frac_sec: nil, hour: 2, min: 37, sec: 22}}
+  Takes a NaiveDateTime and a timezone name. If timezone is valid, returns a tuple with an :ok and DateTime.
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Kalends.NaiveDateTime.to_date_time("UTC")
+      {:ok, %Kalends.DateTime{abbr: "UTC", day: 15, frac_sec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}}
   """
-  def to_date_and_time(dt) do
-    {to_date(dt), to_time(dt)}
+  def to_date_time(ndt, timezone) do
+    DateTime.from_erl(to_erl(ndt), timezone)
+  end
+
+  @doc """
+  Promote to DateTime with UTC time zone.
+
+  Takes a NaiveDateTime. Returns a DateTime.
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Kalends.NaiveDateTime.to_date_time_utc
+      %Kalends.DateTime{abbr: "UTC", day: 15, frac_sec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
+  """
+  def to_date_time_utc(ndt) do
+    {:ok, dt} = to_date_time(ndt, "UTC")
+    dt
+  end
+
+  @doc """
+  Like DateTime.Format.strftime! but for NaiveDateTime.
+
+  Refer to documentation for DateTime.Format.strftime!
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}) |> strftime! "%Y %h %d"
+      "2014 Oct 15"
+  """
+  def strftime!(ndt, string, lang \\ :en) do
+    ndt
+    |> to_date_time_utc
+    |> Kalends.DateTime.Format.strftime! string, lang
   end
 
 end
