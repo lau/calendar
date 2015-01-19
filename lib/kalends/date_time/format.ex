@@ -13,9 +13,12 @@ defmodule Kalends.DateTime.Format do
 
       iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%a %d.%m.%y"
       "Sat 06.09.14"
+
+      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%A %d/%m/%Y", :da
+      "lørdag 06/09/2014"
   """
-  def strftime!(dt, string) do
-    Strftime.strftime!(dt, string)
+  def strftime!(dt, string, lang\\:en) do
+    Strftime.strftime!(dt, string, lang)
   end
 
   @doc """

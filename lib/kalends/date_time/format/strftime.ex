@@ -117,11 +117,20 @@ defmodule Kalends.DateTime.Format.Strftime do
     :calendar.day_of_the_week(date)
   end
   defp names_for_language(:en) do
-    %{
-      weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    %{weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
       weekdays_abbr: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       months_abbr: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     }
+  end
+  defp names_for_language(:da) do
+    %{weekdays: ["mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag"],
+      weekdays_abbr: ["man", "tir", "ons", "tor", "fre", "lør", "søn"],
+      months: ["Januar", "Februar", "Marts", "April", "Maj", "Juni", "Juli", "August", "September", "Oktober", "November", "December"],
+      months_abbr: ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"],
+    }
+  end
+  defp names_for_language(_) do
+    raise "unknown language code"
   end
 end
