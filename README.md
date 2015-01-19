@@ -14,6 +14,30 @@ are supported.
 [![Build
 Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.org/lau/kalends)
 
+## Getting started
+
+Add Kalends as a dependency to an Elixir project by adding it to your mix.exs file:
+
+    defp deps do
+      [  {:kalends, "~> 0.2.0-dev"},  ]
+    end
+
+Then run `mix deps.get` which will fetch Kalends via the hex package manager.
+
+You can then call Kalends functions like this: `Kalends.DateTime.now("UTC")`. But in order to avoid typing Kalends all the time you can add `use Kalends` to your modules. This aliases Kalends modules such as DateTime and Date. Which means that you can call for instance `DateTime.now("UTC")` without writing `Kalends.` Example:
+
+    defmodule NewYearsHttpLib do
+      use Kalends
+
+      def httpdate_new_years(year) do
+        {:ok, dt} = DateTime.from_erl({{year,1,1},{0,0,0}}, "UTC")
+        DateTime.Format.httpdate(dt)
+      end
+
+      # Calling httpdate_new_years(2015) will return
+      # "Thu, 01 Jan 2015 00:00:00 GMT"
+    end
+
 ## Usage examples
 
 For these example first either alias DateTime with this command: `alias Kalends.DateTime` or for use within a model add `use Kalends` to the module.
@@ -99,7 +123,7 @@ release version in use.
 ## Known bugs
 
 There are no confirmed bugs as this is written. But if you do find a problem,
-please create an issue on the GitHub page.
+please create an issue on the GitHub page: https://github.com/lau/kalends
 
 ## License
 
