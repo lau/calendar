@@ -5,7 +5,6 @@ defmodule Kalends.DateTime.Format do
   @doc """
   Generate a string from a DateTime formatted by a format string. Similar to strftime! known from UNIX.
   A list of the letters and and what they do are available here: http://man7.org/linux/man-pages/man3/strftime.3.html
-  The following codes are implemented: %a, %A, %b, %h, %B, %j, %u, %w, %V, %G, %g, %y, %Y, %C, %I, %l, %P, %p, %r, %R, %T, %F, %m, %e, %d, %H, %k, %M, %S, %z, %Z
 
   # Example
       iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%A %Y-%m-%e %H:%M:%S"
@@ -16,6 +15,40 @@ defmodule Kalends.DateTime.Format do
 
       iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%A %d/%m/%Y", :da
       "lørdag 06/09/2014"
+
+  | conversion spec. | Description                                                     | Example            |
+  | -----------------|:---------------------------------------------------------------:| ------------------:|
+  | %a               | Abbreviated name of day                                         | _Mon_              |
+  | %A               | Full name of day                                                | _Monday_           |
+  | %b               | Abbreviated month name                                          | _Jan_              |
+  | %h               | (Equivalent to %b)                                              |                    |
+  | %B               | Full month name                                                 | _January_          |
+  | %j               | Day of the year as a decimal number (001 to 366)                | _002_              |
+  | %u               |                                                                 |                    |
+  | %w               |                                                                 |                    |
+  | %V               |                                                                 |                    |
+  | %G               |                                                                 |                    |
+  | %g               |                                                                 |                    |
+  | %y               |                                                                 |                    |
+  | %Y               |                                                                 |                    |
+  | %C               |                                                                 |                    |
+  | %I               |                                                                 |                    |
+  | %l               |                                                                 |                    |
+  | %P               |                                                                 |                    |
+  | %p               |                                                                 |                    |
+  | %r               |                                                                 |                    |
+  | %R               |                                                                 |                    |
+  | %T               |                                                                 |                    |
+  | %F               |                                                                 |                    |
+  | %m               |                                                                 |                    |
+  | %e               |                                                                 |                    |
+  | %d               |                                                                 |                    |
+  | %H               |                                                                 |                    |
+  | %k               |                                                                 |                    |
+  | %M               |                                                                 |                    |
+  | %S               |                                                                 |                    |
+  | %z               |                                                                 |                    |
+  | %Z               |                                                                 |                    |
   """
   def strftime!(dt, string, lang\\:en) do
     Strftime.strftime!(dt, string, lang)
