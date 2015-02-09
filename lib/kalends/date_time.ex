@@ -7,7 +7,6 @@ defmodule Kalends.DateTime do
   DateTime structs.
   """
   alias Kalends.TimeZoneData
-  alias Kalends.TimeZonePeriods
   require Kalends.Date
   require Kalends.Time
 
@@ -41,7 +40,7 @@ defmodule Kalends.DateTime do
   def now("UTC"), do: now_utc
   def now(timezone) do
     {now_utc_secs, frac_sec} = now_utc |> gregorian_seconds_and_frac_sec
-    period_list = TimeZonePeriods.periods_for_time(timezone, now_utc_secs, :utc)
+    period_list = TimeZoneData.periods_for_time(timezone, now_utc_secs, :utc)
     period = hd period_list
     now_utc_secs + period.utc_off + period.std_off
     |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off, frac_sec)
@@ -85,7 +84,7 @@ defmodule Kalends.DateTime do
 
   defp shift_to_utc(date_time) do
     greg_secs = :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
-    period_list = TimeZonePeriods.periods_for_time(date_time.timezone, greg_secs, :wall)
+    period_list = TimeZoneData.periods_for_time(date_time.timezone, greg_secs, :wall)
     period = period_list|>hd
     greg_secs-period.utc_off-period.std_off
     |>from_gregorian_seconds!("UTC", "UTC", 0, 0)
@@ -93,7 +92,7 @@ defmodule Kalends.DateTime do
 
   defp shift_from_utc(utc_date_time, to_timezone) do
     greg_secs = :calendar.datetime_to_gregorian_seconds(utc_date_time|>to_erl)
-    period_list = TimeZonePeriods.periods_for_time(to_timezone, greg_secs, :utc)
+    period_list = TimeZoneData.periods_for_time(to_timezone, greg_secs, :utc)
     period = period_list|>hd
     greg_secs+period.utc_off+period.std_off
     |>from_gregorian_seconds!(to_timezone, period.zone_abbr, period.utc_off, period.std_off)
@@ -199,7 +198,7 @@ defmodule Kalends.DateTime do
   defp from_erl_timezone_validity({date, time}, timezone, true, frac_sec) do
     # get periods for time
     greg_secs = :calendar.datetime_to_gregorian_seconds({date, time})
-    periods = TimeZonePeriods.periods_for_time(timezone, greg_secs, :wall)
+    periods = TimeZoneData.periods_for_time(timezone, greg_secs, :wall)
     from_erl_periods({date, time}, timezone, periods, frac_sec)
   end
 
