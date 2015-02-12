@@ -12,7 +12,12 @@ defmodule Kalends.DateTime do
 
   defstruct [:year, :month, :day, :hour, :min, :sec, :frac_sec, :timezone, :abbr, :utc_off, :std_off]
 
-  defp now_utc do
+  @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
+
+  @doc """
+  Like DateTime.now("UTC")
+  """
+  def now_utc do
     erl_now = :erlang.now
     {_, _, microsecs} = erl_now
     frac_sec = microsecs/1_000_000
@@ -299,6 +304,8 @@ defmodule Kalends.DateTime do
   Takes a DateTime and returns an integer of gregorian seconds starting with
   year 0. This is done via the Erlang calendar module.
 
+  ## Examples
+
       iex> from_erl!({{2014,9,26},{17,10,20}}, "UTC") |> gregorian_seconds
       63578970620
   """
@@ -311,6 +318,75 @@ defmodule Kalends.DateTime do
     {gregorian_seconds(date_time), frac_sec}
   end
 
+  def gregorian_seconds_with_frac_sec(date_time) do
+    frac_sec = date_time.frac_sec
+    gregorian_seconds(date_time) + frac_sec
+  end
+
+  @doc """
+  Unix time. Unix time is defined as seconds since 1970-01-01 00:00:00 UTC without leap seconds.
+
+  ## Examples
+
+      iex> Kalends.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 0.55) |> unix_time
+      1_000_000_000
+  """
+  def unix_time(date_time) do
+    date_time
+    |> shift_zone!("UTC")
+    |> gregorian_seconds
+    |> - @secs_between_year_0_and_unix_epoch
+  end
+
+  @doc """
+  Like unix time but returns a float with fractional seconds. If the frac_sec of the DateTime
+  is nil, the fractional seconds will be treated as 0.0 as seen in the second example below:
+
+  ## Examples
+
+      iex> from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 0.985085) |> unix_time_with_frac_sec
+      1_000_000_000.985085
+
+      iex> from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> unix_time_with_frac_sec
+      1_000_000_000.0
+  """
+  def unix_time_with_frac_sec(date_time = %Kalends.DateTime{frac_sec: frac_sec}) when frac_sec == nil do
+    date_time |> unix_time |> + 0.0
+  end
+  def unix_time_with_frac_sec(date_time) do
+    date_time
+    |> unix_time
+    |> + date_time.frac_sec
+  end
+
+
+  @doc """
+  Takes unix time as an integer or float. Returns a DateTime struct.
+
+  ## Examples
+
+      iex> from_unix_time!(1_000_000_000)
+      %Kalends.DateTime{abbr: "UTC", day: 9, frac_sec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
+
+      iex> from_unix_time!(1_000_000_000.9876)
+      %Kalends.DateTime{abbr: "UTC", day: 9, frac_sec: 0.9876, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
+  """
+  def from_unix_time!(unix_time_stamp) when is_integer(unix_time_stamp) do
+    unix_time_stamp + @secs_between_year_0_and_unix_epoch
+    |> from_gregorian_seconds! "UTC", "UTC", 0, 0, nil
+  end
+
+  def from_unix_time!(unix_time_stamp) when is_float(unix_time_stamp) do
+    {whole, frac} = int_and_frac_for_float(unix_time_stamp)
+    whole + @secs_between_year_0_and_unix_epoch
+    |> from_gregorian_seconds! "UTC", "UTC", 0, 0, frac
+  end
+
+  defp int_and_frac_for_float(float) do
+    {int,frac_string} = Integer.parse("#{float}")
+    frac = Float.parse("0#{frac_string}") |> elem 0
+    {int, frac}
+  end
 
   defp validate_erl_datetime({date, _}) do
     :calendar.valid_date date
