@@ -1,6 +1,9 @@
 Kalends
 =======
 
+[![Build
+Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.org/lau/kalends) ![Hex Version](http://img.shields.io/hexpm/v/kalends.svg?style=flat)](https://hex.pm/packages/kalends)
+
 Kalends is a date and time library for Elixir.
 
 **kalends |ˈkalɪndz|**
@@ -10,9 +13,6 @@ the first day of the month in the ancient Roman calendar. Agner Krarup Erlang wa
 It is a priority to provide timezone information that is as accurate as
 possible. The Olson/Eggert "Time Zone Database" is used. Years 1 through 2200
 are supported.
-
-[![Build
-Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.org/lau/kalends)
 
 ## Getting started
 
