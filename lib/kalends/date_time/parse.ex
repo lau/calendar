@@ -83,7 +83,7 @@ defmodule Kalends.DateTime.Parse do
       {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
       iex> rfc3339("1996-12-19T16:39:57.1234Z", "UTC")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0, frac_sec: 0.1234}}
+      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "UTC", abbr: "UTC", std_off: 0, utc_off: 0, microsec: 123400}}
 
       iex> rfc3339("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
       {:ok, %Kalends.DateTime{abbr: "PST", day: 19, hour: 16, min: 39, month: 12, sec: 57, std_off: 0, timezone: "America/Los_Angeles", utc_off: -28800, year: 1996}}
@@ -121,7 +121,8 @@ defmodule Kalends.DateTime.Parse do
   end
 
   defp parse_fraction(""), do: nil
-  defp parse_fraction(string), do: "0.#{string}" |> String.to_float
+  # parse and return microseconds
+  defp parse_fraction(string), do: String.slice(string, 0..5) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
 
   defp parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time) do
     greg_secs = :calendar.datetime_to_gregorian_seconds(erl_date_time)

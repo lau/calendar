@@ -19,7 +19,7 @@ Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.
 Add Kalends as a dependency to an Elixir project by adding it to your mix.exs file:
 
     defp deps do
-      [  {:kalends, "~> 0.2.2"},  ]
+      [  {:kalends, "~> 0.2.3"},  ]
     end
 
 Then run `mix deps.get` which will fetch Kalends via the hex package manager.
@@ -84,7 +84,7 @@ Parsing the same string again back into a DateTime:
 Parsing an RFC 3339 timestamp as UTC:
 
     DateTime.Parse.rfc3339_utc "2014-10-04T23:44:32.4999Z"
-    {:ok, %Kalends.DateTime{abbr: "UTC", day: 4, frac_sec: 0.4999, hour: 23,
+    {:ok, %Kalends.DateTime{abbr: "UTC", day: 4, microsec: 499900, hour: 23,
             min: 44, month: 10, sec: 32, std_off: 0, timezone: "UTC",
             utc_off: 0, year: 2014}}
 

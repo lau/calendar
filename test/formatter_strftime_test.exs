@@ -4,7 +4,7 @@ defmodule FormatterStrfTimeTest do
   doctest Strftime
 
   test "strftime" do
-    dt = Kalends.DateTime.from_erl!({{2014, 11, 3}, {1, 41, 2}}, "UTC")
+    dt = Kalends.DateTime.from_erl!({{2014, 11, 3}, {1, 41, 2}}, "UTC", 123456)
     dt_sunday = Kalends.DateTime.from_erl!({{2014, 11, 2}, {1, 41, 2}}, "UTC")
     assert Strftime.strftime!(dt, "%a") == "Mon"
     assert Strftime.strftime!(dt, "%A") == "Monday"
@@ -13,6 +13,7 @@ defmodule FormatterStrfTimeTest do
     assert Strftime.strftime!(dt, "%B") == "November"
     assert Strftime.strftime!(dt, "%d") == "03"
     assert Strftime.strftime!(dt, "%e") == " 3"
+    assert Strftime.strftime!(dt, "%f") == "123456"
     assert Strftime.strftime!(dt, "%u") == "1"
     assert Strftime.strftime!(dt, "%w") == "1"
     assert Strftime.strftime!(dt_sunday, "%u") == "7"

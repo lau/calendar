@@ -19,6 +19,7 @@ defmodule Kalends.DateTime.Format.Strftime do
   defp string_for_conv_spec(dt, :b, lang) do month_abbr(dt, lang) end
   defp string_for_conv_spec(dt, :h, lang) do string_for_conv_spec(dt, :b, lang) end
   defp string_for_conv_spec(dt, :B, lang) do month(dt, lang) end
+  defp string_for_conv_spec(dt, :f, _) do microsecs(dt) end
   defp string_for_conv_spec(dt, :j, _) do "#{day_number_in_year(dt)}"|>pad(3) end
   defp string_for_conv_spec(dt, :u, _) do "#{day_of_the_week(dt)}" end
   defp string_for_conv_spec(dt, :w, _) do "#{day_of_the_week_zero_sunday(dt)}" end
@@ -45,6 +46,10 @@ defmodule Kalends.DateTime.Format.Strftime do
   defp string_for_conv_spec(dt, :S, _) do "#{dt.sec}"|>pad end
   defp string_for_conv_spec(dt, :z, _) do iso8601_offset_part(dt) end
   defp string_for_conv_spec(dt, :Z, _) do "#{dt.abbr}" end
+
+  defp microsecs(dt) do
+    "#{dt.microsec}"
+  end
 
   defp pad(subject, len\\2, char\\?0) do
     String.rjust("#{subject}", len, char)
@@ -127,7 +132,7 @@ defmodule Kalends.DateTime.Format.Strftime do
     %{weekdays: ["mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag"],
       weekdays_abbr: ["man", "tir", "ons", "tor", "fre", "lør", "søn"],
       months: ["Januar", "Februar", "Marts", "April", "Maj", "Juni", "Juli", "August", "September", "Oktober", "November", "December"],
-      months_abbr: ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"],
+      months_abbr: ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"],
     }
   end
   defp names_for_language(_) do
