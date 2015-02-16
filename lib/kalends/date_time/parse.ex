@@ -1,6 +1,64 @@
 defmodule Kalends.DateTime.Parse do
   alias Kalends.DateTime
 
+  @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
+
+  @doc """
+  Takes unix time as an integer or float. Returns a DateTime struct.
+
+  ## Examples
+
+      iex> unix!(1_000_000_000)
+      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
+
+      iex> unix!(1_000_000_000.9876)
+      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 987600, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
+
+      iex> unix!(1_000_000_000.9999999)
+      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 999999, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
+  """
+  def unix!(unix_time_stamp) when is_integer(unix_time_stamp) do
+    unix_time_stamp + @secs_between_year_0_and_unix_epoch
+    |>:calendar.gregorian_seconds_to_datetime
+    |> DateTime.from_erl!("UTC")
+  end
+
+  def unix!(unix_time_stamp) when is_float(unix_time_stamp) do
+    {whole, micro} = int_and_microsec_for_float(unix_time_stamp)
+    whole + @secs_between_year_0_and_unix_epoch
+    |>:calendar.gregorian_seconds_to_datetime
+    |> DateTime.from_erl!("UTC", micro)
+  end
+
+  defp int_and_microsec_for_float(float) do
+    {int, frac} = Integer.parse("#{float}")
+    {int, parse_unix_fraction(frac)}
+  end
+  # recieves eg. ".987654321" returns microsecs. eg. 987654
+  defp parse_unix_fraction(string), do: String.slice(string, 1..6) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
+
+  @doc """
+  Parse JavaScript style milliseconds since epoch.
+
+  # Examples
+
+      iex> js_ms!("1000000000123")
+      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
+
+      iex> js_ms!(1_000_000_000_123)
+      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
+  """
+  def js_ms!(millisec) when is_integer(millisec) do
+    (millisec/1000)
+    |> unix!
+  end
+
+  def js_ms!(millisec) when is_binary(millisec) do
+    {int, ""} = millisec
+    |> Integer.parse
+    js_ms!(int)
+  end
+
   @doc """
   Parses a timestamp in RFC 2616 format.
 

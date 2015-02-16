@@ -12,8 +12,6 @@ defmodule Kalends.DateTime do
 
   defstruct [:year, :month, :day, :hour, :min, :sec, :microsec, :timezone, :abbr, :utc_off, :std_off]
 
-  @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
-
   @doc """
   Like DateTime.now("UTC")
   """
@@ -321,72 +319,6 @@ defmodule Kalends.DateTime do
     microsec = date_time.microsec
     gregorian_seconds(date_time) + microsec
   end
-
-  @doc """
-  Unix time. Unix time is defined as seconds since 1970-01-01 00:00:00 UTC without leap seconds.
-
-  ## Examples
-
-      iex> Kalends.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 0.55) |> unix_time
-      1_000_000_000
-  """
-  def unix_time(date_time) do
-    date_time
-    |> shift_zone!("UTC")
-    |> gregorian_seconds
-    |> - @secs_between_year_0_and_unix_epoch
-  end
-
-  @doc """
-  Like unix_time but returns a float with fractional seconds. If the microsec of the DateTime
-  is nil, the fractional seconds will be treated as 0.0 as seen in the second example below:
-
-  ## Examples
-
-      iex> from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 985085) |> unix_time_with_microsec
-      1_000_000_000.985085
-
-      iex> from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> unix_time_with_microsec
-      1_000_000_000.0
-  """
-  def unix_time_with_microsec(date_time = %Kalends.DateTime{microsec: microsec}) when microsec == nil do
-    date_time |> unix_time |> + 0.0
-  end
-  def unix_time_with_microsec(date_time) do
-    date_time
-    |> unix_time
-    |> + (date_time.microsec/1_000_000)
-  end
-
-
-  @doc """
-  Takes unix time as an integer or float. Returns a DateTime struct.
-
-  ## Examples
-
-      iex> from_unix_time!(1_000_000_000)
-      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
-
-      iex> from_unix_time!(1_000_000_000.9876)
-      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 987600, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
-  """
-  def from_unix_time!(unix_time_stamp) when is_integer(unix_time_stamp) do
-    unix_time_stamp + @secs_between_year_0_and_unix_epoch
-    |> from_gregorian_seconds! "UTC", "UTC", 0, 0, nil
-  end
-
-  def from_unix_time!(unix_time_stamp) when is_float(unix_time_stamp) do
-    {whole, micro} = int_and_microsec_for_float(unix_time_stamp)
-    whole + @secs_between_year_0_and_unix_epoch
-    |> from_gregorian_seconds! "UTC", "UTC", 0, 0, micro
-  end
-
-  defp int_and_microsec_for_float(float) do
-    {int, frac} = Integer.parse("#{float}")
-    {int, parse_fraction(frac)}
-  end
-  # recieves eg. ".987654321" returns microsecs. eg. 987654
-  defp parse_fraction(string), do: String.slice(string, 1..6) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
 
   defp validate_erl_datetime({date, _}) do
     :calendar.valid_date date

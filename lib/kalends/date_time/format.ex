@@ -1,6 +1,7 @@
 defmodule Kalends.DateTime.Format do
   alias Kalends.DateTime
   alias Kalends.DateTime.Format.Strftime
+  @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
 
   @doc """
   Generate a string from a DateTime formatted by a format string. Similar to strftime! known from UNIX.
@@ -87,5 +88,67 @@ defmodule Kalends.DateTime.Format do
     dt
     |> DateTime.shift_zone!("UTC")
     |> Strftime.strftime!("%a, %d %b %Y %H:%M:%S GMT")
+  end
+
+  @doc """
+  Unix time. Unix time is defined as seconds since 1970-01-01 00:00:00 UTC without leap seconds.
+
+  ## Examples
+
+      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 55) |> DateTime.Format.unix
+      1_000_000_000
+  """
+  def unix(date_time) do
+    date_time
+    |> DateTime.shift_zone!("UTC")
+    |> DateTime.gregorian_seconds
+    |> - @secs_between_year_0_and_unix_epoch
+  end
+
+  @doc """
+  Like unix_time but returns a float with fractional seconds. If the microsec of the DateTime
+  is nil, the fractional seconds will be treated as 0.0 as seen in the second example below:
+
+  ## Examples
+
+      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 985085) |> DateTime.Format.unix_micro
+      1_000_000_000.985085
+
+      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> DateTime.Format.unix_micro
+      1_000_000_000.0
+  """
+  def unix_micro(date_time = %Kalends.DateTime{microsec: microsec}) when microsec == nil do
+    date_time |> unix |> + 0.0
+  end
+  def unix_micro(date_time) do
+    date_time
+    |> unix
+    |> + (date_time.microsec/1_000_000)
+  end
+
+  @doc """
+  Takes datetime and returns UTC timestamp in JavaScript format. That is milliseconds since 1970 unix epoch.
+
+  ## Examples
+
+      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 985085) |> DateTime.Format.js_ms
+      1_000_000_000_985
+
+      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 98508) |> DateTime.Format.js_ms
+      1_000_000_000_098
+  """
+  def js_ms(date_time) do
+    whole_secs = date_time
+    |> unix
+    |> Kernel.* 1000
+    whole_secs + micro_to_mil(date_time.microsec)
+  end
+
+  defp micro_to_mil(microsec) do
+    "#{microsec}"
+     |> String.rjust(6, ?0) # pad with zeros if necessary
+     |> String.slice(0..2)  # take first 3 numbers to get milliseconds
+     |> Integer.parse
+     |> elem(0) # return the integer part
   end
 end
