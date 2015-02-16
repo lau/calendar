@@ -19,7 +19,7 @@ are supported.
 Add Kalends as a dependency to an Elixir project by adding it to your mix.exs file:
 
     defp deps do
-      [  {:kalends, "~> 0.2.3"},  ]
+      [  {:kalends, "~> 0.2.4"},  ]
     end
 
 Then run `mix deps.get` which will fetch Kalends via the hex package manager.
