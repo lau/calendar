@@ -14,7 +14,7 @@ defmodule Kalends.DateTime.Parse do
       iex> unix!(1_000_000_000.9876)
       %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 987600, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
 
-      iex> unix!(1_000_000_000.9999999)
+      iex> unix!(1_000_000_000.999999)
       %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 999999, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
   """
   def unix!(unix_time_stamp) when is_integer(unix_time_stamp) do
@@ -31,7 +31,8 @@ defmodule Kalends.DateTime.Parse do
   end
 
   defp int_and_microsec_for_float(float) do
-    {int, frac} = Integer.parse("#{float}")
+    float_as_string = Float.to_string(float, [decimals: 6, compact: false])
+    {int, frac} = Integer.parse(float_as_string)
     {int, parse_unix_fraction(frac)}
   end
   # recieves eg. ".987654321" returns microsecs. eg. 987654
@@ -47,9 +48,12 @@ defmodule Kalends.DateTime.Parse do
 
       iex> js_ms!(1_000_000_000_123)
       %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "UTC", utc_off: 0, year: 2001}
+
+      iex> js_ms!(1424102000000)
+      %Kalends.DateTime{abbr: "UTC", day: 16, hour: 15, microsec: 0, min: 53, month: 2, sec: 20, std_off: 0, timezone: "UTC", utc_off: 0, year: 2015}
   """
   def js_ms!(millisec) when is_integer(millisec) do
-    (millisec/1000)
+    (millisec/1000.0)
     |> unix!
   end
 
