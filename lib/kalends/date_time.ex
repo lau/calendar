@@ -70,8 +70,8 @@ defmodule Kalends.DateTime do
 
   ## Example
 
-      iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone(nyc, "Europe/Copenhagen")
-      {:ok, %Kalends.DateTime{abbr: "CEST", day: 2, hour: 6, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014}}
+      iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York",123456; shift_zone(nyc, "Europe/Copenhagen")
+      {:ok, %Kalends.DateTime{abbr: "CEST", day: 2, hour: 6, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014, microsec: 123456}}
 
       iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone(nyc, "Invalid timezone")
       {:invalid_time_zone, nil}
@@ -89,7 +89,7 @@ defmodule Kalends.DateTime do
     period_list = TimeZoneData.periods_for_time(date_time.timezone, greg_secs, :wall)
     period = period_list|>hd
     greg_secs-period.utc_off-period.std_off
-    |>from_gregorian_seconds!("UTC", "UTC", 0, 0)
+    |>from_gregorian_seconds!("UTC", "UTC", 0, 0, date_time.microsec)
   end
 
   defp shift_from_utc(utc_date_time, to_timezone) do
@@ -97,7 +97,7 @@ defmodule Kalends.DateTime do
     period_list = TimeZoneData.periods_for_time(to_timezone, greg_secs, :utc)
     period = period_list|>hd
     greg_secs+period.utc_off+period.std_off
-    |>from_gregorian_seconds!(to_timezone, period.zone_abbr, period.utc_off, period.std_off)
+    |>from_gregorian_seconds!(to_timezone, period.zone_abbr, period.utc_off, period.std_off, utc_date_time.microsec)
   end
 
   # Takes gregorian seconds and and optional timezone.
