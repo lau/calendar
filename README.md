@@ -4,14 +4,13 @@ Kalends
 [![Build
 Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.org/lau/kalends) [![Hex Version](http://img.shields.io/hexpm/v/kalends.svg?style=flat)](https://hex.pm/packages/kalends)
 
-Kalends is a date and time library for Elixir.
+Kalends is a date and time library for Elixir. The only Elixir library with with accurate, up-to-date time zone information.
 
 **kalends |ˈkalɪndz|**
 _plural noun_ -
 the first day of the month in the ancient Roman calendar. Agner Krarup Erlang was born on the first day of January 1878.
 
-It is a priority to provide timezone information that is as accurate as
-possible. The Olson/Eggert "Time Zone Database" is used. Years 1 through 2200
+The Olson/Eggert "Time Zone Database" is used. Years 1 through 2200
 are supported.
 
 ## Getting started
@@ -19,7 +18,7 @@ are supported.
 Add Kalends as a dependency to an Elixir project by adding it to your mix.exs file:
 
     defp deps do
-      [  {:kalends, "~> 0.2.4"},  ]
+      [  {:kalends, "~> 0.2.5"},  ]
     end
 
 Then run `mix deps.get` which will fetch Kalends via the hex package manager.
@@ -80,6 +79,11 @@ Parsing the same string again back into a DateTime:
     {:ok, %Kalends.DateTime{abbr: "UYT", day: 4, hour: 23, min: 44,
             month: 10, sec: 32, std_off: 0, timezone: "America/Montevideo",
             utc_off: -10800, year: 2014}}
+
+Format as a unix timestamp:
+
+    mvd |> DateTime.Format.unix
+    1412477072
 
 Parsing an RFC 3339 timestamp as UTC:
 
