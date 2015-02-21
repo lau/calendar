@@ -13,14 +13,14 @@ defmodule Kalends.DateTime do
   defstruct [:year, :month, :day, :hour, :min, :sec, :microsec, :timezone, :abbr, :utc_off, :std_off]
 
   @doc """
-  Like DateTime.now("UTC")
+  Like DateTime.now("Etc/UTC")
   """
   def now_utc do
     erl_now = :erlang.now
     {_, _, microsec} = erl_now
     erl_now
     |> :calendar.now_to_datetime
-    |> from_erl!("UTC", "UTC", 0, 0, microsec)
+    |> from_erl!("Etc/UTC", "UTC", 0, 0, microsec)
   end
 
   @doc """
@@ -39,7 +39,7 @@ defmodule Kalends.DateTime do
        min: 41, month: 10, sec: 1, std_off: 3600, timezone: "Europe/Copenhagen",
        utc_off: 3600, year: 2014}
   """
-  def now("UTC"), do: now_utc
+  def now("Etc/UTC"), do: now_utc
   def now(timezone) do
     {now_utc_secs, microsec} = now_utc |> gregorian_seconds_and_microsec
     period_list = TimeZoneData.periods_for_time(timezone, now_utc_secs, :utc)
@@ -89,7 +89,7 @@ defmodule Kalends.DateTime do
     period_list = TimeZoneData.periods_for_time(date_time.timezone, greg_secs, :wall)
     period = period_list|>hd
     greg_secs-period.utc_off-period.std_off
-    |>from_gregorian_seconds!("UTC", "UTC", 0, 0, date_time.microsec)
+    |>from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.microsec)
   end
 
   defp shift_from_utc(utc_date_time, to_timezone) do
@@ -236,7 +236,7 @@ defmodule Kalends.DateTime do
 
   ## Examples
 
-      iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Kalends.DateTime.to_erl
+      iex> from_erl!({{2014,10,15},{2,37,22}}, "Etc/UTC") |> Kalends.DateTime.to_erl
       {{2014, 10, 15}, {2, 37, 22}}
   """
   def to_erl(%Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec}) do
@@ -313,11 +313,6 @@ defmodule Kalends.DateTime do
   def gregorian_seconds_and_microsec(date_time) do
     microsec = date_time.microsec
     {gregorian_seconds(date_time), microsec}
-  end
-
-  def gregorian_seconds_with_microsec(date_time) do
-    microsec = date_time.microsec
-    gregorian_seconds(date_time) + microsec
   end
 
   defp validate_erl_datetime({date, _}) do
