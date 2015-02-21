@@ -8,7 +8,7 @@
 # the tzdata is from.
 mkdir -p tzdata/       \
   && cd tzdata/        \
-  && wget 'ftp://ftp.iana.org/tz/tzdata-latest.tar.gz' \
+  && wget 'https://www.iana.org/time-zones/repository/tzdata-latest.tar.gz' \
   && tar -zxvf tzdata-latest.tar.gz                    \
   && rm tzdata-latest.tar.gz                           \
   && rm factory leap-seconds.* leapseconds leapseconds.* Makefile iso3166.tab README systemv yearistype.sh zone.tab zone1970.tab backzone checktab.awk checklinks.awk CONTRIBUTING Theory zoneinfo2tdf.pl \
