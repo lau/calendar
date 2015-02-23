@@ -28,4 +28,12 @@ defmodule DateTimeTest do
     result = from_erl({{2014, 3, 30}, {2, 20, 02}}, "Europe/Copenhagen")
     assert result == {:error, :invalid_datetime_for_timezone}
   end
+
+  test "shift_zone! works even for periods when wall clock is set back in fall because of DST" do
+      result =  from_erl!({{1999,10,31},{0,29,10}}, "Etc/UTC") |> shift_zone!("Europe/Copenhagen") |> shift_zone!("Etc/UTC") |> shift_zone!("Europe/Copenhagen")
+      assert result == %Kalends.DateTime{abbr: "CEST", day: 31, hour: 2, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 1999}
+
+      result2 = from_erl!({{1999,10,31},{1,29,10}}, "Etc/UTC") |> shift_zone!("Europe/Copenhagen") |> shift_zone!("Etc/UTC") |> shift_zone!("Europe/Copenhagen")
+      assert result2 == %Kalends.DateTime{abbr: "CET", day: 31, hour: 2, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 0, year: 1999}
+  end
 end

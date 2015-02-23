@@ -57,6 +57,7 @@ defmodule Kalends.DateTime do
       iex> from_erl!({{2014,10,2},{0,29,10}},"America/New_York") |> shift_zone! "Europe/Copenhagen"
       %Kalends.DateTime{abbr: "CEST", day: 2, hour: 6, min: 29, month: 10, sec: 10,
                         timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014}
+
   """
   def shift_zone!(date_time, timezone) do
     date_time
@@ -70,7 +71,7 @@ defmodule Kalends.DateTime do
 
   ## Example
 
-      iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York",123456; shift_zone(nyc, "Europe/Copenhagen")
+      iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York",123456) |> shift_zone("Europe/Copenhagen")
       {:ok, %Kalends.DateTime{abbr: "CEST", day: 2, hour: 6, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014, microsec: 123456}}
 
       iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone(nyc, "Invalid timezone")
@@ -87,9 +88,22 @@ defmodule Kalends.DateTime do
   defp shift_to_utc(date_time) do
     greg_secs = :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
     period_list = TimeZoneData.periods_for_time(date_time.timezone, greg_secs, :wall)
-    period = period_list|>hd
+    period = period_by_offset(period_list, date_time.utc_off, date_time.std_off)
     greg_secs-period.utc_off-period.std_off
     |>from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.microsec)
+  end
+
+  # When we have a list of 2 periods, return the one where UTC offset
+  # and standard offset matches. The is used for instance during ambigous
+  # wall time in the fall when switching back from summer time to standard
+  # time.
+  # If there is just one period, just return the only period in the list
+  defp period_by_offset(period_list, _utc_off, _std_off) when length(period_list) == 1 do
+    hd(period_list)
+  end
+  defp period_by_offset(period_list, utc_off, std_off) do
+    matching = period_list |> Enum.filter(&(&1.utc_off == utc_off && &1.std_off == std_off))
+    hd(matching)
   end
 
   defp shift_from_utc(utc_date_time, to_timezone) do
