@@ -19,6 +19,7 @@ defmodule Kalends.Mixfile do
     [
       {:tzdata, "~> 0.0.1"},
       {:ex_doc, "~> 0.6", only: :dev},
+      {:inch_ex, only: :docs},
      ]
   end
 
