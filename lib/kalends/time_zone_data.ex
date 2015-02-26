@@ -1,5 +1,5 @@
 defmodule Kalends.TimeZoneData do
-  alias Kalends.TzParsing.TimeZoneDataSource, as: TZSource
+  alias Tzdata.TimeZoneDataSource, as: TZSource
   @doc """
   A list of pre-compiled periods for a given zone name. This function is
   used by the TimeZonePeriods module.

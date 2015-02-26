@@ -18,7 +18,7 @@ are supported.
 Add Kalends as a dependency to an Elixir project by adding it to your mix.exs file:
 
     defp deps do
-      [  {:kalends, "~> 0.2.6"},  ]
+      [  {:kalends, "~> 0.3.0"},  ]
     end
 
 Then run `mix deps.get` which will fetch Kalends via the hex package manager.
@@ -115,14 +115,6 @@ often. In order to correctly find out what time it is around the world, the
 "tz database" is invaluable. This is (AFAIK) the first pure Elixir library that
 uses the tz database correctly and can easily be updated whenever a new version
 is released.
-
-## Time Zone Database updates
-
-The time zone database (tzdata) is regularly updated. When a new tzdata
-version is released, developers of Kalends can easily download the new version
-simply by running a command. Then when compiling Kalends, the new tzdata will be
-used. The function `Kalends.TimeZoneData.tzdata_version` tells you the tzdata
-release version in use.
 
 ## Known bugs
 
