@@ -2,7 +2,9 @@ Kalends
 =======
 
 [![Build
-Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.org/lau/kalends) [![Hex Version](http://img.shields.io/hexpm/v/kalends.svg?style=flat)](https://hex.pm/packages/kalends)
+Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.org/lau/kalends)
+[![Inline docs](http://inch-ci.org/github/lau/kalends.svg)](http://inch-ci.org/github/lau/kalends)
+[![Hex Version](http://img.shields.io/hexpm/v/kalends.svg?style=flat)](https://hex.pm/packages/kalends)
 
 Kalends is a date and time library for Elixir. The only Elixir library with with accurate, up-to-date time zone information.
 
@@ -39,7 +41,7 @@ You can then call Kalends functions like this: `Kalends.DateTime.now("UTC")`. Bu
 
 ## Usage examples
 
-For these example first either alias DateTime with this command: `alias Kalends.DateTime` or for use within a model add `use Kalends` to the module.
+For these example first either alias DateTime with this command: `alias Kalends.DateTime` or for use within a module add `use Kalends` to the module.
 
 Get a DateTime struct for the 4th of October 2014 at 23:44:32 in the city of
 Montevideo:
