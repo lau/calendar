@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.0] - 2015-03-02
+### Changed
+
+DateTime.Format.iso8601 function renamed to DateTime.Format.rfc3339.
+
 ## [0.3.0] - 2015-02-26
 ### Changed
 

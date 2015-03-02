@@ -56,14 +56,14 @@ defmodule Kalends.DateTime.Format do
 
   @doc """
   Takes a DateTime.
-  Returns a string with the time in ISO 8601
+  Returns a string with the time in RFC3339 (a profile of ISO 8601)
 
   ## Example
 
-      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Kalends.DateTime.Format.iso8601
+      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Kalends.DateTime.Format.rfc3339
       "2014-09-26T17:10:20-03:00"
   """
-  def iso8601(dt) do
+  def rfc3339(dt) do
     Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
     iso8601_offset_part(dt, dt.timezone)
   end

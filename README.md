@@ -72,7 +72,7 @@ Formatting a DateTime using "strftime":
 
 Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
 
-    mvd |> DateTime.Format.iso8601
+    mvd |> DateTime.Format.rfc3339
     "2014-10-04T23:44:32-03:00"
 
 Parsing the same string again back into a DateTime:
