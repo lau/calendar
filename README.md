@@ -70,9 +70,9 @@ struct for the same time in the London time zone:
 ...and then in UTC:
 
 ```elixir
-    london |> DateTime.shift_zone! "UTC"
+    london |> DateTime.shift_zone! "Etc/UTC"
     %Kalends.DateTime{abbr: "UTC", day: 5, hour: 2, min: 44, month: 10,
-                   sec: 32, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
+                   sec: 32, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2014}
 ```
 
 Formatting a DateTime using "strftime":
@@ -110,7 +110,7 @@ Parsing an RFC 3339 timestamp as UTC:
 ```elixir
     DateTime.Parse.rfc3339_utc "2014-10-04T23:44:32.4999Z"
     {:ok, %Kalends.DateTime{abbr: "UTC", day: 4, microsec: 499900, hour: 23,
-            min: 44, month: 10, sec: 32, std_off: 0, timezone: "UTC",
+            min: 44, month: 10, sec: 32, std_off: 0, timezone: "Etc/UTC",
             utc_off: 0, year: 2014}}
 ```
 
