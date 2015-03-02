@@ -27,14 +27,14 @@ Add Kalends as a dependency to an Elixir project by adding it to your mix.exs fi
 
 Then run `mix deps.get` which will fetch Kalends via the hex package manager.
 
-You can then call Kalends functions like this: `Kalends.DateTime.now("UTC")`. But in order to avoid typing Kalends all the time you can add `use Kalends` to your modules. This aliases Kalends modules such as DateTime and Date. Which means that you can call for instance `DateTime.now("UTC")` without writing `Kalends.` Example:
+You can then call Kalends functions like this: `Kalends.DateTime.now_utc`. But in order to avoid typing Kalends all the time you can add `use Kalends` to your modules. This aliases Kalends modules such as DateTime and Date. Which means that you can call for instance `DateTime.now_utc` without writing `Kalends.` Example:
 
 ```elixir
     defmodule NewYearsHttpLib do
       use Kalends
 
       def httpdate_new_years(year) do
-        {:ok, dt} = DateTime.from_erl({{year,1,1},{0,0,0}}, "UTC")
+        {:ok, dt} = DateTime.from_erl({{year,1,1},{0,0,0}}, "Etc/UTC")
         DateTime.Format.httpdate(dt)
       end
 
