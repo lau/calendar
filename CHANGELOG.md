@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.1] - 2015-03-02
+### Added
+
+Important addition: tzdata is no in applications in mix.exs
+
 ## [0.4.0] - 2015-03-02
 ### Changed
 
