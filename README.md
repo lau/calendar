@@ -55,10 +55,10 @@ Montevideo:
     {:ok, %Kalends.DateTime{abbr: "UYT", day: 4, hour: 23, min: 44, month: 10,
                             sec: 32, std_off: 0, timezone: "America/Montevideo",
                             utc_off: -10800, year: 2014}}
+```
 
 A DateTime struct is now assigned to the variable `mvd`. Let's get a DateTime
 struct for the same time in the London time zone:
-```
 
 ```elixir
     london = mvd |> DateTime.shift_zone! "Europe/London"
