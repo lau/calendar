@@ -134,6 +134,11 @@ Transform a DateTime struct to an Erlang style tuple:
 
 Documentation can be found at http://hexdocs.pm/kalends/
 
+## Ecto
+
+If you want to use Kalends with Ecto, there is a library for that:
+Kalecto https://github.com/lau/kalecto
+
 ## Raison d'être
 
 There are many different rules for time zones all over the world and they change
