@@ -135,6 +135,13 @@ defmodule Kalends.DateTime.Format.Strftime do
       months_abbr: ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"],
     }
   end
+  defp names_for_language(:es) do
+    %{weekdays: ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"],
+      weekdays_abbr: ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"],
+      months: ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre" ],
+      months_abbr: ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
+    }
+  end
   defp names_for_language(_) do
     raise "unknown language code"
   end

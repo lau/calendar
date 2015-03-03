@@ -16,6 +16,9 @@ defmodule Kalends.DateTime.Format do
       iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%A %d/%m/%Y", :da
       "lørdag 06/09/2014"
 
+      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%A %d/%m/%Y", :es
+      "sábado 06/09/2014"
+
   | conversion spec. | Description                                                     | Example            |
   | -----------------|:---------------------------------------------------------------:| ------------------:|
   | %a               | Abbreviated name of day                                         | _Mon_              |
