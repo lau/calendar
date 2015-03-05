@@ -1,5 +1,10 @@
 # Changelog
 
+### Changed
+
+The microseconds part of the DateTime, NaiveTime and Time structs have been
+renamed from microsec to usec.
+
 ## [0.4.1] - 2015-03-02
 ### Added
 

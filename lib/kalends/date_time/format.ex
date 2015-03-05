@@ -61,19 +61,35 @@ defmodule Kalends.DateTime.Format do
   Takes a DateTime.
   Returns a string with the time in RFC3339 (a profile of ISO 8601)
 
-  ## Example
+  ## Examples
+
+  Without microseconds
 
       iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Kalends.DateTime.Format.rfc3339
       "2014-09-26T17:10:20-03:00"
+
+  With microseconds
+
+      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Kalends.DateTime.Format.rfc3339
+      "2014-09-26T17:10:20.000005-03:00"
   """
   def rfc3339(dt) do
     Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
-    iso8601_offset_part(dt, dt.timezone)
+    rfc3330_usec_part(dt.usec)<>
+    rfc3339_offset_part(dt, dt.timezone)
   end
 
-  defp iso8601_offset_part(_, time_zone) when time_zone == "UTC" or time_zone == "Etc/UTC", do: "Z"
-  defp iso8601_offset_part(dt, _) do
+  defp rfc3339_offset_part(_, time_zone) when time_zone == "UTC" or time_zone == "Etc/UTC", do: "Z"
+  defp rfc3339_offset_part(dt, _) do
     Strftime.strftime!(dt, "%z")
+  end
+
+  defp rfc3330_usec_part(nil), do: ""
+  defp rfc3330_usec_part(usec) do
+    ".#{usec |> pad(6)}"
+  end
+  defp pad(subject, len\\2, char\\?0) do
+    String.rjust("#{subject}", len, char)
   end
 
   @doc """
@@ -109,7 +125,7 @@ defmodule Kalends.DateTime.Format do
   end
 
   @doc """
-  Like unix_time but returns a float with fractional seconds. If the microsec of the DateTime
+  Like unix_time but returns a float with fractional seconds. If the usec of the DateTime
   is nil, the fractional seconds will be treated as 0.0 as seen in the second example below:
 
   ## Examples
@@ -120,13 +136,13 @@ defmodule Kalends.DateTime.Format do
       iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> DateTime.Format.unix_micro
       1_000_000_000.0
   """
-  def unix_micro(date_time = %Kalends.DateTime{microsec: microsec}) when microsec == nil do
+  def unix_micro(date_time = %Kalends.DateTime{usec: usec}) when usec == nil do
     date_time |> unix |> + 0.0
   end
   def unix_micro(date_time) do
     date_time
     |> unix
-    |> + (date_time.microsec/1_000_000)
+    |> + (date_time.usec/1_000_000)
   end
 
   @doc """
@@ -144,11 +160,11 @@ defmodule Kalends.DateTime.Format do
     whole_secs = date_time
     |> unix
     |> Kernel.* 1000
-    whole_secs + micro_to_mil(date_time.microsec)
+    whole_secs + micro_to_mil(date_time.usec)
   end
 
-  defp micro_to_mil(microsec) do
-    "#{microsec}"
+  defp micro_to_mil(usec) do
+    "#{usec}"
      |> String.rjust(6, ?0) # pad with zeros if necessary
      |> String.slice(0..2)  # take first 3 numbers to get milliseconds
      |> Integer.parse

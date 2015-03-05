@@ -9,13 +9,13 @@ defmodule Kalends.DateTime.Parse do
   ## Examples
 
       iex> unix!(1_000_000_000)
-      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Kalends.DateTime{abbr: "UTC", day: 9, usec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
       iex> unix!(1_000_000_000.9876)
-      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 987600, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Kalends.DateTime{abbr: "UTC", day: 9, usec: 987600, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
       iex> unix!(1_000_000_000.999999)
-      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 999999, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Kalends.DateTime{abbr: "UTC", day: 9, usec: 999999, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
   """
   def unix!(unix_time_stamp) when is_integer(unix_time_stamp) do
     unix_time_stamp + @secs_between_year_0_and_unix_epoch
@@ -24,18 +24,18 @@ defmodule Kalends.DateTime.Parse do
   end
 
   def unix!(unix_time_stamp) when is_float(unix_time_stamp) do
-    {whole, micro} = int_and_microsec_for_float(unix_time_stamp)
+    {whole, micro} = int_and_usec_for_float(unix_time_stamp)
     whole + @secs_between_year_0_and_unix_epoch
     |>:calendar.gregorian_seconds_to_datetime
     |> DateTime.from_erl!("Etc/UTC", micro)
   end
 
-  defp int_and_microsec_for_float(float) do
+  defp int_and_usec_for_float(float) do
     float_as_string = Float.to_string(float, [decimals: 6, compact: false])
     {int, frac} = Integer.parse(float_as_string)
     {int, parse_unix_fraction(frac)}
   end
-  # recieves eg. ".987654321" returns microsecs. eg. 987654
+  # recieves eg. ".987654321" returns usecs. eg. 987654
   defp parse_unix_fraction(string), do: String.slice(string, 1..6) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
 
   @doc """
@@ -44,13 +44,13 @@ defmodule Kalends.DateTime.Parse do
   # Examples
 
       iex> js_ms!("1000000000123")
-      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Kalends.DateTime{abbr: "UTC", day: 9, usec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
       iex> js_ms!(1_000_000_000_123)
-      %Kalends.DateTime{abbr: "UTC", day: 9, microsec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Kalends.DateTime{abbr: "UTC", day: 9, usec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
       iex> js_ms!(1424102000000)
-      %Kalends.DateTime{abbr: "UTC", day: 16, hour: 15, microsec: 0, min: 53, month: 2, sec: 20, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2015}
+      %Kalends.DateTime{abbr: "UTC", day: 16, hour: 15, usec: 0, min: 53, month: 2, sec: 20, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2015}
   """
   def js_ms!(millisec) when is_integer(millisec) do
     (millisec/1000.0)
@@ -145,7 +145,7 @@ defmodule Kalends.DateTime.Parse do
       {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
       iex> rfc3339("1996-12-19T16:39:57.1234Z", "Etc/UTC")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0, microsec: 123400}}
+      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0, usec: 123400}}
 
       iex> rfc3339("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
       {:ok, %Kalends.DateTime{abbr: "PST", day: 19, hour: 16, min: 39, month: 12, sec: 57, std_off: 0, timezone: "America/Los_Angeles", utc_off: -28800, year: 1996}}

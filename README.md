@@ -109,7 +109,7 @@ Parsing an RFC 3339 timestamp as UTC:
 
 ```elixir
     DateTime.Parse.rfc3339_utc "2014-10-04T23:44:32.4999Z"
-    {:ok, %Kalends.DateTime{abbr: "UTC", day: 4, microsec: 499900, hour: 23,
+    {:ok, %Kalends.DateTime{abbr: "UTC", day: 4, usec: 499900, hour: 23,
             min: 44, month: 10, sec: 32, std_off: 0, timezone: "Etc/UTC",
             utc_off: 0, year: 2014}}
 ```

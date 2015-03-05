@@ -10,17 +10,17 @@ defmodule Kalends.DateTime do
   require Kalends.Date
   require Kalends.Time
 
-  defstruct [:year, :month, :day, :hour, :min, :sec, :microsec, :timezone, :abbr, :utc_off, :std_off]
+  defstruct [:year, :month, :day, :hour, :min, :sec, :usec, :timezone, :abbr, :utc_off, :std_off]
 
   @doc """
   Like DateTime.now("Etc/UTC")
   """
   def now_utc do
     erl_now = :erlang.now
-    {_, _, microsec} = erl_now
+    {_, _, usec} = erl_now
     erl_now
     |> :calendar.now_to_datetime
-    |> from_erl!("Etc/UTC", "UTC", 0, 0, microsec)
+    |> from_erl!("Etc/UTC", "UTC", 0, 0, usec)
   end
 
   @doc """
@@ -41,11 +41,11 @@ defmodule Kalends.DateTime do
   """
   def now("Etc/UTC"), do: now_utc
   def now(timezone) do
-    {now_utc_secs, microsec} = now_utc |> gregorian_seconds_and_microsec
+    {now_utc_secs, usec} = now_utc |> gregorian_seconds_and_usec
     period_list = TimeZoneData.periods_for_time(timezone, now_utc_secs, :utc)
     period = hd period_list
     now_utc_secs + period.utc_off + period.std_off
-    |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off, microsec)
+    |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off, usec)
   end
 
   @doc """
@@ -72,7 +72,7 @@ defmodule Kalends.DateTime do
   ## Example
 
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York",123456) |> shift_zone("Europe/Copenhagen")
-      {:ok, %Kalends.DateTime{abbr: "CEST", day: 2, hour: 6, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014, microsec: 123456}}
+      {:ok, %Kalends.DateTime{abbr: "CEST", day: 2, hour: 6, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014, usec: 123456}}
 
       iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone(nyc, "Invalid timezone")
       {:invalid_time_zone, nil}
@@ -90,7 +90,7 @@ defmodule Kalends.DateTime do
     period_list = TimeZoneData.periods_for_time(date_time.timezone, greg_secs, :wall)
     period = period_by_offset(period_list, date_time.utc_off, date_time.std_off)
     greg_secs-period.utc_off-period.std_off
-    |>from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.microsec)
+    |>from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.usec)
   end
 
   # When we have a list of 2 periods, return the one where UTC offset
@@ -111,7 +111,7 @@ defmodule Kalends.DateTime do
     period_list = TimeZoneData.periods_for_time(to_timezone, greg_secs, :utc)
     period = period_list|>hd
     greg_secs+period.utc_off+period.std_off
-    |>from_gregorian_seconds!(to_timezone, period.zone_abbr, period.utc_off, period.std_off, utc_date_time.microsec)
+    |>from_gregorian_seconds!(to_timezone, period.zone_abbr, period.utc_off, period.std_off, utc_date_time.usec)
   end
 
   # Takes gregorian seconds and and optional timezone.
@@ -122,10 +122,10 @@ defmodule Kalends.DateTime do
   #   %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, timezone: nil, year: 2014}
   #   iex> from_gregorian_seconds!(63578970620, "America/Montevideo")
   #   %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, timezone: "America/Montevideo", year: 2014}
-  defp from_gregorian_seconds!(gregorian_seconds, timezone, abbr, utc_off, std_off, microsec \\ nil) do
+  defp from_gregorian_seconds!(gregorian_seconds, timezone, abbr, utc_off, std_off, usec \\ nil) do
     gregorian_seconds
     |>:calendar.gregorian_seconds_to_datetime
-    |>from_erl!(timezone, abbr, utc_off, std_off, microsec)
+    |>from_erl!(timezone, abbr, utc_off, std_off, usec)
   end
 
   @doc """
@@ -138,8 +138,8 @@ defmodule Kalends.DateTime do
       iex> from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo")
       %Kalends.DateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, timezone: "America/Montevideo", abbr: "UYT", utc_off: -10800, std_off: 0}
   """
-  def from_erl!(date_time, time_zone, microsec \\ nil) do
-    {:ok, result} = from_erl(date_time, time_zone, microsec)
+  def from_erl!(date_time, time_zone, usec \\ nil) do
+    {:ok, result} = from_erl(date_time, time_zone, usec)
     result
   end
 
@@ -162,7 +162,7 @@ defmodule Kalends.DateTime do
       {:ok, %Kalends.DateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20,
                               year: 2014, timezone: "America/Montevideo",
                               abbr: "UYT",
-                              utc_off: -10800, std_off: 0, microsec: nil} }
+                              utc_off: -10800, std_off: 0, usec: nil} }
 
     Switching from summer to wintertime in the fall means an ambigous time.
 
@@ -192,18 +192,18 @@ defmodule Kalends.DateTime do
       {:ok, %Kalends.DateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20,
                               year: 2014, timezone: "America/Montevideo",
                               abbr: "UYT",
-                              utc_off: -10800, std_off: 0, microsec: 987654} }
+                              utc_off: -10800, std_off: 0, usec: 987654} }
 
   """
-  def from_erl(date_time, timezone, microsec \\ nil) do
+  def from_erl(date_time, timezone, usec \\ nil) do
     validity = validate_erl_datetime date_time
-    from_erl_validity(date_time, timezone, validity, microsec)
+    from_erl_validity(date_time, timezone, validity, usec)
   end
 
   # Date, time and timezone. Date and time is valid.
-  defp from_erl_validity(datetime, timezone, true, microsec) do
+  defp from_erl_validity(datetime, timezone, true, usec) do
     # validate that timezone exists
-    from_erl_timezone_validity(datetime, timezone, TimeZoneData.zone_exists?(timezone), microsec)
+    from_erl_timezone_validity(datetime, timezone, TimeZoneData.zone_exists?(timezone), usec)
   end
   defp from_erl_validity(_, _, false, _) do
     {:error, :invalid_datetime}
@@ -211,29 +211,29 @@ defmodule Kalends.DateTime do
 
   defp from_erl_timezone_validity(_, _, false, _), do: {:error, :timezone_not_found}
 
-  defp from_erl_timezone_validity({date, time}, timezone, true, microsec) do
+  defp from_erl_timezone_validity({date, time}, timezone, true, usec) do
     # get periods for time
     greg_secs = :calendar.datetime_to_gregorian_seconds({date, time})
     periods = TimeZoneData.periods_for_time(timezone, greg_secs, :wall)
-    from_erl_periods({date, time}, timezone, periods, microsec)
+    from_erl_periods({date, time}, timezone, periods, usec)
   end
 
   defp from_erl_periods(_, _, periods, _) when periods == [] do
     {:error, :invalid_datetime_for_timezone}
   end
-  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, microsec) when length(periods) == 1 do
+  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, usec) when length(periods) == 1 do
     period = periods |> hd
     {:ok, %Kalends.DateTime{year: year, month: month, day: day, hour: hour,
          min: min, sec: sec, timezone: timezone, abbr: period.zone_abbr,
-         utc_off: period.utc_off, std_off: period.std_off, microsec: microsec } }
+         utc_off: period.utc_off, std_off: period.std_off, usec: usec } }
   end
   # When a time is ambigous (for instance switching from summer- to winter-time)
-  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, microsec) when length(periods) == 2 do
+  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, usec) when length(periods) == 2 do
     possible_date_times =
     Enum.map(periods, fn period ->
            %Kalends.DateTime{year: year, month: month, day: day, hour: hour,
            min: min, sec: sec, timezone: timezone, abbr: period.zone_abbr,
-           utc_off: period.utc_off, std_off: period.std_off, microsec: microsec }
+           utc_off: period.utc_off, std_off: period.std_off, usec: usec }
        end )
     # sort by abbreviation
     |> Enum.sort(fn dt1, dt2 -> dt1.abbr <= dt2.abbr end)
@@ -241,8 +241,8 @@ defmodule Kalends.DateTime do
     {:ambiguous, %Kalends.AmbiguousDateTime{ possible_date_times: possible_date_times} }
   end
 
-  defp from_erl!({{year, month, day}, {hour, min, sec}}, timezone, abbr, utc_off, std_off, microsec) do
-    %Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, timezone: timezone, abbr: abbr, utc_off: utc_off, std_off: std_off, microsec: microsec}
+  defp from_erl!({{year, month, day}, {hour, min, sec}}, timezone, abbr, utc_off, std_off, usec) do
+    %Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, timezone: timezone, abbr: abbr, utc_off: utc_off, std_off: std_off, usec: usec}
   end
 
   @doc """
@@ -273,17 +273,17 @@ defmodule Kalends.DateTime do
   of the provided DateTime.
 
       iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Kalends.DateTime.to_time
-      %Kalends.Time{microsec: nil, hour: 2, min: 37, sec: 22}
+      %Kalends.Time{usec: nil, hour: 2, min: 37, sec: 22}
   """
   def to_time(dt) do
-    %Kalends.Time{hour: dt.hour, min: dt.min, sec: dt.sec, microsec: dt.microsec}
+    %Kalends.Time{hour: dt.hour, min: dt.min, sec: dt.sec, usec: dt.usec}
   end
 
   @doc """
   Returns a tuple with a Date struct and a Time struct.
 
       iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Kalends.DateTime.to_date_and_time
-      {%Kalends.Date{day: 15, month: 10, year: 2014}, %Kalends.Time{microsec: nil, hour: 2, min: 37, sec: 22}}
+      {%Kalends.Date{day: 15, month: 10, year: 2014}, %Kalends.Time{usec: nil, hour: 2, min: 37, sec: 22}}
   """
   def to_date_and_time(dt) do
     {to_date(dt), to_time(dt)}
@@ -293,7 +293,7 @@ defmodule Kalends.DateTime do
   Takes an NaiveDateTime and a time zone identifier and returns a DateTime
 
       iex> Kalends.NaiveDateTime.from_erl!({{2014,10,15},{2,37,22}}) |> from_naive "UTC"
-      {:ok, %Kalends.DateTime{abbr: "UTC", day: 15, microsec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}}
+      {:ok, %Kalends.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}}
   """
   def from_naive(ndt, timezone) do
     ndt |> Kalends.NaiveDateTime.to_erl
@@ -304,11 +304,11 @@ defmodule Kalends.DateTime do
   Takes a DateTime and returns a NaiveDateTime
 
       iex> Kalends.DateTime.from_erl!({{2014,10,15},{2,37,22}}, "UTC", 0.55) |> to_naive
-      %Kalends.NaiveDateTime{day: 15, microsec: 0.55, hour: 2, min: 37, month: 10, sec: 22, year: 2014}
+      %Kalends.NaiveDateTime{day: 15, usec: 0.55, hour: 2, min: 37, month: 10, sec: 22, year: 2014}
   """
   def to_naive(dt) do
     dt |> to_erl
-    |> Kalends.NaiveDateTime.from_erl!(dt.microsec)
+    |> Kalends.NaiveDateTime.from_erl!(dt.usec)
   end
 
   @doc """
@@ -324,9 +324,9 @@ defmodule Kalends.DateTime do
     :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
   end
 
-  def gregorian_seconds_and_microsec(date_time) do
-    microsec = date_time.microsec
-    {gregorian_seconds(date_time), microsec}
+  def gregorian_seconds_and_usec(date_time) do
+    usec = date_time.usec
+    {gregorian_seconds(date_time), usec}
   end
 
   defp validate_erl_datetime({date, _}) do
