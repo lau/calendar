@@ -1,5 +1,6 @@
 # Changelog
 
+## [0.5.0] - 2015-03-05
 ### Changed
 
 The microseconds part of the DateTime, NaiveTime and Time structs have been
