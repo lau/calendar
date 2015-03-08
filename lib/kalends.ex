@@ -10,7 +10,6 @@ defmodule Kalends do
       alias Kalends.Date
       alias Kalends.Time
       alias Kalends.TimeZoneData
-      alias Kalends.TimeZonePeriods
     end
   end
 end
