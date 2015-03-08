@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.1] - 2015-03-08
+### Added
+
+to_micro_erl functions added to DateTime and NaiveDateTime. These functions
+return datetime tuples with 4 elements in the time part, the fourth one
+being microseconds.
+
+### Changed
+
+DateTime. now_utc function now uses :os.timestamp instead of :erlang.now
+internally for more accuracy and less overhead.
+
 ## [0.5.0] - 2015-03-05
 ### Changed
 
