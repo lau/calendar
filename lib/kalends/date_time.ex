@@ -16,9 +16,9 @@ defmodule Kalends.DateTime do
   Like DateTime.now("Etc/UTC")
   """
   def now_utc do
-    erl_now = :erlang.now
-    {_, _, usec} = erl_now
-    erl_now
+    erl_timestamp = :os.timestamp
+    {_, _, usec} = erl_timestamp
+    erl_timestamp
     |> :calendar.now_to_datetime
     |> from_erl!("Etc/UTC", "UTC", 0, 0, usec)
   end
@@ -255,6 +255,28 @@ defmodule Kalends.DateTime do
   """
   def to_erl(%Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec}) do
     {{year, month, day}, {hour, min, sec}}
+  end
+
+  @doc """
+  Takes a DateTime struct and returns an Ecto style datetime tuple. This is
+  like an erlang style tuple, but with microseconds added as an additional
+  element in the time part of the tuple.
+
+  If the datetime has its usec field set to nil, 0 will be used for usec.
+
+  ## Examples
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}, "Etc/UTC", 999999) |> Kalends.DateTime.to_micro_erl
+      {{2014, 10, 15}, {2, 37, 22, 999999}}
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}, "Etc/UTC", nil) |> Kalends.DateTime.to_micro_erl
+      {{2014, 10, 15}, {2, 37, 22, 0}}
+  """
+  def to_micro_erl(%Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: nil}) do
+    {{year, month, day}, {hour, min, sec, 0}}
+  end
+  def to_micro_erl(%Kalends.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec}) do
+    {{year, month, day}, {hour, min, sec, usec}}
   end
 
   @doc """
