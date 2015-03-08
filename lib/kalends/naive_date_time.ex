@@ -66,6 +66,28 @@ defmodule Kalends.NaiveDateTime do
   end
 
   @doc """
+  Takes a NaiveDateTime struct and returns an Ecto style datetime tuple. This is
+  like an erlang style tuple, but with microseconds added as an additional
+  element in the time part of the tuple.
+
+  If the datetime has its usec field set to nil, 0 will be used for usec.
+
+  ## Examples
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}, 999999) |> Kalends.NaiveDateTime.to_micro_erl
+      {{2014, 10, 15}, {2, 37, 22, 999999}}
+
+      iex> from_erl!({{2014,10,15},{2,37,22}}, nil) |> Kalends.NaiveDateTime.to_micro_erl
+      {{2014, 10, 15}, {2, 37, 22, 0}}
+  """
+  def to_micro_erl(%Kalends.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: nil}) do
+    {{year, month, day}, {hour, min, sec, 0}}
+  end
+  def to_micro_erl(%Kalends.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec}) do
+    {{year, month, day}, {hour, min, sec, usec}}
+  end
+
+  @doc """
   Takes a NaiveDateTime struct and returns a Date struct representing the date part
   of the provided NaiveDateTime.
 
