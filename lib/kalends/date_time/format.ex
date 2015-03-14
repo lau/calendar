@@ -75,7 +75,7 @@ defmodule Kalends.DateTime.Format do
   """
   def rfc3339(dt) do
     Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
-    rfc3330_usec_part(dt.usec)<>
+    rfc3330_usec_part(dt.usec, 6)<>
     rfc3339_offset_part(dt, dt.timezone)
   end
 
@@ -84,12 +84,58 @@ defmodule Kalends.DateTime.Format do
     Strftime.strftime!(dt, "%z")
   end
 
-  defp rfc3330_usec_part(nil), do: ""
-  defp rfc3330_usec_part(usec) do
+  defp rfc3330_usec_part(nil, _), do: ""
+  defp rfc3330_usec_part(_, 0), do: ""
+  defp rfc3330_usec_part(usec, 6) do
     ".#{usec |> pad(6)}"
   end
-  defp pad(subject, len\\2, char\\?0) do
+  defp rfc3330_usec_part(usec, precision) when precision >= 1 and precision <=6 do
+    ".#{usec |> pad(6)}" |> String.slice 0..precision
+  end
+  defp pad(subject, len, char\\?0) do
     String.rjust("#{subject}", len, char)
+  end
+
+  @doc """
+  Takes a DateTime and a integer for number of decimals.
+  Returns a string with the time in RFC3339 (a profile of ISO 8601)
+
+  The decimal_count integer defines the number fractional second digits.
+  The decimal_count must be between 0 and 6.
+
+  Fractional seconds are not rounded up, but rather trucated.
+
+  ## Examples
+
+  DateTime does not have microseconds, but 3 digits of fractional seconds
+  requested. We assume 0 microseconds and display three zeroes.
+
+      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Kalends.DateTime.Format.rfc3339(3)
+      "2014-09-26T17:10:20.000-03:00"
+
+  DateTime has microseconds and decimal count set to 6
+
+      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Kalends.DateTime.Format.rfc3339(6)
+      "2014-09-26T17:10:20.000005-03:00"
+
+  DateTime has microseconds and decimal count set to 5
+
+      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Kalends.DateTime.Format.rfc3339(5)
+      "2014-09-26T17:10:20.00000-03:00"
+
+  DateTime has microseconds and decimal count set to 0
+
+      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Kalends.DateTime.Format.rfc3339(0)
+      "2014-09-26T17:10:20-03:00"
+  """
+  def rfc3339(%Kalends.DateTime{usec: nil} = dt, decimal_count) do
+    # if the provided DateTime does not have usec defined, we set it to 0
+    rfc3339(%{dt | usec: 0}, decimal_count)
+  end
+  def rfc3339(dt, decimal_count) when decimal_count >= 0 and decimal_count <=6 do
+    Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
+    rfc3330_usec_part(dt.usec, decimal_count)<>
+    rfc3339_offset_part(dt, dt.timezone)
   end
 
   @doc """

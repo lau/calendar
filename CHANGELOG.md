@@ -1,5 +1,11 @@
 # Changelog
 
+
+### Added
+
+DateTime.Format.rfc3339/2 function added. Like rfc3339/1, but takes second
+parameter to specify number of decimals.
+
 ## [0.5.1] - 2015-03-08
 ### Added
 
