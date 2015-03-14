@@ -122,7 +122,7 @@ defmodule Kalends.DateTime do
   #   %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, timezone: nil, year: 2014}
   #   iex> from_gregorian_seconds!(63578970620, "America/Montevideo")
   #   %Kalends.DateTime{date: 26, hour: 17, min: 10, month: 9, sec: 20, timezone: "America/Montevideo", year: 2014}
-  defp from_gregorian_seconds!(gregorian_seconds, timezone, abbr, utc_off, std_off, usec \\ nil) do
+  defp from_gregorian_seconds!(gregorian_seconds, timezone, abbr, utc_off, std_off, usec) do
     gregorian_seconds
     |>:calendar.gregorian_seconds_to_datetime
     |>from_erl!(timezone, abbr, utc_off, std_off, usec)
