@@ -1,6 +1,6 @@
 # Changelog
 
-
+## [0.5.2] - 2015-03-14
 ### Added
 
 DateTime.Format.rfc3339/2 function added. Like rfc3339/1, but takes second
