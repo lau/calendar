@@ -246,6 +246,56 @@ defmodule Kalends.DateTime do
   end
 
   @doc """
+  Like from_erl, but also takes an argument with the total UTC offset.
+  (Total offset is standard offset + UTC offset)
+
+  The result will be the same as from_erl, except if the datetime is ambiguous.
+  When the datetime is ambiguous (for instance during change from DST to
+  non-DST) the total_offset argument is use to try to disambiguise the result.
+  If successful the matching result is returned tagged with `:ok`. If the
+  `total_offset` argument does not match either, an error will be returned.
+
+  ## Examples:
+
+      iex> from_erl_total_off({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo", -10800, 2)
+      {:ok, %Kalends.DateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20,
+                              year: 2014, timezone: "America/Montevideo",
+                              abbr: "UYT",
+                              utc_off: -10800, std_off: 0, usec: 2} }
+
+      iex> from_erl_total_off({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo", -7200, 2)
+      {:ok, %Kalends.DateTime{day: 9, hour: 1, min: 1, month: 3, sec: 1,
+                    year: 2014, timezone: "America/Montevideo", usec: 2,
+                           abbr: "UYST", utc_off: -10800, std_off: 3600}
+      }
+  """
+  def from_erl_total_off(erl_dt, timezone, total_off, usec\\nil) do
+    h_from_erl_total_off(from_erl(erl_dt, timezone, usec), total_off)
+  end
+
+  defp h_from_erl_total_off({:ok, result}, _total_off), do: {:ok, result}
+  defp h_from_erl_total_off({:error, result}, _total_off), do: {:error, result}
+  defp h_from_erl_total_off({:ambiguous, result}, total_off) do
+    result |> Kalends.AmbiguousDateTime.disamb_total_off(total_off)
+  end
+
+  @doc """
+  Like `from_erl_total_off/4` but takes a 7 element datetime tuple with
+  microseconds instead of a "normal" erlang style tuple.
+
+  ## Examples:
+
+      iex> from_micro_erl_total_off({{2014, 3, 9}, {1, 1, 1, 2}}, "America/Montevideo", -7200)
+      {:ok, %Kalends.DateTime{day: 9, hour: 1, min: 1, month: 3, sec: 1,
+                    year: 2014, timezone: "America/Montevideo", usec: 2,
+                           abbr: "UYST", utc_off: -10800, std_off: 3600}
+      }
+  """
+  def from_micro_erl_total_off({{year, mon, day}, {hour, min, sec, usec}}, timezone, total_off) do
+    from_erl_total_off({{year, mon, day}, {hour, min, sec}}, timezone, total_off, usec)
+  end
+
+  @doc """
   Takes a DateTime struct and returns an erlang style datetime tuple.
 
   ## Examples

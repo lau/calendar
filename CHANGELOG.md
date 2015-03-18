@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0] - 2015-03-18
+### Added
+
+Functions DateTime.from_micro_erl_total_off/3 and from_erl_total_off/4
+which takes an erlang style datetime (or "micro erlang" style), a time zone,
+and a total UTC offset. In case the datetime is ambiguous
+the functions try to disambiguise the time based on the total UTC offset.
+
 ## [0.5.2] - 2015-03-14
 ### Added
 
