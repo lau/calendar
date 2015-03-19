@@ -3,7 +3,7 @@ Kalends
 
 [![Build
 Status](https://travis-ci.org/lau/kalends.svg?branch=master)](https://travis-ci.org/lau/kalends)
-[![Inline docs](http://inch-ci.org/github/lau/kalends.svg)](http://inch-ci.org/github/lau/kalends)
+[![Inline docs](http://inch-ci.org/github/lau/kalends.svg)](http://hexdocs.pm/kalends/)
 [![Hex Version](http://img.shields.io/hexpm/v/kalends.svg?style=flat)](https://hex.pm/packages/kalends)
 
 Kalends is a date and time library for Elixir. The only Elixir library with with accurate, up-to-date time zone information.
