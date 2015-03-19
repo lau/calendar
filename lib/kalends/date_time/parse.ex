@@ -11,6 +11,9 @@ defmodule Kalends.DateTime.Parse do
       iex> unix!(1_000_000_000)
       %Kalends.DateTime{abbr: "UTC", day: 9, usec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
+      iex> unix!("1000000000")
+      %Kalends.DateTime{abbr: "UTC", day: 9, usec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+
       iex> unix!(1_000_000_000.9876)
       %Kalends.DateTime{abbr: "UTC", day: 9, usec: 987600, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
@@ -22,12 +25,16 @@ defmodule Kalends.DateTime.Parse do
     |>:calendar.gregorian_seconds_to_datetime
     |> DateTime.from_erl!("Etc/UTC")
   end
-
   def unix!(unix_time_stamp) when is_float(unix_time_stamp) do
     {whole, micro} = int_and_usec_for_float(unix_time_stamp)
     whole + @secs_between_year_0_and_unix_epoch
     |>:calendar.gregorian_seconds_to_datetime
     |> DateTime.from_erl!("Etc/UTC", micro)
+  end
+  def unix!(unix_time_stamp) when is_binary(unix_time_stamp) do
+    unix_time_stamp
+    |> to_int
+    |> unix!
   end
 
   defp int_and_usec_for_float(float) do
