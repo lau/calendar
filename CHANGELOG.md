@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.1] - 2015-03-21
+### Added
+
+Unix timestamp parsing can parse strings.
+
+### Changed
+
+Updated tzdata dependency to version 0.0.2, which has tz release version
+2015b.
+
 ## [0.6.0] - 2015-03-18
 ### Added
 
