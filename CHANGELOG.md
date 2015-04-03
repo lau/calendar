@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.2] - 2015-04-03
+### Changed
+
+Use version 0.1.0 of `tzdata` library that has a slightly different API
+than before.
+
 ## [0.6.1] - 2015-03-21
 ### Added
 
