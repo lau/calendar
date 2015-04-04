@@ -1,5 +1,15 @@
 # Changelog
 
+### Added
+
+DateTime now has proper validation of the time part of datetimes. This
+includes validating leap seconds. Date times with the second being "60"
+will be validated based on whether it is actually a known leap second.
+
+TimeZoneData has functions for accessing known leap seconds.
+
+Timezone shifting supports leap seconds.
+
 ## [0.6.2] - 2015-04-03
 ### Changed
 

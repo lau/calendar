@@ -88,4 +88,34 @@ defmodule Kalends.TimeZoneData do
   def periods_for_time(zone_name, time_point, time_type \\ :wall) do
     TZSource.periods_for_time(zone_name, time_point, time_type)
   end
+
+  @doc """
+  List of know leap seconds as DateTime structs
+
+  ## Example:
+
+      iex> TimeZoneData.leap_seconds |> Enum.take(3)
+      [%Kalends.DateTime{abbr: "UTC", day: 31, hour: 23, min: 59, month: 12, sec: 60, std_off: 0, timezone: "Etc/UTC", usec: 0, utc_off: 0, year: 1971},
+       %Kalends.DateTime{abbr: "UTC", day: 30, hour: 23, min: 59, month: 6, sec: 60, std_off: 0, timezone: "Etc/UTC", usec: 0, utc_off: 0, year: 1972},
+       %Kalends.DateTime{abbr: "UTC", day: 31, hour: 23, min: 59, month: 12, sec: 60, std_off: 0, timezone: "Etc/UTC", usec: 0, utc_off: 0, year: 1972}]
+  """
+  def leap_seconds do
+    TZSource.leap_seconds
+    |> Enum.map fn(dt) ->
+      {{year, month, day}, {hour, min, sec}} = dt
+      %Kalends.DateTime{abbr: "UTC", usec: 0, timezone: "Etc/UTC", utc_off: 0,
+        std_off: 0, year: year, month: month, day: day, hour: hour, min: min,
+        sec: sec}
+    end
+  end
+
+  @doc """
+  List of known leap seconds in erlang tuple format in UTC.
+
+  ## Example:
+
+      iex> TimeZoneData.leap_seconds_erl |> Enum.take(3)
+      [{{1971, 12, 31}, {23, 59, 60}}, {{1972, 6, 30}, {23, 59, 60}}, {{1972, 12, 31}, {23, 59, 60}}]
+  """
+  def leap_seconds_erl, do: TZSource.leap_seconds
 end

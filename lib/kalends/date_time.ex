@@ -59,6 +59,14 @@ defmodule Kalends.DateTime do
                         timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014}
 
   """
+  # In case we are shifting a leap second, shift the second before and then
+  # correct the second back to 60. This is to avoid problems with the erlang
+  # gregorian second system (lack of) handling of leap seconds.
+  def shift_zone!(%Kalends.DateTime{sec: 60} = date_time, timezone) do
+    second_before = %Kalends.DateTime{date_time | sec: 59}
+    |> shift_zone!(timezone)
+    %Kalends.DateTime{second_before | sec: 60}
+  end
   def shift_zone!(date_time, timezone) do
     date_time
     |>shift_to_utc
@@ -196,7 +204,7 @@ defmodule Kalends.DateTime do
 
   """
   def from_erl(date_time, timezone, usec \\ nil) do
-    validity = validate_erl_datetime date_time
+    validity = validate_erl_datetime(date_time, timezone)
     from_erl_validity(date_time, timezone, validity, usec)
   end
 
@@ -401,7 +409,33 @@ defmodule Kalends.DateTime do
     {gregorian_seconds(date_time), usec}
   end
 
-  defp validate_erl_datetime({date, _}) do
-    :calendar.valid_date date
+  defp validate_erl_datetime({date, time}, timezone) do
+    :calendar.valid_date(date) && valid_time_part_of_datetime(date, time, timezone)
+  end
+  # Validate time part of a datetime
+  # The date and timezone part is only used for leap seconds
+  defp valid_time_part_of_datetime(date, {h, m, 60}, "Etc/UTC") do
+    if TimeZoneData.leap_seconds_erl |> Enum.member?({date, {h, m, 60}}) do
+      true
+    else
+      false
+    end
+  end
+  defp valid_time_part_of_datetime(date, {h, m, 60}, timezone) do
+    {tag, utc_datetime} = from_erl({date, {h, m, 59}}, timezone)
+    if tag != :ok do
+      false
+    else
+      {date_utc, {h, m, s}} = utc_datetime
+        |> shift_zone!("Etc/UTC")
+        |> to_erl
+      valid_time_part_of_datetime(date_utc, {h, m, s+1}, "Etc/UTC")
+    end
+  end
+  defp valid_time_part_of_datetime(_date, {h, m, s}, _timezone) when h>=0 and h<=23 and m>=0 and m<=59 and s>=0 and s<=60 do
+    true
+  end
+  defp valid_time_part_of_datetime(_, _, _) do
+    false
   end
 end
