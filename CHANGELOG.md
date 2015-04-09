@@ -1,14 +1,21 @@
 # Changelog
 
+## [0.6.3] - 2015-04-09
 ### Added
 
-DateTime now has proper validation of the time part of datetimes. This
-includes validating leap seconds. Date times with the second being "60"
-will be validated based on whether it is actually a known leap second.
+- DateTime now has proper validation of the time part of datetimes. This
+  includes validating leap seconds. Date times with the second being "60"
+  will be validated based on whether it is actually a known leap second.
 
-TimeZoneData has functions for accessing known leap seconds.
+- TimeZoneData has functions for accessing known leap seconds.
 
-Timezone shifting supports leap seconds.
+- Timezone shifting supports leap seconds.
+
+### Changed
+
+- Use version 0.1.1 of tzdata. This greatly improves performance. Also
+  it means that years above 2200 are now supported. Year 0 to 9999 should
+  now work.
 
 ## [0.6.2] - 2015-04-03
 ### Changed

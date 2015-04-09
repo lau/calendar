@@ -12,7 +12,7 @@ Kalends is a date and time library for Elixir. The only Elixir library with with
 _plural noun_ -
 the first day of the month in the ancient Roman calendar. Agner Krarup Erlang was born on the first day of January 1878.
 
-The Olson/Eggert "Time Zone Database" is used. Years 1 through 2200
+The Olson/Eggert "Time Zone Database" is used. Years 1 through 9999
 are supported.
 
 ## Getting started
@@ -21,7 +21,7 @@ Add Kalends as a dependency to an Elixir project by adding it to your mix.exs fi
 
 ```elixir
     defp deps do
-      [  {:kalends, "~> 0.6.2"},  ]
+      [  {:kalends, "~> 0.6.3"},  ]
     end
 ```
 

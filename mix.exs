@@ -4,7 +4,7 @@ defmodule Kalends.Mixfile do
   def project do
     [app: :kalends,
      name: "Kalends",
-     version: "0.6.2",
+     version: "0.6.3",
      elixir: "~> 1.1.0 or ~> 1.0.0 or ~> 0.15.1",
      package: package,
      description: description,
@@ -17,7 +17,7 @@ defmodule Kalends.Mixfile do
 
   def deps do
     [
-      {:tzdata, "~> 0.1.0"},
+      {:tzdata, "~> 0.1.1"},
       {:ex_doc, "~> 0.6", only: :dev},
       {:inch_ex, only: :docs},
      ]
