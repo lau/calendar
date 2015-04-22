@@ -74,10 +74,77 @@ defmodule Kalends.DateTime do
   end
 
   @doc """
+  Takes a DateTime and an integer. Returns the `date_time` advanced by the number
+  of seconds found in the `seconds` argument.
+
+  If `seconds` is negative, the time is moved back.
+
+  The advancement is done in UTC. The datetime is converted to UTC, then
+  advanced, then converted back.
+
+  NOTE: this ignores leap seconds. The calculation is based on the (wrong) assumption that
+  there are no leap seconds.
+
+  ## Examples
+
+      # Advance 2 seconds
+      iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York",123456) |> advance(2)
+      {:ok, %Kalends.DateTime{abbr: "EDT", day: 2, hour: 0, min: 29, month: 10,
+            sec: 12, std_off: 3600, timezone: "America/New_York", usec: 123456,
+            utc_off: -18000, year: 2014}}
+
+      # Advance 86400 seconds (one day)
+      iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York",123456) |> advance(86400)
+      {:ok, %Kalends.DateTime{abbr: "EDT", day: 3, hour: 0, min: 29, month: 10,
+            sec: 10, std_off: 3600, timezone: "America/New_York", usec: 123456,
+            utc_off: -18000, year: 2014}}
+
+      # Go back 62 seconds
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York",123456) |> advance(-62)
+      {:ok, %Kalends.DateTime{abbr: "EDT", day: 1, hour: 23, min: 58, month: 10,
+            sec: 58, std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000,
+            year: 2014}}
+
+      # Advance 10 seconds just before DST "spring forward" so we go from 1:59:59 to 3:00:09
+      iex> from_erl!({{2015,3,8},{1,59,59}}, "America/New_York",123456) |> advance(10)
+      {:ok, %Kalends.DateTime{abbr: "EDT", day: 8, hour: 3, min: 0, month: 3,
+            sec: 9, std_off: 3600, timezone: "America/New_York", usec: 123456,
+            utc_off: -18000, year: 2015}}
+
+      # Go back too far so that year would be before 0
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York",123456) |> advance(-999999999999)
+      {:error, :function_clause_error}
+  """
+  def advance(%Kalends.DateTime{} = date_time, seconds) do
+    try do
+      in_utc = date_time |> shift_zone!("Etc/UTC")
+      greg_secs = in_utc |> gregorian_seconds
+      advanced = greg_secs + seconds
+      |>from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.usec)
+      |>shift_zone!(date_time.timezone)
+      {:ok, advanced}
+    rescue
+      e in FunctionClauseError -> e
+      {:error, :function_clause_error}
+    end
+  end
+
+  @doc """
+  Like `advance` without exclamation points.
+  Instead of returning a tuple with :ok and the result,
+  the result is returned untagged. Will raise an error in case
+  no correct result can be found based on the arguments.
+  """
+  def advance!(date_time, seconds) do
+    {:ok, result} = advance(date_time, seconds)
+    result
+  end
+
+  @doc """
   Takes a DateTime and the name of a new timezone.
   Returns a DateTime with the equivalent time in the new timezone.
 
-  ## Example
+  ## Examples
 
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York",123456) |> shift_zone("Europe/Copenhagen")
       {:ok, %Kalends.DateTime{abbr: "CEST", day: 2, hour: 6, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014, usec: 123456}}
