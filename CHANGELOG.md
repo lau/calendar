@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.4] - 2015-04-23
+### Added
+
+- `advance` functions added to DateTime
+
 ## [0.6.3] - 2015-04-09
 ### Added
 
