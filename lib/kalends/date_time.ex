@@ -141,6 +141,92 @@ defmodule Kalends.DateTime do
   end
 
   @doc """
+  The difference between two DateTime structs. In seconds and microseconds.
+
+  Leap seconds are ignored.
+
+  Returns tuple with {:ok, seconds, microseconds}
+
+  ## Examples
+
+      # March 30th 2014 02:00:00 in Central Europe the time changed from
+      # winter time to summer time. This means that clocks were set forward
+      # and an hour skipped. So between 01:00 and 4:00 there were 2 hours
+      # not 3. Two hours is 7200 seconds.
+      iex> diff(from_erl!({{2014,3,30},{4,0,0}}, "Europe/Stockholm"), from_erl!({{2014,3,30},{1,0,0}}, "Europe/Stockholm"))
+      {:ok, 7200, 0}
+
+      # The first DateTime is 40 seconds after the second DateTime
+      iex> diff(from_erl!({{2014,10,2},{0,29,50}}, "Etc/UTC"), from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC"))
+      {:ok, 40, 0}
+
+      # The first DateTime is 40 seconds before the second DateTime
+      iex> diff(from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC"), from_erl!({{2014,10,2},{0,29,50}}, "Etc/UTC"))
+      {:ok, -40, 0}
+
+      # The first DateTime is 30 microseconds after the second DateTime
+      iex> diff(from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 31), from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 1))
+      {:ok, 0, 30}
+
+      # The first DateTime is 2 microseconds after the second DateTime
+      iex> diff(from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 0), from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 2))
+      {:ok, 0, -2}
+
+      # The first DateTime is 9.999998 seconds after the second DateTime
+      iex> diff(from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC", 0), from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 2))
+      {:ok, 9, 999998}
+
+      # The first DateTime is 9.999998 seconds before the second DateTime
+      iex> diff(from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 2), from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC", 0))
+      {:ok, -9, 999998}
+
+      iex> diff(from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 0), from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC", 2))
+      {:ok, -10, 2}
+
+      iex> diff(from_erl!({{2014,10,2},{0,29,1}}, "Etc/UTC", 100), from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 200))
+      {:ok, 0, 999900}
+
+      iex> diff(from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 10), from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 999999))
+      {:ok, 0, -999989}
+  """
+  # If any datetime usec is nil, set it to 0
+  def diff(%Kalends.DateTime{usec: nil} = first_dt, %Kalends.DateTime{usec: nil} = second_dt) do
+    diff(Map.put(first_dt, :usec, 0), Map.put(second_dt, :usec, 0))
+  end
+  def diff(%Kalends.DateTime{usec: nil} = first_dt, %Kalends.DateTime{} = second_dt) do
+    diff(Map.put(first_dt, :usec, 0), second_dt)
+  end
+  def diff(%Kalends.DateTime{} = first_dt, %Kalends.DateTime{usec: nil} = second_dt) do
+    diff(first_dt, Map.put(second_dt, :usec, 0))
+  end
+
+  def diff(%Kalends.DateTime{usec: 0} = first_dt, %Kalends.DateTime{usec: 0} = second_dt) do
+    first_utc = first_dt |> shift_to_utc |> gregorian_seconds
+    second_utc = second_dt |> shift_to_utc |> gregorian_seconds
+    {:ok, first_utc - second_utc, 0}
+  end
+  def diff(%Kalends.DateTime{usec: first_usec} = first_dt, %Kalends.DateTime{usec: second_usec} = second_dt) do
+    {:ok, sec, 0} = diff(Map.put(first_dt, :usec, 0), Map.put(second_dt, :usec, 0))
+    usec = first_usec - second_usec
+    diff_sort_out_decimal {:ok, sec, usec}
+  end
+
+  defp diff_sort_out_decimal({:ok, sec, usec}) when sec > 0 and usec < 0 do
+    sec = sec - 1
+    usec = 1_000_000 + usec
+    {:ok, sec, usec}
+  end
+  defp diff_sort_out_decimal({:ok, sec, usec}) when sec < 0 and usec > 0 do
+    sec = sec + 1
+    usec = 1_000_000 - usec
+    {:ok, sec, usec}
+  end
+  defp diff_sort_out_decimal({:ok, sec, usec}) when sec < 0 and usec < 0 do
+    {:ok, sec, abs(usec)}
+  end
+  defp diff_sort_out_decimal({:ok, sec, usec}), do: {:ok, sec, usec}
+
+  @doc """
   Takes a DateTime and the name of a new timezone.
   Returns a DateTime with the equivalent time in the new timezone.
 
@@ -160,6 +246,7 @@ defmodule Kalends.DateTime do
     end
   end
 
+  defp shift_to_utc(%Kalends.DateTime{timezone: "Etc/UTC"} = dt), do: dt
   defp shift_to_utc(date_time) do
     greg_secs = :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
     period_list = TimeZoneData.periods_for_time(date_time.timezone, greg_secs, :wall)
