@@ -114,6 +114,21 @@ defmodule Kalends.Date do
   end
 
   @doc """
+  Difference in days between two dates.
+
+  Takes two Date structs: `first_date` and `second_date`.
+  Subtracts `second_date` from `first_date`.
+
+      iex> from_erl!({2014,12,27}) |> diff from_erl!({2014,12,20})
+      7
+      iex> from_erl!({2014,12,27}) |> diff from_erl!({2014,12,29})
+      -2
+  """
+  def diff(%Kalends.Date{} = first_date, %Kalends.Date{} = second_date) do
+    to_gregorian_days(first_date) -to_gregorian_days(second_date)
+  end
+
+  @doc """
   Get a stream of dates. Takes a starting date and an optional end date. Includes both start and end date.
 
       iex> stream(from_erl!({2014,12,27}), from_erl!({2014,12,29})) |> Enum.to_list
