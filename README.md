@@ -21,7 +21,7 @@ Add Kalends as a dependency to an Elixir project by adding it to your mix.exs fi
 
 ```elixir
 defp deps do
-  [  {:kalends, "~> 0.6.4"},  ]
+  [  {:kalends, "~> 0.6.5"},  ]
 end
 ```
 
