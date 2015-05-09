@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.5] - 2015-05-08
+### Added
+
+- `diff` function added to DateTime
+- `diff` function added to Date
+
 ## [0.6.4] - 2015-04-23
 ### Added
 
