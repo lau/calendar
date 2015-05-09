@@ -5,6 +5,7 @@
 
 - `diff` function added to DateTime
 - `diff` function added to Date
+- `strftime!` function added to Date
 
 ## [0.6.4] - 2015-04-23
 ### Added

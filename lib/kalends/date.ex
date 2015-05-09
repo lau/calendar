@@ -1,4 +1,7 @@
 defmodule Kalends.Date do
+  alias Kalends.DateTime
+  alias Kalends.NaiveDateTime
+
   @moduledoc """
   The Date module provides a struct to represent a simple date: year, month and day.
   """
@@ -126,6 +129,27 @@ defmodule Kalends.Date do
   """
   def diff(%Kalends.Date{} = first_date, %Kalends.Date{} = second_date) do
     to_gregorian_days(first_date) -to_gregorian_days(second_date)
+  end
+
+  @doc """
+  Format date as string.
+
+  Takes
+
+  * `date` - a Date struct
+  * `string` - formatting string
+  * `lang` (optional) - language code
+
+  ## Examples
+
+      iex> strftime!(from_erl!({2014,12,27}), "%Y-%m-%d")
+      "2014-12-27"
+  """
+  def strftime!(date, string, lang \\ :en) do
+    date_erl = date |> to_erl
+    {date_erl, {0, 0, 0}}
+    |> NaiveDateTime.from_erl!
+    |> DateTime.Format.strftime! string, lang
   end
 
   @doc """
