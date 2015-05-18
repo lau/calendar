@@ -1,5 +1,18 @@
 # Changelog
 
+### Removed!
+
+`stream` functions have been removed!
+The functions `days_after` and `days_after_until` replace them.
+
+### Added
+
+Added to Date module:
+
+- `advance` and `advance!` functions
+- `days_after`, `days_after_until` functions
+- `days_before`, `days_before_until` functions
+
 ## [0.6.5] - 2015-05-08
 ### Added
 

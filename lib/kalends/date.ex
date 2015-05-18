@@ -95,25 +95,23 @@ defmodule Kalends.Date do
   @doc """
   Takes a Date struct and returns another one representing the next day.
 
-      iex> from_erl!({2014,12,27}) |> next_day
+      iex> from_erl!({2014,12,27}) |> next_day!
       %Kalends.Date{day: 28, month: 12, year: 2014}
-      iex> from_erl!({2014,12,31}) |> next_day
+      iex> from_erl!({2014,12,31}) |> next_day!
       %Kalends.Date{day: 1, month: 1, year: 2015}
   """
-  def next_day(date) do
-    to_gregorian_days(date)+1
-    |> from_gregorian_days!
+  def next_day!(date) do
+    advance!(date, 1)
   end
 
   @doc """
   Takes a Date struct and returns another one representing the previous day.
 
-      iex> from_erl!({2014,12,27}) |> prev_day
+      iex> from_erl!({2014,12,27}) |> prev_day!
       %Kalends.Date{day: 26, month: 12, year: 2014}
   """
-  def prev_day(date) do
-    to_gregorian_days(date)-1
-    |> from_gregorian_days!
+  def prev_day!(date) do
+    advance!(date, -1)
   end
 
   @doc """
@@ -128,7 +126,37 @@ defmodule Kalends.Date do
       -2
   """
   def diff(%Kalends.Date{} = first_date, %Kalends.Date{} = second_date) do
-    to_gregorian_days(first_date) -to_gregorian_days(second_date)
+    to_gregorian_days(first_date) - to_gregorian_days(second_date)
+  end
+
+  @doc """
+  Advances `date` by `days` number of days.
+
+  ## Examples
+
+      iex> from_erl!({2014,12,27}) |> advance(3)
+      {:ok, %Kalends.Date{day: 30, month: 12, year: 2014} }
+      iex> from_erl!({2014,12,27}) |> advance(-2)
+      {:ok, %Kalends.Date{day: 25, month: 12, year: 2014} }
+  """
+  def advance(%Kalends.Date{} = date, days) when is_integer(days) do
+    result = to_gregorian_days(date) + days
+    |> from_gregorian_days!
+    {:ok, result}
+  end
+
+  @doc """
+  Like `advance/2`, but returns the result directly - not tagged with :ok.
+  This function might raise an error.
+
+  ## Examples
+
+      iex> from_erl!({2014,12,27}) |> advance!(3)
+      %Kalends.Date{day: 30, month: 12, year: 2014}
+  """
+  def advance!(%Kalends.Date{} = date, days) when is_integer(days) do
+    {:ok, result} = advance(date, days)
+    result
   end
 
   @doc """
@@ -153,19 +181,48 @@ defmodule Kalends.Date do
   end
 
   @doc """
-  Get a stream of dates. Takes a starting date and an optional end date. Includes both start and end date.
+  Stream of dates after the date provided as argument.
 
-      iex> stream(from_erl!({2014,12,27}), from_erl!({2014,12,29})) |> Enum.to_list
-      [%Kalends.Date{day: 27, month: 12, year: 2014}, %Kalends.Date{day: 28, month: 12, year: 2014}, %Kalends.Date{day: 29, month: 12, year: 2014}]
-      iex> stream(from_erl!({2014,12,27})) |> Enum.take(7)
-      [%Kalends.Date{day: 27, month: 12, year: 2014}, %Kalends.Date{day: 28, month: 12, year: 2014}, %Kalends.Date{day: 29, month: 12, year: 2014},
+      iex> days_after(from_erl!({2014,12,27})) |> Enum.take(6)
+      [%Kalends.Date{day: 28, month: 12, year: 2014}, %Kalends.Date{day: 29, month: 12, year: 2014},
             %Kalends.Date{day: 30, month: 12, year: 2014}, %Kalends.Date{day: 31, month: 12, year: 2014}, %Kalends.Date{day: 1, month: 1, year: 2015},
             %Kalends.Date{day: 2, month: 1, year: 2015}]
   """
-  def stream(from_date, until_date) do
-    Stream.unfold(from_date, fn n -> if n == next_day(until_date) do nil else {n, n |> next_day} end end)
+  def days_after(from_date) do
+    Stream.unfold(next_day!(from_date), fn n -> {n, n |> next_day!} end)
   end
-  def stream(from_date) do
-    Stream.unfold(from_date, fn n -> {n, n |> next_day} end)
+
+  @doc """
+  Stream of dates before the date provided as argument.
+
+      iex> days_before(from_erl!({2014,12,27})) |> Enum.take(3)
+      [%Kalends.Date{day: 26, month: 12, year: 2014}, %Kalends.Date{day: 25, month: 12, year: 2014},
+            %Kalends.Date{day: 24, month: 12, year: 2014}]
+  """
+  def days_before(from_date) do
+    Stream.unfold(prev_day!(from_date), fn n -> {n, n |> prev_day!} end)
+  end
+
+  @doc """
+  Get a stream of dates. Takes a starting date and an end date. Includes end date.
+  Does not include start date.
+
+      iex> days_after_until(from_erl!({2014,12,27}), from_erl!({2014,12,29})) |> Enum.to_list
+      [%Kalends.Date{day: 28, month: 12, year: 2014}, %Kalends.Date{day: 29, month: 12, year: 2014}]
+  """
+  def days_after_until(from_date, until_date) do
+    Stream.unfold(next_day!(from_date), fn n -> if n == next_day!(until_date) do nil else {n, n |> next_day!} end end)
+  end
+
+  @doc """
+  Get a stream of dates going back in time. Takes a starting date and an end date. Includes end date.
+  End date should be before start date.
+  Does not include start date.
+
+      iex> days_before_until(from_erl!({2014,12,27}), from_erl!({2014,12,24})) |> Enum.to_list
+      [%Kalends.Date{day: 26, month: 12, year: 2014}, %Kalends.Date{day: 25, month: 12, year: 2014}, %Kalends.Date{day: 24, month: 12, year: 2014}]
+  """
+  def days_before_until(from_date, until_date) do
+    Stream.unfold(prev_day!(from_date), fn n -> if n == prev_day!(until_date) do nil else {n, n |> prev_day!} end end)
   end
 end
