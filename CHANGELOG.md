@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.6] - 2015-05-18
+### Changed
+
+The library has been renamed from Kalends to Calendar.
+In your code replace Kalends with Calendar and :kalends with :calendar
+
 ### Removed!
 
 `stream` functions have been removed!
