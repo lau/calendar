@@ -1,11 +1,11 @@
 defmodule FormatterStrfTimeTest do
   use ExUnit.Case, async: true
-  alias Kalends.DateTime.Format.Strftime
+  alias Calendar.DateTime.Format.Strftime
   doctest Strftime
 
   test "strftime" do
-    dt = Kalends.DateTime.from_erl!({{2014, 11, 3}, {1, 41, 2}}, "UTC", 123456)
-    dt_sunday = Kalends.DateTime.from_erl!({{2014, 11, 2}, {1, 41, 2}}, "UTC")
+    dt = Calendar.DateTime.from_erl!({{2014, 11, 3}, {1, 41, 2}}, "UTC", 123456)
+    dt_sunday = Calendar.DateTime.from_erl!({{2014, 11, 2}, {1, 41, 2}}, "UTC")
     assert Strftime.strftime!(dt, "%a") == "Mon"
     assert Strftime.strftime!(dt, "%A") == "Monday"
     assert Strftime.strftime!(dt, "%b") == "Nov"
@@ -35,27 +35,27 @@ defmodule FormatterStrfTimeTest do
   end
 
   test "strftime am pm" do
-    dt = Kalends.DateTime.from_erl!({{2014, 12, 31}, {21, 41, 2}}, "UTC")
+    dt = Calendar.DateTime.from_erl!({{2014, 12, 31}, {21, 41, 2}}, "UTC")
     assert Strftime.strftime!(dt, "%l %P") == " 9 pm"
     assert Strftime.strftime!(dt, "%I %p") == "09 PM"
-    dt = Kalends.DateTime.from_erl!({{2014, 12, 31}, {12, 41, 2}}, "UTC")
+    dt = Calendar.DateTime.from_erl!({{2014, 12, 31}, {12, 41, 2}}, "UTC")
     assert Strftime.strftime!(dt, "%l %P") == "12 pm"
     assert Strftime.strftime!(dt, "%I %p") == "12 PM"
-    dt = Kalends.DateTime.from_erl!({{2014, 12, 31}, {0, 41, 2}}, "UTC")
+    dt = Calendar.DateTime.from_erl!({{2014, 12, 31}, {0, 41, 2}}, "UTC")
     assert Strftime.strftime!(dt, "%l %P") == "12 am"
     assert Strftime.strftime!(dt, "%I %p") == "12 AM"
-    dt = Kalends.DateTime.from_erl!({{2014, 12, 31}, {9, 41, 2}}, "UTC")
+    dt = Calendar.DateTime.from_erl!({{2014, 12, 31}, {9, 41, 2}}, "UTC")
     assert Strftime.strftime!(dt, "%l %P") == " 9 am"
     assert Strftime.strftime!(dt, "%I %p") == "09 AM"
   end
 
   test "strftime day number in year" do
-    dt = Kalends.DateTime.from_erl!({{2014, 12, 31}, {21, 41, 2}}, "UTC")
+    dt = Calendar.DateTime.from_erl!({{2014, 12, 31}, {21, 41, 2}}, "UTC")
     assert Strftime.strftime!(dt, "%j") == "365"
-    dt = Kalends.DateTime.from_erl!({{2014, 1, 1}, {21, 41, 2}}, "UTC")
+    dt = Calendar.DateTime.from_erl!({{2014, 1, 1}, {21, 41, 2}}, "UTC")
     assert Strftime.strftime!(dt, "%j") == "001"
     # Leap year
-    dt = Kalends.DateTime.from_erl!({{2012, 12, 31}, {21, 41, 2}}, "UTC")
+    dt = Calendar.DateTime.from_erl!({{2012, 12, 31}, {21, 41, 2}}, "UTC")
     assert Strftime.strftime!(dt, "%j") == "366"
   end
 end

@@ -1,5 +1,5 @@
 defmodule AmbiguousDateTimeTest do
   use ExUnit.Case, async: true
-  require Kalends.AmbiguousDateTime
-  doctest Kalends.AmbiguousDateTime
+  require Calendar.AmbiguousDateTime
+  doctest Calendar.AmbiguousDateTime
 end

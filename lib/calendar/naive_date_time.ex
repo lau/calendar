@@ -1,6 +1,6 @@
-defmodule Kalends.NaiveDateTime do
-  alias Kalends.DateTime
-  require Kalends.DateTime.Format
+defmodule Calendar.NaiveDateTime do
+  alias Calendar.DateTime
+  require Calendar.DateTime.Format
 
   @moduledoc """
   NaiveDateTime can represents a "naive time". That is a point in time without
@@ -15,7 +15,7 @@ defmodule Kalends.NaiveDateTime do
   ## Examples
 
       iex> from_erl!({{2014, 9, 26}, {17, 10, 20}})
-      %Kalends.NaiveDateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014}
+      %Calendar.NaiveDateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014}
 
       iex from_erl!({{2014, 99, 99}, {17, 10, 20}})
       # this will throw a MatchError
@@ -33,17 +33,17 @@ defmodule Kalends.NaiveDateTime do
   ## Examples
 
       iex>from_erl({{2014, 9, 26}, {17, 10, 20}})
-      {:ok, %Kalends.NaiveDateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014} }
+      {:ok, %Calendar.NaiveDateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014} }
 
       iex>from_erl({{2014, 9, 26}, {17, 10, 20}}, 321321)
-      {:ok, %Kalends.NaiveDateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, usec: 321321} }
+      {:ok, %Calendar.NaiveDateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, usec: 321321} }
 
       iex>from_erl({{2014, 99, 99}, {17, 10, 20}})
       {:error, :invalid_datetime}
   """
   def from_erl({{year, month, day}, {hour, min, sec}}, usec \\ nil) do
     if validate_erl_datetime {{year, month, day}, {hour, min, sec}} do
-      {:ok, %Kalends.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec}}
+      {:ok, %Calendar.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec}}
     else
       {:error, :invalid_datetime}
     end
@@ -61,7 +61,7 @@ defmodule Kalends.NaiveDateTime do
       iex> from_erl!({{2014, 10, 15}, {2, 37, 22}}) |> to_erl
       {{2014, 10, 15}, {2, 37, 22}}
   """
-  def to_erl(%Kalends.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec}) do
+  def to_erl(%Calendar.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec}) do
     {{year, month, day}, {hour, min, sec}}
   end
 
@@ -74,16 +74,16 @@ defmodule Kalends.NaiveDateTime do
 
   ## Examples
 
-      iex> from_erl!({{2014,10,15},{2,37,22}}, 999999) |> Kalends.NaiveDateTime.to_micro_erl
+      iex> from_erl!({{2014,10,15},{2,37,22}}, 999999) |> Calendar.NaiveDateTime.to_micro_erl
       {{2014, 10, 15}, {2, 37, 22, 999999}}
 
-      iex> from_erl!({{2014,10,15},{2,37,22}}, nil) |> Kalends.NaiveDateTime.to_micro_erl
+      iex> from_erl!({{2014,10,15},{2,37,22}}, nil) |> Calendar.NaiveDateTime.to_micro_erl
       {{2014, 10, 15}, {2, 37, 22, 0}}
   """
-  def to_micro_erl(%Kalends.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: nil}) do
+  def to_micro_erl(%Calendar.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: nil}) do
     {{year, month, day}, {hour, min, sec, 0}}
   end
-  def to_micro_erl(%Kalends.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec}) do
+  def to_micro_erl(%Calendar.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec}) do
     {{year, month, day}, {hour, min, sec, usec}}
   end
 
@@ -91,22 +91,22 @@ defmodule Kalends.NaiveDateTime do
   Takes a NaiveDateTime struct and returns a Date struct representing the date part
   of the provided NaiveDateTime.
 
-      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Kalends.NaiveDateTime.to_date
-      %Kalends.Date{day: 15, month: 10, year: 2014}
+      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Calendar.NaiveDateTime.to_date
+      %Calendar.Date{day: 15, month: 10, year: 2014}
   """
   def to_date(dt) do
-    %Kalends.Date{year: dt.year, month: dt.month, day: dt.day}
+    %Calendar.Date{year: dt.year, month: dt.month, day: dt.day}
   end
 
   @doc """
   Takes a NaiveDateTime struct and returns a Time struct representing the time part
   of the provided NaiveDateTime.
 
-      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Kalends.NaiveDateTime.to_time
-      %Kalends.Time{usec: nil, hour: 2, min: 37, sec: 22}
+      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Calendar.NaiveDateTime.to_time
+      %Calendar.Time{usec: nil, hour: 2, min: 37, sec: 22}
   """
   def to_time(dt) do
-    %Kalends.Time{hour: dt.hour, min: dt.min, sec: dt.sec, usec: dt.usec}
+    %Calendar.Time{hour: dt.hour, min: dt.min, sec: dt.sec, usec: dt.usec}
   end
 
   @doc """
@@ -114,8 +114,8 @@ defmodule Kalends.NaiveDateTime do
 
   Takes a NaiveDateTime and a timezone name. If timezone is valid, returns a tuple with an :ok and DateTime.
 
-      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Kalends.NaiveDateTime.to_date_time("UTC")
-      {:ok, %Kalends.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}}
+      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Calendar.NaiveDateTime.to_date_time("UTC")
+      {:ok, %Calendar.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}}
   """
   def to_date_time(ndt, timezone) do
     DateTime.from_erl(to_erl(ndt), timezone)
@@ -126,8 +126,8 @@ defmodule Kalends.NaiveDateTime do
 
   Takes a NaiveDateTime. Returns a DateTime.
 
-      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Kalends.NaiveDateTime.to_date_time_utc
-      %Kalends.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
+      iex> from_erl!({{2014,10,15},{2,37,22}}) |> Calendar.NaiveDateTime.to_date_time_utc
+      %Calendar.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
   """
   def to_date_time_utc(ndt) do
     {:ok, dt} = to_date_time(ndt, "UTC")
@@ -145,7 +145,7 @@ defmodule Kalends.NaiveDateTime do
   def strftime!(ndt, string, lang \\ :en) do
     ndt
     |> to_date_time_utc
-    |> Kalends.DateTime.Format.strftime! string, lang
+    |> Calendar.DateTime.Format.strftime! string, lang
   end
 
 end

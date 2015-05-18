@@ -1,6 +1,6 @@
-defmodule Kalends.DateTime.Format do
-  alias Kalends.DateTime
-  alias Kalends.DateTime.Format.Strftime
+defmodule Calendar.DateTime.Format do
+  alias Calendar.DateTime
+  alias Calendar.DateTime.Format.Strftime
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
 
   @doc """
@@ -65,12 +65,12 @@ defmodule Kalends.DateTime.Format do
 
   Without microseconds
 
-      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Kalends.DateTime.Format.rfc3339
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Calendar.DateTime.Format.rfc3339
       "2014-09-26T17:10:20-03:00"
 
   With microseconds
 
-      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Kalends.DateTime.Format.rfc3339
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339
       "2014-09-26T17:10:20.000005-03:00"
   """
   def rfc3339(dt) do
@@ -110,25 +110,25 @@ defmodule Kalends.DateTime.Format do
   DateTime does not have microseconds, but 3 digits of fractional seconds
   requested. We assume 0 microseconds and display three zeroes.
 
-      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Kalends.DateTime.Format.rfc3339(3)
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Calendar.DateTime.Format.rfc3339(3)
       "2014-09-26T17:10:20.000-03:00"
 
   DateTime has microseconds and decimal count set to 6
 
-      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Kalends.DateTime.Format.rfc3339(6)
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339(6)
       "2014-09-26T17:10:20.000005-03:00"
 
   DateTime has microseconds and decimal count set to 5
 
-      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Kalends.DateTime.Format.rfc3339(5)
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339(5)
       "2014-09-26T17:10:20.00000-03:00"
 
   DateTime has microseconds and decimal count set to 0
 
-      iex> Kalends.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Kalends.DateTime.Format.rfc3339(0)
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339(0)
       "2014-09-26T17:10:20-03:00"
   """
-  def rfc3339(%Kalends.DateTime{usec: nil} = dt, decimal_count) do
+  def rfc3339(%Calendar.DateTime{usec: nil} = dt, decimal_count) do
     # if the provided DateTime does not have usec defined, we set it to 0
     rfc3339(%{dt | usec: 0}, decimal_count)
   end
@@ -182,7 +182,7 @@ defmodule Kalends.DateTime.Format do
       iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> DateTime.Format.unix_micro
       1_000_000_000.0
   """
-  def unix_micro(date_time = %Kalends.DateTime{usec: usec}) when usec == nil do
+  def unix_micro(date_time = %Calendar.DateTime{usec: usec}) when usec == nil do
     date_time |> unix |> + 0.0
   end
   def unix_micro(date_time) do

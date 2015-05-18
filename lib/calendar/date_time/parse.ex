@@ -1,5 +1,5 @@
-defmodule Kalends.DateTime.Parse do
-  alias Kalends.DateTime
+defmodule Calendar.DateTime.Parse do
+  alias Calendar.DateTime
 
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
 
@@ -9,16 +9,16 @@ defmodule Kalends.DateTime.Parse do
   ## Examples
 
       iex> unix!(1_000_000_000)
-      %Kalends.DateTime{abbr: "UTC", day: 9, usec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Calendar.DateTime{abbr: "UTC", day: 9, usec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
       iex> unix!("1000000000")
-      %Kalends.DateTime{abbr: "UTC", day: 9, usec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Calendar.DateTime{abbr: "UTC", day: 9, usec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
       iex> unix!(1_000_000_000.9876)
-      %Kalends.DateTime{abbr: "UTC", day: 9, usec: 987600, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Calendar.DateTime{abbr: "UTC", day: 9, usec: 987600, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
       iex> unix!(1_000_000_000.999999)
-      %Kalends.DateTime{abbr: "UTC", day: 9, usec: 999999, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Calendar.DateTime{abbr: "UTC", day: 9, usec: 999999, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
   """
   def unix!(unix_time_stamp) when is_integer(unix_time_stamp) do
     unix_time_stamp + @secs_between_year_0_and_unix_epoch
@@ -51,13 +51,13 @@ defmodule Kalends.DateTime.Parse do
   # Examples
 
       iex> js_ms!("1000000000123")
-      %Kalends.DateTime{abbr: "UTC", day: 9, usec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Calendar.DateTime{abbr: "UTC", day: 9, usec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
       iex> js_ms!(1_000_000_000_123)
-      %Kalends.DateTime{abbr: "UTC", day: 9, usec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %Calendar.DateTime{abbr: "UTC", day: 9, usec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
 
       iex> js_ms!(1424102000000)
-      %Kalends.DateTime{abbr: "UTC", day: 16, hour: 15, usec: 0, min: 53, month: 2, sec: 20, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2015}
+      %Calendar.DateTime{abbr: "UTC", day: 16, hour: 15, usec: 0, min: 53, month: 2, sec: 20, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2015}
   """
   def js_ms!(millisec) when is_integer(millisec) do
     (millisec/1000.0)
@@ -74,7 +74,7 @@ defmodule Kalends.DateTime.Parse do
   Parses a timestamp in RFC 2616 format.
 
       iex> httpdate("Sat, 06 Sep 2014 09:09:08 GMT")
-      {:ok, %Kalends.DateTime{year: 2014, month: 9, day: 6, hour: 9, min: 9, sec: 8, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %Calendar.DateTime{year: 2014, month: 9, day: 6, hour: 9, min: 9, sec: 8, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
       iex> httpdate("invalid")
       {:bad_format, nil}
@@ -129,10 +129,10 @@ defmodule Kalends.DateTime.Parse do
       {:bad_format, nil}
 
       iex> rfc3339_utc("1996-12-19T16:39:57Z")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
       iex> rfc3339_utc("1996-12-19T16:39:57-08:00")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
   """
   def rfc3339_utc(rfc3339_string) do
     parsed = rfc3339_string
@@ -149,13 +149,13 @@ defmodule Kalends.DateTime.Parse do
   the specified time zone.
 
       iex> rfc3339("1996-12-19T16:39:57Z", "Etc/UTC")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
       iex> rfc3339("1996-12-19T16:39:57.1234Z", "Etc/UTC")
-      {:ok, %Kalends.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0, usec: 123400}}
+      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0, usec: 123400}}
 
       iex> rfc3339("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
-      {:ok, %Kalends.DateTime{abbr: "PST", day: 19, hour: 16, min: 39, month: 12, sec: 57, std_off: 0, timezone: "America/Los_Angeles", utc_off: -28800, year: 1996}}
+      {:ok, %Calendar.DateTime{abbr: "PST", day: 19, hour: 16, min: 39, month: 12, sec: 57, std_off: 0, timezone: "America/Los_Angeles", utc_off: -28800, year: 1996}}
 
       iex> rfc3339("invalid", "America/Los_Angeles")
       {:bad_format, nil}

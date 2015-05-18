@@ -1,10 +1,10 @@
-defmodule Kalends.DateTime.TzPeriod do
-  alias Kalends.DateTime
-  alias Kalends.TimeZoneData
+defmodule Calendar.DateTime.TzPeriod do
+  alias Calendar.DateTime
+  alias Calendar.TimeZoneData
 
   @moduledoc """
   DateTime.TzPeriod is for getting information about timezone periods.
-  A timezone period is an invention for Kalends, which is a period where the
+  A timezone period is an invention for Calendar, which is a period where the
   offsets are the same for a given time zone. For instance during summer time
   in London where Daylight Saving Time is in effect. The period would be from
   the beginning of summer time until the fall where DST is no longer in effect.
@@ -41,7 +41,7 @@ defmodule Kalends.DateTime.TzPeriod do
 
       iex> DateTime.from_erl!({{2000,6,1},{0,0,0}},"America/New_York") |> next_from
       {:ok,
-            %Kalends.DateTime{abbr: "EST", day: 29, hour: 1, usec: nil, min: 0, month: 10, sec: 0, std_off: 0,
+            %Calendar.DateTime{abbr: "EST", day: 29, hour: 1, usec: nil, min: 0, month: 10, sec: 0, std_off: 0,
              timezone: "America/New_York", utc_off: -18000, year: 2000}}
 
       The provided DateTime is in winter 2000. The returned DateTime is the
@@ -49,7 +49,7 @@ defmodule Kalends.DateTime.TzPeriod do
 
       iex> DateTime.from_erl!({{2000,1,1},{0,0,0}},"Europe/Copenhagen") |> next_from
       {:ok,
-            %Kalends.DateTime{abbr: "CEST", day: 26, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600,
+            %Calendar.DateTime{abbr: "CEST", day: 26, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600,
              timezone: "Europe/Copenhagen", utc_off: 3600, year: 2000}}
   """
   def next_from(date_time) do
@@ -79,7 +79,7 @@ defmodule Kalends.DateTime.TzPeriod do
 
       iex> DateTime.from_erl!({{2000,1,1},{0,0,0}},"Atlantic/Reykjavik") |> from
       {:ok,
-            %Kalends.DateTime{abbr: "GMT", day: 7, hour: 2, usec: nil, min: 0, month: 4, sec: 0, std_off: 0,
+            %Calendar.DateTime{abbr: "GMT", day: 7, hour: 2, usec: nil, min: 0, month: 4, sec: 0, std_off: 0,
              timezone: "Atlantic/Reykjavik", utc_off: 0, year: 1968}}
 
       iex> DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> from
@@ -103,7 +103,7 @@ defmodule Kalends.DateTime.TzPeriod do
 
       iex> DateTime.from_erl!({{2000,1,1},{0,0,0}},"Europe/Copenhagen") |> prev_from
       {:ok,
-            %Kalends.DateTime{abbr: "CEST", day: 28, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "Europe/Copenhagen", utc_off: 3600, year: 1999}}
+            %Calendar.DateTime{abbr: "CEST", day: 28, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "Europe/Copenhagen", utc_off: 3600, year: 1999}}
 
       iex> DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> prev_from
       {:error, :already_at_first}
@@ -136,13 +136,13 @@ defmodule Kalends.DateTime.TzPeriod do
       The next is standard time. Then Daylight time and Standard time again.
 
       iex> DateTime.from_erl!({{2015,2,24},{13,0,0}}, "America/New_York") |> stream_next_from |> Enum.take(4)
-      [%Kalends.DateTime{abbr: "EDT", day: 8, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
+      [%Calendar.DateTime{abbr: "EDT", day: 8, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
              utc_off: -18000, year: 2015},
-            %Kalends.DateTime{abbr: "EST", day: 1, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
+            %Calendar.DateTime{abbr: "EST", day: 1, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
              utc_off: -18000, year: 2015},
-            %Kalends.DateTime{abbr: "EDT", day: 13, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
+            %Calendar.DateTime{abbr: "EDT", day: 13, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
              utc_off: -18000, year: 2016},
-            %Kalends.DateTime{abbr: "EST", day: 6, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
+            %Calendar.DateTime{abbr: "EST", day: 6, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
              utc_off: -18000, year: 2016}]
   """
   def stream_next_from(date_time) do
@@ -162,13 +162,13 @@ defmodule Kalends.DateTime.TzPeriod do
       which began in the previous year.
 
       iex> DateTime.from_erl!({{2015,2,24},{13,0,0}}, "America/New_York") |> stream_prev_from |> Enum.take(4)
-      [%Kalends.DateTime{abbr: "EST", day: 2, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
+      [%Calendar.DateTime{abbr: "EST", day: 2, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
              utc_off: -18000, year: 2014},
-            %Kalends.DateTime{abbr: "EDT", day: 9, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
+            %Calendar.DateTime{abbr: "EDT", day: 9, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
              utc_off: -18000, year: 2014},
-            %Kalends.DateTime{abbr: "EST", day: 3, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
+            %Calendar.DateTime{abbr: "EST", day: 3, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
              utc_off: -18000, year: 2013},
-            %Kalends.DateTime{abbr: "EDT", day: 10, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
+            %Calendar.DateTime{abbr: "EDT", day: 10, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
              utc_off: -18000, year: 2013}]
   """
   def stream_prev_from(date_time) do

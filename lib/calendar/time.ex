@@ -1,4 +1,4 @@
-defmodule Kalends.Time do
+defmodule Calendar.Time do
   @moduledoc """
   The Time module provides a struct to represent a simple time without
   specifying a date, nor a time zone.
@@ -8,7 +8,7 @@ defmodule Kalends.Time do
   @doc """
   Takes a Time struct and returns an erlang style time tuple.
   """
-  def to_erl(%Kalends.Time{hour: hour, min: min, sec: sec}) do
+  def to_erl(%Calendar.Time{hour: hour, min: min, sec: sec}) do
     {hour, min, sec}
   end
 
@@ -16,10 +16,10 @@ defmodule Kalends.Time do
   Create a Time struct using an erlang style tuple and optionally a fractional second.
 
       iex> from_erl({20,14,15})
-      {:ok, %Kalends.Time{usec: nil, hour: 20, min: 14, sec: 15}}
+      {:ok, %Calendar.Time{usec: nil, hour: 20, min: 14, sec: 15}}
 
       iex> from_erl({20,14,15}, 123456)
-      {:ok, %Kalends.Time{usec: 123456, hour: 20, min: 14, sec: 15}}
+      {:ok, %Calendar.Time{usec: 123456, hour: 20, min: 14, sec: 15}}
 
       iex> from_erl({24,14,15})
       {:error, :invalid_time}
@@ -32,7 +32,7 @@ defmodule Kalends.Time do
   """
   def from_erl({hour, min, sec}, usec\\nil) do
     if valid_time({hour, min, sec}, usec) do
-      {:ok, %Kalends.Time{hour: hour, min: min, sec: sec, usec: usec}}
+      {:ok, %Calendar.Time{hour: hour, min: min, sec: sec, usec: usec}}
     else
       {:error, :invalid_time}
     end

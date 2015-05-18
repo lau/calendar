@@ -1,8 +1,8 @@
-defmodule Kalends.DateTime.Format.Strftime do
+defmodule Calendar.DateTime.Format.Strftime do
   @moduledoc false
-  alias Kalends.DateTime
+  alias Calendar.DateTime
 
-  # documentation for this is in Kalends.Formatter
+  # documentation for this is in Calendar.Formatter
   def strftime!(dt, string, lang\\:en) do
     parse_for_con_specs(string)
     |> Enum.reduce(string, fn(conv_spec, new_string) -> String.replace(new_string, "%#{conv_spec}", string_for_conv_spec(dt, conv_spec, lang)) end)

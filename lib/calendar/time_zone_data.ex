@@ -1,4 +1,4 @@
-defmodule Kalends.TimeZoneData do
+defmodule Calendar.TimeZoneData do
   alias Tzdata, as: TZSource
   @doc """
   A list of pre-compiled periods for a given zone name.
@@ -28,11 +28,11 @@ defmodule Kalends.TimeZoneData do
   @doc """
   Takes the name of a zone. Returns true zone exists. Otherwise false.
 
-      iex> Kalends.TimeZoneData.zone_exists? "Pacific/Auckland"
+      iex> Calendar.TimeZoneData.zone_exists? "Pacific/Auckland"
       true
-      iex> Kalends.TimeZoneData.zone_exists? "America/Sao_Paulo"
+      iex> Calendar.TimeZoneData.zone_exists? "America/Sao_Paulo"
       true
-      iex> Kalends.TimeZoneData.zone_exists? "Europe/Jersey"
+      iex> Calendar.TimeZoneData.zone_exists? "Europe/Jersey"
       true
   """
   def zone_exists?(name), do: TZSource.zone_exists?(name)
@@ -41,9 +41,9 @@ defmodule Kalends.TimeZoneData do
   Takes the name of a zone. Returns true if zone exists and is canonical.
   Otherwise false.
 
-      iex> Kalends.TimeZoneData.canonical_zone? "Europe/London"
+      iex> Calendar.TimeZoneData.canonical_zone? "Europe/London"
       true
-      iex> Kalends.TimeZoneData.canonical_zone? "Europe/Jersey"
+      iex> Calendar.TimeZoneData.canonical_zone? "Europe/Jersey"
       false
   """
   def canonical_zone?(name), do: TZSource.canonical_zone?(name)
@@ -52,9 +52,9 @@ defmodule Kalends.TimeZoneData do
   Takes the name of a zone. Returns true if zone exists and is an alias.
   Otherwise false.
 
-      iex> Kalends.TimeZoneData.zone_alias? "Europe/Jersey"
+      iex> Calendar.TimeZoneData.zone_alias? "Europe/Jersey"
       true
-      iex> Kalends.TimeZoneData.zone_alias? "Europe/London"
+      iex> Calendar.TimeZoneData.zone_alias? "Europe/London"
       false
   """
   def zone_alias?(name), do: TZSource.zone_alias?(name)
@@ -63,7 +63,7 @@ defmodule Kalends.TimeZoneData do
   @doc """
   Returns a map of links. Also known as aliases.
 
-      iex> Kalends.TimeZoneData.links["Europe/Jersey"]
+      iex> Calendar.TimeZoneData.links["Europe/Jersey"]
       "Europe/London"
   """
   def links, do: TZSource.links
@@ -80,7 +80,7 @@ defmodule Kalends.TimeZoneData do
 
   Example:
 
-      Kalends.TimeZoneData.tzdata_version
+      Calendar.TimeZoneData.tzdata_version
       "2014i"
   """
   def tzdata_version, do: TZSource.tzdata_version
@@ -95,15 +95,15 @@ defmodule Kalends.TimeZoneData do
   ## Example:
 
       iex> TimeZoneData.leap_seconds |> Enum.take(3)
-      [%Kalends.DateTime{abbr: "UTC", day: 31, hour: 23, min: 59, month: 12, sec: 60, std_off: 0, timezone: "Etc/UTC", usec: 0, utc_off: 0, year: 1971},
-       %Kalends.DateTime{abbr: "UTC", day: 30, hour: 23, min: 59, month: 6, sec: 60, std_off: 0, timezone: "Etc/UTC", usec: 0, utc_off: 0, year: 1972},
-       %Kalends.DateTime{abbr: "UTC", day: 31, hour: 23, min: 59, month: 12, sec: 60, std_off: 0, timezone: "Etc/UTC", usec: 0, utc_off: 0, year: 1972}]
+      [%Calendar.DateTime{abbr: "UTC", day: 31, hour: 23, min: 59, month: 12, sec: 60, std_off: 0, timezone: "Etc/UTC", usec: 0, utc_off: 0, year: 1971},
+       %Calendar.DateTime{abbr: "UTC", day: 30, hour: 23, min: 59, month: 6, sec: 60, std_off: 0, timezone: "Etc/UTC", usec: 0, utc_off: 0, year: 1972},
+       %Calendar.DateTime{abbr: "UTC", day: 31, hour: 23, min: 59, month: 12, sec: 60, std_off: 0, timezone: "Etc/UTC", usec: 0, utc_off: 0, year: 1972}]
   """
   def leap_seconds do
     TZSource.leap_seconds
     |> Enum.map fn(dt) ->
       {{year, month, day}, {hour, min, sec}} = dt
-      %Kalends.DateTime{abbr: "UTC", usec: 0, timezone: "Etc/UTC", utc_off: 0,
+      %Calendar.DateTime{abbr: "UTC", usec: 0, timezone: "Etc/UTC", utc_off: 0,
         std_off: 0, year: year, month: month, day: day, hour: hour, min: min,
         sec: sec}
     end

@@ -1,5 +1,5 @@
 defmodule DateTest do
   use ExUnit.Case, async: true
-  import Kalends.Date
-  doctest Kalends.Date
+  import Calendar.Date
+  doctest Calendar.Date
 end

@@ -1,6 +1,6 @@
 defmodule DateTimeTzPeriodTest do
   use ExUnit.Case, async: true
-  alias Kalends.DateTime
-  import Kalends.DateTime.TzPeriod
-  doctest Kalends.DateTime.TzPeriod
+  alias Calendar.DateTime
+  import Calendar.DateTime.TzPeriod
+  doctest Calendar.DateTime.TzPeriod
 end

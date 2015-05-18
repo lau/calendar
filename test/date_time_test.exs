@@ -1,16 +1,16 @@
 defmodule DateTimeTest do
   use ExUnit.Case, async: true
-  import Kalends.DateTime
-  doctest Kalends.DateTime
+  import Calendar.DateTime
+  doctest Calendar.DateTime
 
   test "now" do
-    assert Kalends.DateTime.now("America/Montevideo").year > 1900
+    assert Calendar.DateTime.now("America/Montevideo").year > 1900
     # the test below needs to be changed if there are changes on Iceland
-    assert Kalends.DateTime.now("Atlantic/Reykjavik").abbr == "GMT"
+    assert Calendar.DateTime.now("Atlantic/Reykjavik").abbr == "GMT"
   end
 
   test "to erl" do
-    {{year,_,_},{_,_,_}} = Kalends.DateTime.to_erl(Kalends.DateTime.now("UTC"))
+    {{year,_,_},{_,_,_}} = Calendar.DateTime.to_erl(Calendar.DateTime.now("UTC"))
     assert year > 1900
   end
 
@@ -31,10 +31,10 @@ defmodule DateTimeTest do
 
   test "shift_zone! works even for periods when wall clock is set back in fall because of DST" do
       result =  from_erl!({{1999,10,31},{0,29,10}}, "Etc/UTC") |> shift_zone!("Europe/Copenhagen") |> shift_zone!("Etc/UTC") |> shift_zone!("Europe/Copenhagen")
-      assert result == %Kalends.DateTime{abbr: "CEST", day: 31, hour: 2, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 1999}
+      assert result == %Calendar.DateTime{abbr: "CEST", day: 31, hour: 2, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 1999}
 
       result2 = from_erl!({{1999,10,31},{1,29,10}}, "Etc/UTC") |> shift_zone!("Europe/Copenhagen") |> shift_zone!("Etc/UTC") |> shift_zone!("Europe/Copenhagen")
-      assert result2 == %Kalends.DateTime{abbr: "CET", day: 31, hour: 2, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 0, year: 1999}
+      assert result2 == %Calendar.DateTime{abbr: "CET", day: 31, hour: 2, min: 29, month: 10, sec: 10, timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 0, year: 1999}
   end
 
   test "shift_zone of a leap second" do
