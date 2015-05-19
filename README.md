@@ -1,5 +1,6 @@
 Calendar
 =======
+### (formerly known as Kalends)
 
 [![Build
 Status](https://travis-ci.org/lau/calendar.svg?branch=master)](https://travis-ci.org/lau/calendar)
@@ -8,10 +9,19 @@ Status](https://travis-ci.org/lau/calendar.svg?branch=master)](https://travis-ci
 
 Calendar is a date and time library for Elixir. The only Elixir library with with accurate, up-to-date time zone information.
 
-Calendar was formerly known as Kalends.
-
 The Olson/Eggert "Time Zone Database" is used. Years 1 through 9999
 are supported.
+
+## Name change from Kalends, upgrade instructions.
+
+For existing users of Kalends: Kalends has changed its name to Calendar. To upgrade:
+- In your code replace all instances of `Kalends` with `Calendar`
+- In your code replace all instances of `:kalends` with `:calendar`
+- In case you are also using Kalecto, it has changed its name to
+  [Calecto](https://github.com/lau/calecto). In a similair
+  fashion replace `Kalecto` with `Calecto` and `:kalecto` with `:calecto`
+- In your `mix.exs` file make sure you are specifying a valid version of :calendar
+  (At least version 0.6.6. See the newest version below.)
 
 ## Getting started
 
@@ -144,7 +154,7 @@ Documentation can be found at http://hexdocs.pm/calendar/
 ## Ecto
 
 If you want to use Calendar with Ecto, there is a library for that:
-Kalecto https://github.com/lau/kalecto
+Calecto https://github.com/lau/calecto
 
 ## Raison d'être
 
