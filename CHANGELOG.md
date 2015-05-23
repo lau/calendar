@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.7] - 2015-05-23
+### Changed
+
+DateTime.Parse.rfc3339_utc/1 and rfc3339/2 functions can now parse timestamps
+where there is no colon in the offset. For instance:
+rfc3339_utc("1996-12-19T16:39:57-0800")
+
 ## [0.6.6] - 2015-05-18
 ### Changed
 

@@ -133,6 +133,10 @@ defmodule Calendar.DateTime.Parse do
 
       iex> rfc3339_utc("1996-12-19T16:39:57-08:00")
       {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+
+      # Offset does not have colon (-0800). That makes it ISO8601, but not RFC3339. We still parse it.
+      iex> rfc3339_utc("1996-12-19T16:39:57-0800")
+      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
   """
   def rfc3339_utc(rfc3339_string) do
     parsed = rfc3339_string
@@ -222,7 +226,7 @@ defmodule Calendar.DateTime.Parse do
   end
 
   defp parse_rfc3339_string(rfc3339_string) do
-    ~r/(?<year>[\d]{4})[^\d](?<month>[\d]{2})[^\d](?<day>[\d]{2})[^\d](?<hour>[\d]{2})[^\d](?<min>[\d]{2})[^\d](?<sec>[\d]{2})(\.(?<fraction>[\d]+))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):(?<offset_mins>[\d]{2}))?/
+    ~r/(?<year>[\d]{4})[^\d](?<month>[\d]{2})[^\d](?<day>[\d]{2})[^\d](?<hour>[\d]{2})[^\d](?<min>[\d]{2})[^\d](?<sec>[\d]{2})(\.(?<fraction>[\d]+))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):?(?<offset_mins>[\d]{2}))?/
     |> Regex.named_captures rfc3339_string
   end
 end
