@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.8] - 2015-06-16
+### Changed
+- DateTime.Parse.rfc3339_utc/1 and rfc3339/2 functions now allow no seperators
+  between year, month, date, hour etc. E.g. "19961219T163957-08:00".
+
+### Added
+- NaiveDateTime.Parse module added with an iso8601 function to parse ISO 8601
+  datetimes. With or without offsets.
+
 ## [0.6.7] - 2015-05-23
 ### Changed
 
