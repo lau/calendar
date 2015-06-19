@@ -7,7 +7,7 @@ Status](https://travis-ci.org/lau/calendar.svg?branch=master)](https://travis-ci
 [![Inline docs](http://inch-ci.org/github/lau/calendar.svg)](http://hexdocs.pm/calendar/)
 [![Hex Version](http://img.shields.io/hexpm/v/calendar.svg?style=flat)](https://hex.pm/packages/calendar)
 
-Calendar is a date and time library for Elixir. The only Elixir library with with accurate, up-to-date time zone information.
+Calendar is a date and time library for Elixir.
 
 The Olson/Eggert "Time Zone Database" is used. Years 1 through 9999
 are supported.
