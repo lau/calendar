@@ -135,6 +135,71 @@ defmodule Calendar.NaiveDateTime do
   end
 
   @doc """
+  Takes a NaiveDateTime and an integer.
+  Returns the `naive_date_time` advanced by the number
+  of seconds found in the `seconds` argument.
+
+  If `seconds` is negative, the time is moved back.
+
+  ## Examples
+
+      # Advance 2 seconds
+      iex> from_erl!({{2014,10,2},{0,29,10}}, 123456) |> advance(2)
+      {:ok, %Calendar.NaiveDateTime{day: 2, hour: 0, min: 29, month: 10,
+            sec: 12, usec: 123456,
+            year: 2014}}
+  """
+  def advance(%Calendar.NaiveDateTime{} = naive_date_time, seconds) do
+    try do
+      greg_secs = naive_date_time |> gregorian_seconds
+      advanced = greg_secs + seconds
+      |>from_gregorian_seconds!(naive_date_time.usec)
+      {:ok, advanced}
+    rescue
+      e in FunctionClauseError -> e
+      {:error, :function_clause_error}
+    end
+  end
+
+  @doc """
+  Like `advance` without exclamation points.
+  Instead of returning a tuple with :ok and the result,
+  the result is returned untagged. Will raise an error in case
+  no correct result can be found based on the arguments.
+
+  ## Examples
+
+      # Advance 2 seconds
+      iex> from_erl!({{2014,10,2},{0,29,10}}, 123456) |> advance!(2)
+      %Calendar.NaiveDateTime{day: 2, hour: 0, min: 29, month: 10,
+            sec: 12, usec: 123456,
+            year: 2014}
+  """
+  def advance!(date_time, seconds) do
+    {:ok, result} = advance(date_time, seconds)
+    result
+  end
+
+  @doc """
+  Takes a NaiveDateTime and returns an integer of gregorian seconds starting with
+  year 0. This is done via the Erlang calendar module.
+
+  ## Examples
+
+      iex> from_erl!({{2014,9,26},{17,10,20}}) |> gregorian_seconds
+      63578970620
+  """
+  def gregorian_seconds(date_time) do
+    :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
+  end
+
+  defp from_gregorian_seconds!(gregorian_seconds, usec) do
+    gregorian_seconds
+    |>:calendar.gregorian_seconds_to_datetime
+    |>from_erl!(usec)
+  end
+
+  @doc """
   Like DateTime.Format.strftime! but for NaiveDateTime.
 
   Refer to documentation for DateTime.Format.strftime!
