@@ -5,6 +5,59 @@ defmodule Calendar.DateTime.Parse do
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
 
   @doc """
+  Parses an RFC 2822 or RFC 1123 datetime string.
+
+  The datetime is shifted to UTC.
+
+  ## Examples
+      iex> rfc2822_utc("Sat, 13 Mar 2010 11:23:03 -0800")
+      {:ok,
+            %Calendar.DateTime{abbr: "UTC", day: 13, hour: 19, min: 23, month: 3, sec: 3, std_off: 0,
+             timezone: "Etc/UTC", usec: nil, utc_off: 0, year: 2010}}
+
+      # PST is the equivalent of -0800 in the RFC 2822 standard
+      iex> rfc2822_utc("Sat, 13 Mar 2010 11:23:03 PST")
+      {:ok,
+            %Calendar.DateTime{abbr: "UTC", day: 13, hour: 19, min: 23, month: 3, sec: 3, std_off: 0,
+             timezone: "Etc/UTC", usec: nil, utc_off: 0, year: 2010}}
+
+      # Z is the equivalent of UTC
+      iex> rfc2822_utc("Sat, 13 Mar 2010 11:23:03 Z")
+      {:ok,
+            %Calendar.DateTime{abbr: "UTC", day: 13, hour: 11, min: 23, month: 3, sec: 3, std_off: 0,
+             timezone: "Etc/UTC", usec: nil, utc_off: 0, year: 2010}}
+  """
+  def rfc2822_utc(string) do
+    cap = string |> capture_rfc2822_string
+    month_num = month_number_for_month_name(cap["month"])
+    {:ok, offset_in_secs} = offset_in_seconds_rfc2822(cap["offset_sign"],
+                                               cap["offset_hours"],
+                                               cap["offset_mins"],
+                                               cap["offset_letters"])
+    {:ok, result} = DateTime.from_erl({{cap["year"]|>to_int, month_num, cap["day"]|>to_int}, {cap["hour"]|>to_int, cap["min"]|>to_int, cap["sec"]|>to_int}}, "Etc/UTC")
+    DateTime.advance(result, offset_in_secs*-1)
+  end
+
+  defp offset_in_seconds_rfc2822(_, _, _, "UTC"), do: {:ok, 0 }
+  defp offset_in_seconds_rfc2822(_, _, _, "UT"),  do: {:ok, 0 }
+  defp offset_in_seconds_rfc2822(_, _, _, "Z"),   do: {:ok, 0 }
+  defp offset_in_seconds_rfc2822(_, _, _, "GMT"), do: {:ok, 0 }
+  defp offset_in_seconds_rfc2822(_, _, _, "EDT"), do: {:ok, -4*3600 }
+  defp offset_in_seconds_rfc2822(_, _, _, "EST"), do: {:ok, -5*3600 }
+  defp offset_in_seconds_rfc2822(_, _, _, "CDT"), do: {:ok, -5*3600 }
+  defp offset_in_seconds_rfc2822(_, _, _, "CST"), do: {:ok, -6*3600 }
+  defp offset_in_seconds_rfc2822(_, _, _, "MDT"), do: {:ok, -6*3600 }
+  defp offset_in_seconds_rfc2822(_, _, _, "MST"), do: {:ok, -7*3600 }
+  defp offset_in_seconds_rfc2822(_, _, _, "PDT"), do: {:ok, -7*3600 }
+  defp offset_in_seconds_rfc2822(_, _, _, "PST"), do: {:ok, -8*3600 }
+  defp offset_in_seconds_rfc2822(_, _, _, letters) when letters != "", do: {:error, :invalid_letters}
+  defp offset_in_seconds_rfc2822(offset_sign, offset_hours, offset_mins, _letters) do
+    offset_in_secs = hours_mins_to_secs!(offset_hours, offset_mins)
+    if offset_sign == "-", do: offset_in_secs = offset_in_secs*-1
+    {:ok, offset_in_secs}
+  end
+
+  @doc """
   Takes unix time as an integer or float. Returns a DateTime struct.
 
   ## Examples
@@ -195,13 +248,6 @@ defmodule Calendar.DateTime.Parse do
   defp erl_date_time_from_strings({{year, month, date},{hour, min, sec}}) do
     { {year|>to_int, month|>to_int, date|>to_int},
       {hour|>to_int, min|>to_int, sec|>to_int} }
-  end
-
-  # Takes strings of hours and mins and return secs
-  defp hours_mins_to_secs!(hours, mins) do
-    hours_int = hours |> to_int
-    mins_int = mins |> to_int
-    hours_int*3600+mins_int*60
   end
 
   defp parse_rfc3339_string(rfc3339_string) do

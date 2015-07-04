@@ -2,6 +2,8 @@
 
 ### Added
 
+- DateTime: Added parsing of RFC 2822 & 1123 datetime strings
+- NaiveDateTime.Parse: Added parsing of "C time" strings
 - NaiveDateTime functions: advance, advance!, gregorian_seconds
 
 ## [0.6.8] - 2015-06-16

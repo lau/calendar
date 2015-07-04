@@ -3,7 +3,7 @@ defmodule Calendar.NaiveDateTime.Parse do
   import Calendar.ParseUtil
 
   @doc """
-  Parses a "C time" string. Note: This is a legacy ways of representing time.
+  Parses a "C time" string.
 
   ## Examples
       iex> Calendar.NaiveDateTime.Parse.asctime("Wed Apr  9 07:53:03 2003")
@@ -94,11 +94,4 @@ defmodule Calendar.NaiveDateTime.Parse do
   defp parse_fraction(""), do: nil
   # parse and return microseconds
   defp parse_fraction(string), do: String.slice(string, 0..5) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
-
-  # Takes strings of hours and mins and return secs
-  defp hours_mins_to_secs!(hours, mins) do
-    hours_int = hours |> to_int
-    mins_int = mins |> to_int
-    hours_int*3600+mins_int*60
-  end
 end
