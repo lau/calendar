@@ -2,6 +2,7 @@ defmodule FormatterTest do
   use ExUnit.Case, async: true
   alias Calendar.DateTime
   alias Calendar.DateTime.Format
+  import Calendar.DateTime.Format
   doctest Format
 
   test "rfc3339 formatting" do

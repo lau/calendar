@@ -2,9 +2,14 @@
 
 ### Added
 
+- DateTime.Format: rfc2822 function for formatting DateTimes as RFC 2822
 - DateTime: Added parsing of RFC 2822 & 1123 datetime strings
 - NaiveDateTime.Parse: Added parsing of "C time" strings
 - NaiveDateTime functions: advance, advance!, gregorian_seconds
+
+### Changed
+
+- In strftime %z no longer includes a colon
 
 ## [0.6.8] - 2015-06-16
 ### Changed

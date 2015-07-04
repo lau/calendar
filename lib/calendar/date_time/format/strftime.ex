@@ -44,7 +44,7 @@ defmodule Calendar.DateTime.Format.Strftime do
   defp string_for_conv_spec(dt, :k, _) do "#{dt.hour}"|>pad(2, hd ' ') end
   defp string_for_conv_spec(dt, :M, _) do "#{dt.min}"|>pad end
   defp string_for_conv_spec(dt, :S, _) do "#{dt.sec}"|>pad end
-  defp string_for_conv_spec(dt, :z, _) do iso8601_offset_part(dt) end
+  defp string_for_conv_spec(dt, :z, _) do z_offset_part(dt) end
   defp string_for_conv_spec(dt, :Z, _) do "#{dt.abbr}" end
 
   defp micro_seconds(dt) do
@@ -55,19 +55,19 @@ defmodule Calendar.DateTime.Format.Strftime do
     String.rjust("#{subject}", len, char)
   end
 
-  defp iso8601_offset_part(dt) do
+  defp z_offset_part(dt) do
     total_off = dt.utc_off + dt.std_off
-    sign = sign_for_offset8601(total_off)
+    sign = sign_for_offset(total_off)
     offset_amount_string = total_off |> secs_to_hours_mins_string
     sign<>offset_amount_string
   end
-  defp sign_for_offset8601(offset) when offset < 0, do: "-"
-  defp sign_for_offset8601(_), do: "+"
+  defp sign_for_offset(offset) when offset < 0, do: "-"
+  defp sign_for_offset(_), do: "+"
   defp secs_to_hours_mins_string(secs) do
     secs = abs(secs)
     hours = secs/3600.0 |> Float.floor |> trunc
     mins = rem(secs, 3600)/60.0 |> Float.floor |> trunc
-    "#{hours|>pad(2)}:#{mins|>pad(2)}"
+    "#{hours|>pad(2)}#{mins|>pad(2)}"
   end
 
   defp weekday_abbr(dt, lang) do

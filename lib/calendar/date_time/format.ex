@@ -58,6 +58,19 @@ defmodule Calendar.DateTime.Format do
   end
 
   @doc """
+  Format a DateTime as an RFC 2822 timestamp.
+
+  ## Examples
+      iex> Calendar.DateTime.from_erl!({{2010, 3, 13}, {11, 23, 03}}, "America/Los_Angeles") |> rfc2822
+      "Sat, 13 Mar 2010 11:23:03 -0800"
+      iex> Calendar.DateTime.from_erl!({{2010, 3, 13}, {11, 23, 03}}, "Etc/UTC") |> rfc2822
+      "Sat, 13 Mar 2010 11:23:03 +0000"
+  """
+  def rfc2822(%Calendar.DateTime{} = dt) do
+    strftime! dt, "%a, %d %b %Y %T %z"
+  end
+
+  @doc """
   Takes a DateTime.
   Returns a string with the time in RFC3339 (a profile of ISO 8601)
 
@@ -82,6 +95,18 @@ defmodule Calendar.DateTime.Format do
   defp rfc3339_offset_part(_, time_zone) when time_zone == "UTC" or time_zone == "Etc/UTC", do: "Z"
   defp rfc3339_offset_part(dt, _) do
     Strftime.strftime!(dt, "%z")
+    total_off = dt.utc_off + dt.std_off
+    sign = sign_for_offset(total_off)
+    offset_amount_string = total_off |> secs_to_hours_mins_string
+    sign<>offset_amount_string
+  end
+  defp sign_for_offset(offset) when offset < 0, do: "-"
+  defp sign_for_offset(_), do: "+"
+  defp secs_to_hours_mins_string(secs) do
+    secs = abs(secs)
+    hours = secs/3600.0 |> Float.floor |> trunc
+    mins = rem(secs, 3600)/60.0 |> Float.floor |> trunc
+    "#{hours|>pad(2)}:#{mins|>pad(2)}"
   end
 
   defp rfc3330_usec_part(nil, _), do: ""
