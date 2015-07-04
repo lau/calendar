@@ -12,17 +12,6 @@ Calendar is a date and time library for Elixir.
 The Olson/Eggert "Time Zone Database" is used. Years 1 through 9999
 are supported.
 
-## Name change from Kalends, upgrade instructions.
-
-For existing users of Kalends: Kalends has changed its name to Calendar. To upgrade:
-- In your code replace all instances of `Kalends` with `Calendar`
-- In your code replace all instances of `:kalends` with `:calendar`
-- In case you are also using Kalecto, it has changed its name to
-  [Calecto](https://github.com/lau/calecto). In a similair
-  fashion replace `Kalecto` with `Calecto` and `:kalecto` with `:calecto`
-- In your `mix.exs` file make sure you are specifying a valid version of :calendar
-  (At least version 0.6.6. See the newest version below.)
-
 ## Getting started
 
 Add Calendar as a dependency to an Elixir project by adding it to your mix.exs file:
@@ -97,15 +86,6 @@ mvd |> DateTime.Format.rfc3339
 "2014-10-04T23:44:32-03:00"
 ```
 
-Parsing the same string again back into a DateTime:
-
-```elixir
-DateTime.Parse.rfc3339 "2014-10-04T23:44:32-03:00", "America/Montevideo"
-{:ok, %Calendar.DateTime{abbr: "UYT", day: 4, hour: 23, min: 44, month: 10,
-        sec: 32, std_off: 0, timezone: "America/Montevideo", usec: nil,
-        utc_off: -10800, year: 2014}}
-```
-
 Format as a unix timestamp:
 
 ```elixir
@@ -163,6 +143,17 @@ often. In order to correctly find out what time it is around the world, the
 "tz database" is invaluable. This is (AFAIK) the first pure Elixir library that
 uses the tz database correctly and can easily be updated whenever a new version
 is released.
+
+## Name change from Kalends, upgrade instructions.
+
+For existing users of Kalends: Kalends has changed its name to Calendar. To upgrade:
+- In your code replace all instances of `Kalends` with `Calendar`
+- In your code replace all instances of `:kalends` with `:calendar`
+- In case you are also using Kalecto, it has changed its name to
+  [Calecto](https://github.com/lau/calecto). In a similair
+  fashion replace `Kalecto` with `Calecto` and `:kalecto` with `:calecto`
+- In your `mix.exs` file make sure you are specifying a valid version of :calendar
+  (At least version 0.6.6. See the newest version below.)
 
 ## Known bugs
 
