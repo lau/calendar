@@ -1,5 +1,6 @@
 defmodule Calendar.DateTime.Parse do
   alias Calendar.DateTime
+  import Calendar.ParseUtil
 
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
 
@@ -97,27 +98,6 @@ defmodule Calendar.DateTime.Parse do
         {mapped["hour"]|>to_int, mapped["min"]|>to_int, mapped["sec"]|>to_int }
       }, "Etc/UTC")
   end
-  defp month_number_for_month_name(string) do
-    string
-    |> String.downcase
-    |> cap_month_number_for_month_name
-  end
-  defp cap_month_number_for_month_name("jan"), do: 1
-  defp cap_month_number_for_month_name("feb"), do: 2
-  defp cap_month_number_for_month_name("mar"), do: 3
-  defp cap_month_number_for_month_name("apr"), do: 4
-  defp cap_month_number_for_month_name("may"), do: 5
-  defp cap_month_number_for_month_name("jun"), do: 6
-  defp cap_month_number_for_month_name("jul"), do: 7
-  defp cap_month_number_for_month_name("aug"), do: 8
-  defp cap_month_number_for_month_name("sep"), do: 9
-  defp cap_month_number_for_month_name("oct"), do: 10
-  defp cap_month_number_for_month_name("nov"), do: 11
-  defp cap_month_number_for_month_name("dec"), do: 12
-  # By returning 0 for invalid month names, we have a valid int to pass to
-  # DateTime.from_erl that will return a nice error. This way we avoid an
-  # exception when parsing an httpdate with an invalid month name.
-  defp cap_month_number_for_month_name(_), do: 0
 
   @doc """
   Parse RFC 3339 timestamp strings as UTC. If the timestamp is not in UTC it
@@ -215,11 +195,6 @@ defmodule Calendar.DateTime.Parse do
   defp erl_date_time_from_strings({{year, month, date},{hour, min, sec}}) do
     { {year|>to_int, month|>to_int, date|>to_int},
       {hour|>to_int, min|>to_int, sec|>to_int} }
-  end
-
-  defp to_int(string) do
-    {int, _} = Integer.parse(string)
-    int
   end
 
   # Takes strings of hours and mins and return secs

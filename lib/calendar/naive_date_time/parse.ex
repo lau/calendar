@@ -1,5 +1,28 @@
 defmodule Calendar.NaiveDateTime.Parse do
   alias Calendar.NaiveDateTime
+  import Calendar.ParseUtil
+
+  @doc """
+  Parses a "C time" string. Note: This is a legacy ways of representing time.
+
+  ## Examples
+      iex> Calendar.NaiveDateTime.Parse.asctime("Wed Apr  9 07:53:03 2003")
+      {:ok, %Calendar.NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, min: 53, sec: 3, usec: nil}}
+      iex> asctime("Thu, Apr 10 07:53:03 2003")
+      {:ok, %Calendar.NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, min: 53, sec: 3, usec: nil}}
+  """
+  def asctime(string) do
+    cap = string |> capture_asctime_string
+    month_num = month_number_for_month_name(cap["month"])
+    cap
+    NaiveDateTime.from_erl({{cap["year"]|>to_int, month_num, cap["day"]|>to_int}, {cap["hour"]|>to_int, cap["min"]|>to_int, cap["sec"]|>to_int}})
+  end
+
+  defp capture_asctime_string(string) do
+    ~r/(?<month>[^\d]{3})[\s]+(?<day>[\d]{1,2})[\s]+(?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})[^\d]?(?<year>[\d]{4})/
+    |> Regex.named_captures string
+  end
+
   @doc """
   Parses an ISO8601 datetime. Returns {:ok, NaiveDateTime struct, UTC offset in secods}
   In case there is no UTC offset, the third element of the tuple will be nil.
@@ -66,11 +89,6 @@ defmodule Calendar.NaiveDateTime.Parse do
   defp erl_date_time_from_strings({{year, month, date},{hour, min, sec}}) do
     { {year|>to_int, month|>to_int, date|>to_int},
       {hour|>to_int, min|>to_int, sec|>to_int} }
-  end
-
-  defp to_int(string) do
-    {int, _} = Integer.parse(string)
-    int
   end
 
   defp parse_fraction(""), do: nil

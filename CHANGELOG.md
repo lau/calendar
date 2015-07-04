@@ -1,5 +1,9 @@
 # Changelog
 
+### Added
+
+- NaiveDateTime functions: advance, advance!, gregorian_seconds
+
 ## [0.6.8] - 2015-06-16
 ### Changed
 - DateTime.Parse.rfc3339_utc/1 and rfc3339/2 functions now allow no seperators
