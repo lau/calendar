@@ -1,3 +1,10 @@
+defprotocol Calendar.ContainsTime do
+  @doc """
+  Returns a Calendar.Time struct for the provided argument
+  """
+  def time_struct(data)
+end
+
 defmodule Calendar.Time do
   @moduledoc """
   The Time module provides a struct to represent a simple time without
@@ -38,6 +45,20 @@ defmodule Calendar.Time do
     end
   end
 
+  @doc """
+  Like from_erl, but will raise if the time is not valid.
+
+      iex> from_erl!({20,14,15})
+      %Calendar.Time{usec: nil, hour: 20, min: 14, sec: 15}
+
+      iex> from_erl!({20,14,15}, 123456)
+      %Calendar.Time{usec: 123456, hour: 20, min: 14, sec: 15}
+  """
+  def from_erl!(time, usec\\nil) do
+    {:ok, time} = from_erl(time, usec)
+    time
+  end
+
   defp valid_time(time, usec) do
     valid_time(time) && (usec==nil || (usec >= 0 && usec < 1_000_000))
   end
@@ -47,4 +68,80 @@ defmodule Calendar.Time do
   defp valid_time({_hour, _min, _sec}) do
     false
   end
+
+  @doc """
+  Converts a Time to the 12 hour format
+
+  Returns a five element tuple with:
+  {hours (1-12), minutes, seconds, microseconds, :am or :pm}
+
+  ## Examples
+
+      iex> {13, 10, 23} |> twelve_hour_time
+      {1, 10, 23, nil, :pm}
+      iex> {0, 10, 23, 888888} |> twelve_hour_time
+      {12, 10, 23, 888888, :am}
+  """
+  def twelve_hour_time(time) do
+    time = time |> contained_time
+    {h12, ampm} = x24h_to_12_h(time.hour)
+    {h12, time.min, time.sec, time.usec, ampm}
+  end
+
+  defp x24h_to_12_h(0) do {12, :am} end
+  defp x24h_to_12_h(12) do {12, :pm} end
+  defp x24h_to_12_h(hour) when hour >= 1 and hour < 12 do {hour, :am} end
+  defp x24h_to_12_h(hour) when hour > 12 do {hour - 12, :pm} end
+
+  @doc """
+  Returns true if provided time is AM in the twelve hour clock
+  system. Otherwise false.
+
+  ## Examples
+
+      iex> {8, 10, 23} |> Time.am?
+      true
+      iex> {20, 10, 23} |> Time.am?
+      false
+  """
+  def am?(time) do
+    {_, _, _, _, ampm} = twelve_hour_time(time)
+    ampm == :am
+  end
+
+  @doc """
+  Returns true if provided time is AM in the twelve hour clock
+  system. Otherwise false.
+
+  ## Examples
+
+      iex> {8, 10, 23} |> Time.pm?
+      false
+      iex> {20, 10, 23} |> Time.pm?
+      true
+  """
+  def pm?(time) do
+    {_, _, _, _, ampm} = twelve_hour_time(time)
+    ampm == :pm
+  end
+
+  defp contained_time(time_container), do: Calendar.ContainsTime.time_struct(time_container)
+end
+
+defimpl Calendar.ContainsTime, for: Calendar.Time do
+  def time_struct(data), do: data
+end
+defimpl Calendar.ContainsTime, for: Calendar.DateTime do
+  def time_struct(data) do
+    data |> Calendar.DateTime.to_time
+  end
+end
+defimpl Calendar.ContainsTime, for: Calendar.NaiveDateTime do
+  def time_struct(data) do
+    data |> Calendar.NaiveDateTime.to_time
+  end
+end
+defimpl Calendar.ContainsTime, for: Tuple do
+  def time_struct({h, m, s}), do: Calendar.Time.from_erl!({h, m, s})
+  def time_struct({h, m, s, usec}), do: Calendar.Time.from_erl!({h, m, s}, usec)
 end

@@ -1,5 +1,13 @@
+defprotocol Calendar.ContainsNaiveDateTime do
+  @doc """
+  Returns a Calendar.NaiveDateTime struct for the provided data
+  """
+  def ndt_struct(data)
+end
+
 defmodule Calendar.NaiveDateTime do
   alias Calendar.DateTime
+  alias Calendar.ContainsNaiveDateTime
   require Calendar.DateTime.Format
 
   @moduledoc """
@@ -94,8 +102,9 @@ defmodule Calendar.NaiveDateTime do
       iex> from_erl!({{2014,10,15},{2,37,22}}) |> Calendar.NaiveDateTime.to_date
       %Calendar.Date{day: 15, month: 10, year: 2014}
   """
-  def to_date(dt) do
-    %Calendar.Date{year: dt.year, month: dt.month, day: dt.day}
+  def to_date(ndt) do
+    ndt = ndt |> contained_ndt
+    %Calendar.Date{year: ndt.year, month: ndt.month, day: ndt.day}
   end
 
   @doc """
@@ -105,8 +114,9 @@ defmodule Calendar.NaiveDateTime do
       iex> from_erl!({{2014,10,15},{2,37,22}}) |> Calendar.NaiveDateTime.to_time
       %Calendar.Time{usec: nil, hour: 2, min: 37, sec: 22}
   """
-  def to_time(dt) do
-    %Calendar.Time{hour: dt.hour, min: dt.min, sec: dt.sec, usec: dt.usec}
+  def to_time(ndt) do
+    ndt = ndt |> contained_ndt
+    %Calendar.Time{hour: ndt.hour, min: ndt.min, sec: ndt.sec, usec: ndt.usec}
   end
 
   @doc """
@@ -118,11 +128,13 @@ defmodule Calendar.NaiveDateTime do
       {:ok, %Calendar.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}}
   """
   def to_date_time(ndt, timezone) do
+    ndt = ndt |> contained_ndt
     DateTime.from_erl(to_erl(ndt), timezone)
   end
 
   @doc """
-  Promote to DateTime with UTC time zone.
+  Promote to DateTime with UTC time zone. Should only be used if you
+  are sure that the provided argument is in UTC.
 
   Takes a NaiveDateTime. Returns a DateTime.
 
@@ -130,6 +142,7 @@ defmodule Calendar.NaiveDateTime do
       %Calendar.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
   """
   def to_date_time_utc(ndt) do
+    ndt = ndt |> contained_ndt
     {:ok, dt} = to_date_time(ndt, "UTC")
     dt
   end
@@ -149,11 +162,12 @@ defmodule Calendar.NaiveDateTime do
             sec: 12, usec: 123456,
             year: 2014}}
   """
-  def advance(%Calendar.NaiveDateTime{} = naive_date_time, seconds) do
+  def advance(ndt, seconds) do
     try do
-      greg_secs = naive_date_time |> gregorian_seconds
+      ndt = ndt |> contained_ndt
+      greg_secs = ndt |> gregorian_seconds
       advanced = greg_secs + seconds
-      |>from_gregorian_seconds!(naive_date_time.usec)
+      |>from_gregorian_seconds!(ndt.usec)
       {:ok, advanced}
     rescue
       e in FunctionClauseError -> e
@@ -175,8 +189,9 @@ defmodule Calendar.NaiveDateTime do
             sec: 12, usec: 123456,
             year: 2014}
   """
-  def advance!(date_time, seconds) do
-    {:ok, result} = advance(date_time, seconds)
+  def advance!(ndt, seconds) do
+    ndt = ndt |> contained_ndt
+    {:ok, result} = advance(ndt, seconds)
     result
   end
 
@@ -189,8 +204,11 @@ defmodule Calendar.NaiveDateTime do
       iex> from_erl!({{2014,9,26},{17,10,20}}) |> gregorian_seconds
       63578970620
   """
-  def gregorian_seconds(date_time) do
-    :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
+  def gregorian_seconds(ndt) do
+    ndt
+    |> contained_ndt
+    |> to_erl
+    |> :calendar.datetime_to_gregorian_seconds
   end
 
   defp from_gregorian_seconds!(gregorian_seconds, usec) do
@@ -209,8 +227,26 @@ defmodule Calendar.NaiveDateTime do
   """
   def strftime!(ndt, string, lang \\ :en) do
     ndt
+    |> contained_ndt
     |> to_date_time_utc
     |> Calendar.DateTime.Format.strftime! string, lang
   end
 
+  defp contained_ndt(ndt_container) do
+    ContainsNaiveDateTime.ndt_struct(ndt_container)
+  end
+end
+
+defimpl Calendar.ContainsNaiveDateTime, for: Calendar.NaiveDateTime do
+  def ndt_struct(data), do: data
+end
+
+defimpl Calendar.ContainsNaiveDateTime, for: Calendar.DateTime do
+  def ndt_struct(data), do: data |> Calendar.DateTime.to_naive
+end
+
+defimpl Calendar.ContainsNaiveDateTime, for: Tuple do
+  def ndt_struct({{y, m, d}, {h, m, s}}) do
+    Calendar.NaiveDateTime.from_erl!({{y, m, d}, {h, m, s}})
+  end
 end

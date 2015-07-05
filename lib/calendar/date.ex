@@ -1,6 +1,13 @@
+defprotocol Calendar.ContainsDate do
+  @doc """
+  Returns a Calendar.Date struct for the struct in question
+  """
+  def date_struct(data)
+end
+
 defmodule Calendar.Date do
-  alias Calendar.DateTime
   alias Calendar.NaiveDateTime
+  alias Calendar.ContainsDate
 
   @moduledoc """
   The Date module provides a struct to represent a simple date: year, month and day.
@@ -11,8 +18,9 @@ defmodule Calendar.Date do
   @doc """
   Takes a Date struct and returns an erlang style date tuple.
   """
-  def to_erl(%Calendar.Date{year: year, month: month, day: day}) do
-    {year, month, day}
+  def to_erl(date) do
+    date = date |> contained_date
+    {date.year, date.month, date.day}
   end
 
   @doc """
@@ -60,7 +68,8 @@ defmodule Calendar.Date do
       29
   """
   def number_of_days_in_month(date) do
-    {year, month, _} = date |> to_erl
+    date = date |> contained_date
+    {year, month, _} = ContainsDate.date_struct(date) |> to_erl
     :calendar.last_day_of_the_month(year, month)
   end
 
@@ -75,6 +84,7 @@ defmodule Calendar.Date do
       {2014, 52}
   """
   def week_number(date) do
+    date = date |> contained_date
     :calendar.iso_week_number(date|>to_erl)
   end
 
@@ -85,6 +95,7 @@ defmodule Calendar.Date do
       735959
   """
   def to_gregorian_days(date) do
+    date = date |> contained_date
     :calendar.date_to_gregorian_days(date.year, date.month, date.day)
   end
 
@@ -125,7 +136,9 @@ defmodule Calendar.Date do
       iex> from_erl!({2014,12,27}) |> diff from_erl!({2014,12,29})
       -2
   """
-  def diff(%Calendar.Date{} = first_date, %Calendar.Date{} = second_date) do
+  def diff(first_date_cont, second_date_cont) do
+    first_date = contained_date(first_date_cont)
+    second_date = contained_date(second_date_cont)
     to_gregorian_days(first_date) - to_gregorian_days(second_date)
   end
 
@@ -134,12 +147,18 @@ defmodule Calendar.Date do
 
   ## Examples
 
+      # Date struct advanced by 3 days
       iex> from_erl!({2014,12,27}) |> advance(3)
       {:ok, %Calendar.Date{day: 30, month: 12, year: 2014} }
+      # Date struct turned back 2 days
       iex> from_erl!({2014,12,27}) |> advance(-2)
       {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      # Date tuple turned back 2 days
+      iex> {2014,12,27} |> advance(-2)
+      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
   """
-  def advance(%Calendar.Date{} = date, days) when is_integer(days) do
+  def advance(date, days) when is_integer(days) do
+    date = date |> contained_date
     result = to_gregorian_days(date) + days
     |> from_gregorian_days!
     {:ok, result}
@@ -153,8 +172,11 @@ defmodule Calendar.Date do
 
       iex> from_erl!({2014,12,27}) |> advance!(3)
       %Calendar.Date{day: 30, month: 12, year: 2014}
+      iex> {2014,12,27} |> advance!(-2)
+      %Calendar.Date{day: 25, month: 12, year: 2014}
   """
-  def advance!(%Calendar.Date{} = date, days) when is_integer(days) do
+  def advance!(date, days) when is_integer(days) do
+    date = date |> contained_date
     {:ok, result} = advance(date, days)
     result
   end
@@ -172,23 +194,27 @@ defmodule Calendar.Date do
 
       iex> strftime!(from_erl!({2014,12,27}), "%Y-%m-%d")
       "2014-12-27"
+      iex> strftime!({2014,12,27}, "%a, %Y-%m-%d")
+      "Sat, 2014-12-27"
   """
   def strftime!(date, string, lang \\ :en) do
+    date = contained_date(date)
     date_erl = date |> to_erl
     {date_erl, {0, 0, 0}}
     |> NaiveDateTime.from_erl!
-    |> DateTime.Format.strftime! string, lang
+    |> NaiveDateTime.strftime! string, lang
   end
 
   @doc """
   Stream of dates after the date provided as argument.
 
-      iex> days_after(from_erl!({2014,12,27})) |> Enum.take(6)
+      iex> days_after({2014,12,27}) |> Enum.take(6)
       [%Calendar.Date{day: 28, month: 12, year: 2014}, %Calendar.Date{day: 29, month: 12, year: 2014},
             %Calendar.Date{day: 30, month: 12, year: 2014}, %Calendar.Date{day: 31, month: 12, year: 2014}, %Calendar.Date{day: 1, month: 1, year: 2015},
             %Calendar.Date{day: 2, month: 1, year: 2015}]
   """
   def days_after(from_date) do
+    from_date = from_date |> contained_date
     Stream.unfold(next_day!(from_date), fn n -> {n, n |> next_day!} end)
   end
 
@@ -200,6 +226,7 @@ defmodule Calendar.Date do
             %Calendar.Date{day: 24, month: 12, year: 2014}]
   """
   def days_before(from_date) do
+    from_date = from_date |> contained_date
     Stream.unfold(prev_day!(from_date), fn n -> {n, n |> prev_day!} end)
   end
 
@@ -211,6 +238,8 @@ defmodule Calendar.Date do
       [%Calendar.Date{day: 28, month: 12, year: 2014}, %Calendar.Date{day: 29, month: 12, year: 2014}]
   """
   def days_after_until(from_date, until_date) do
+    from_date = from_date |> contained_date
+    until_date = until_date |> contained_date
     Stream.unfold(next_day!(from_date), fn n -> if n == next_day!(until_date) do nil else {n, n |> next_day!} end end)
   end
 
@@ -225,4 +254,23 @@ defmodule Calendar.Date do
   def days_before_until(from_date, until_date) do
     Stream.unfold(prev_day!(from_date), fn n -> if n == prev_day!(until_date) do nil else {n, n |> prev_day!} end end)
   end
+
+  defp contained_date(date_container), do: ContainsDate.date_struct(date_container)
+end
+
+defimpl Calendar.ContainsDate, for: Calendar.Date do
+  def date_struct(data), do: data
+end
+defimpl Calendar.ContainsDate, for: Calendar.DateTime do
+  def date_struct(data) do
+    data |> Calendar.DateTime.to_date
+  end
+end
+defimpl Calendar.ContainsDate, for: Calendar.NaiveDateTime do
+  def date_struct(data) do
+    data |> Calendar.NaiveDateTime.to_date
+  end
+end
+defimpl Calendar.ContainsDate, for: Tuple do
+  def date_struct({y, m, d}), do: Calendar.Date.from_erl!({y, m, d})
 end
