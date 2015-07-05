@@ -274,3 +274,18 @@ end
 defimpl Calendar.ContainsDate, for: Tuple do
   def date_struct({y, m, d}), do: Calendar.Date.from_erl!({y, m, d})
 end
+
+defimpl Range.Iterator, for: Calendar.Date do
+  def next(first, _ .. last) do
+    if Calendar.Date.diff(last, first)>=0  do
+      &(&1 |> Calendar.Date.next_day!)
+    else
+      &(&1 |> Calendar.Date.prev_day!)
+    end
+  end
+
+  def count(first, _ .. last) do
+    Calendar.Date.diff(last, first)
+    |> abs
+  end
+end
