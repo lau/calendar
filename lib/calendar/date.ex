@@ -255,6 +255,20 @@ defmodule Calendar.Date do
     Stream.unfold(prev_day!(from_date), fn n -> if n == prev_day!(until_date) do nil else {n, n |> prev_day!} end end)
   end
 
+
+  @doc """
+  Day of the week as an integer. Monday is 1, Tuesday is 2 and so on.
+
+  ## Examples
+
+      iex> {2015, 7, 6} |> day_of_the_week
+      1
+  """
+  def day_of_the_week(date) do
+    date = date |> contained_date
+    date |> to_erl |> :calendar.day_of_the_week
+  end
+
   defp contained_date(date_container), do: ContainsDate.date_struct(date_container)
 end
 
@@ -285,7 +299,6 @@ defimpl Range.Iterator, for: Calendar.Date do
   end
 
   def count(first, _ .. last) do
-    Calendar.Date.diff(last, first)
-    |> abs
+    Calendar.Date.diff(last, first) |> abs
   end
 end
