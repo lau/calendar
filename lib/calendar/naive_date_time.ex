@@ -139,11 +139,11 @@ defmodule Calendar.NaiveDateTime do
   Takes a NaiveDateTime. Returns a DateTime.
 
       iex> from_erl!({{2014,10,15},{2,37,22}}) |> Calendar.NaiveDateTime.to_date_time_utc
-      %Calendar.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}
+      %Calendar.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2014}
   """
   def to_date_time_utc(ndt) do
     ndt = ndt |> contained_ndt
-    {:ok, dt} = to_date_time(ndt, "UTC")
+    {:ok, dt} = to_date_time(ndt, "Etc/UTC")
     dt
   end
 
@@ -246,7 +246,7 @@ defimpl Calendar.ContainsNaiveDateTime, for: Calendar.DateTime do
 end
 
 defimpl Calendar.ContainsNaiveDateTime, for: Tuple do
-  def ndt_struct({{y, m, d}, {h, m, s}}) do
-    Calendar.NaiveDateTime.from_erl!({{y, m, d}, {h, m, s}})
+  def ndt_struct({{year, month, day}, {hour, min, sec}}) do
+    Calendar.NaiveDateTime.from_erl!({{year, month, day}, {hour, min, sec}})
   end
 end
