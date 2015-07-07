@@ -1,5 +1,17 @@
 # Changelog
 
+
+## [0.7.0] - 2015-07-07
+### Added
+
+- Add protocols for Date, Time, NaiveDateTime for polymorphism
+- Range functionality for Date
+- Date: `day_of_the_week` function
+- Date: boolean functions for weekdays e.g. `monday?`
+- Time: functions for 12 hour clock: `pm?`, `am?`, `twelve_hour_time`
+- DateTime.Format: format `DateTime`s as RFC 822 & RFC 850
+- Add new module NaiveDateTime.Format
+
 ## [0.6.9] - 2015-07-05
 ### Added
 - DateTime.Format: rfc2822 function for formatting DateTimes as RFC 2822

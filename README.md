@@ -18,13 +18,13 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.6.8"},  ]
+  [  {:calendar, "~> 0.7.0"},  ]
 end
 ```
 
 Then run `mix deps.get` which will fetch Calendar via the hex package manager.
 
-You can then call Calendar functions like this: `Calendar.DateTime.now_utc`. But in order to avoid typing Calendar all the time you can add `use Calendar` to your modules. This aliases Calendar modules such as DateTime and Date. Which means that you can call for instance `DateTime.now_utc` without writing `Calendar.` Example:
+You can then call Calendar functions like this: `Calendar.DateTime.now_utc`. But in order to avoid typing Calendar all the time you can add `use Calendar` to your modules. This aliases Calendar modules such as `DateTime`, `Time`, `Date` and `NaiveDateTime`. Which means that you can call for instance `DateTime.now_utc` without writing `Calendar.` Example:
 
 ```elixir
 defmodule NewYearsHttpLib do
@@ -40,7 +40,63 @@ defmodule NewYearsHttpLib do
 end
 ```
 
-## Usage examples
+## Types
+
+Calendar has 4 basic types of structs:
+
+* `Date` - a simple date without time e.g. 2015-12-24
+* `Time` - a simple time without a date e.g. 14:30:00 or 15:21:12.532985
+* `DateTime` - datetimes where the timezone is known e.g. 2015-12-24 14:30:00 in America/New_York or 2015-12-24 17:30:00 in UTC
+* `NaiveDateTime` - datetimes without timezone information e.g. 2015-12-24 14:30:00
+
+## Polymorphism
+
+The functions of each module are appropriate for that type. For instance the `Date` module has a function `next_day!` that returns a `Date` struct for the next day of a provided date. Any Calendar type that contains a date can be used as an argument. So in addition to `Date`, a `DateTime` or `NaiveDateTime` can be used. Also erlang-style tuples with a date or date-time can be used. Example:
+
+```elixir
+{2015, 12, 24} |> Calendar.Date.next_day!
+%Calendar.Date{day: 25, month: 12, year: 2015}
+```
+
+And using a NaiveDateTime containing the date 2015-12-24 would also return a Date struct for 2015-12-25:
+
+```elixir
+Calendar.NaiveDateTime.from_erl!({{2015, 12, 24}, {13, 45, 55}}) |> Calendar.Date.next_day!
+%Calendar.Date{day: 25, month: 12, year: 2015}
+```
+
+In the same fashion other tuples with at least the same amount of information can be used with other modules. E.g.` NaiveDateTime`, `DateTime`, `Time` structs can be used in the `Time` module. `DateTime` structs and erlang style datetime tuples can be used in the `NaiveDateTime` module.
+
+## Date examples
+
+The Date module is used for handling dates.
+
+```elixir
+# You can create a new date with the from_erl! function:
+> jan_first = {2015, 1, 1} |> Calendar.Date.from_erl!
+%Calendar.Date{day: 1, month: 1, year: 2015}
+# Get a date that is 10000 days ahead of that one
+> ten_k_days_later = jan_first |> Calendar.Date.advance!(10000)
+%Calendar.Date{day: 19, month: 5, year: 2042}
+# Get a Range between the two and take 3 dates
+> jan_first..ten_k_days_later |> Enum.take(3)
+[%Calendar.Date{day: 1, month: 1, year: 2015},
+ %Calendar.Date{day: 2, month: 1, year: 2015},
+ %Calendar.Date{day: 3, month: 1, year: 2015}]
+# Is it friday?
+> jan_first |> Calendar.Date.friday?
+false
+# What day of the week is it?
+> jan_first |> Calendar.Date.day_of_the_week
+4 # the fourth day of the week, so thursday
+
+# Use the DateTime module to get the time right now and
+# pipe it to the Date module to get the week number
+> Calendar.DateTime.now_utc |> Calendar.Date.week_number
+{2015, 28}
+```
+
+## DateTime usage examples
 
 For these example first either alias DateTime with this command: `alias Calendar.DateTime` or for use within a module add `use Calendar` to the module.
 
@@ -136,13 +192,22 @@ Documentation can be found at http://hexdocs.pm/calendar/
 If you want to use Calendar with Ecto, there is a library for that:
 Calecto https://github.com/lau/calecto
 
+This makes it easy to save the different types of time and date
+representations to a database. And later work with them in an easy and
+safe manner.
+
 ## Raison d'être
 
-There are many different rules for time zones all over the world and they change
-often. In order to correctly find out what time it is around the world, the
-"tz database" is invaluable. This is (AFAIK) the first pure Elixir library that
-uses the tz database correctly and can easily be updated whenever a new version
-is released.
+The purpose of Calendar is to have an easy to use library for handling
+dates, time and datetimes that gives correct results.
+
+Instead of treating everything as the same kind of datetime, the different
+types (Date, Time, NaiveDateTime, DateTime) provide clarity and safety
+from certain bugs.
+
+Before Calendar, there was no Elixir library with
+with correct time zone support. The timezone information was later
+extracted from Calendar into the Tzdata library.
 
 ## Name change from Kalends, upgrade instructions.
 
@@ -153,7 +218,6 @@ For existing users of Kalends: Kalends has changed its name to Calendar. To upgr
   [Calecto](https://github.com/lau/calecto). In a similair
   fashion replace `Kalecto` with `Calecto` and `:kalecto` with `:calecto`
 - In your `mix.exs` file make sure you are specifying a valid version of :calendar
-  (At least version 0.6.6. See the newest version below.)
 
 ## Known bugs
 
