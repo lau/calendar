@@ -269,6 +269,104 @@ defmodule Calendar.Date do
     date |> to_erl |> :calendar.day_of_the_week
   end
 
+  @doc """
+  Returns `true` if the `date` is a Monday.
+
+  ## Examples
+
+      iex> {2015, 7, 6} |> monday?
+      true
+      iex> {2015, 7, 7} |> monday?
+      false
+  """
+  def monday?(date) do
+    day_of_the_week(date) == 1
+  end
+
+  @doc """
+  Returns `true` if the `date` is a Tuesday.
+
+  ## Examples
+
+      iex> {2015, 7, 6} |> tuesday?
+      false
+      iex> {2015, 7, 7} |> tuesday?
+      true
+  """
+  def tuesday?(date) do
+    day_of_the_week(date) == 2
+  end
+
+  @doc """
+  Returns `true` if the `date` is a Wednesday.
+
+  ## Examples
+
+      iex> {2015, 7, 8} |> wednesday?
+      true
+      iex> {2015, 7, 9} |> wednesday?
+      false
+  """
+  def wednesday?(date) do
+    day_of_the_week(date) == 3
+  end
+
+  @doc """
+  Returns `true` if the `date` is a Thursday.
+
+  ## Examples
+
+      iex> {2015, 7, 9} |> thursday?
+      true
+      iex> {2015, 7, 7} |> thursday?
+      false
+  """
+  def thursday?(date) do
+    day_of_the_week(date) == 4
+  end
+
+  @doc """
+  Returns `true` if the `date` is a Friday.
+
+  ## Examples
+
+      iex> {2015, 7, 10} |> friday?
+      true
+      iex> {2015, 7, 7} |> friday?
+      false
+  """
+  def friday?(date) do
+    day_of_the_week(date) == 5
+  end
+
+  @doc """
+  Returns `true` if the `date` is a Saturday.
+
+  ## Examples
+
+      iex> {2015, 7, 11} |> saturday?
+      true
+      iex> {2015, 7, 7} |> saturday?
+      false
+  """
+  def saturday?(date) do
+    day_of_the_week(date) == 6
+  end
+
+  @doc """
+  Returns `true` if the `date` is a Sunday.
+
+  ## Examples
+
+      iex> {2015, 7, 12} |> sunday?
+      true
+      iex> {2015, 7, 7} |> sunday?
+      false
+  """
+  def sunday?(date) do
+    day_of_the_week(date) == 7
+  end
+
   defp contained_date(date_container), do: ContainsDate.date_struct(date_container)
 end
 
