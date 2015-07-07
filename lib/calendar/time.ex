@@ -144,4 +144,8 @@ end
 defimpl Calendar.ContainsTime, for: Tuple do
   def time_struct({h, m, s}), do: Calendar.Time.from_erl!({h, m, s})
   def time_struct({h, m, s, usec}), do: Calendar.Time.from_erl!({h, m, s}, usec)
+  # datetime tuple
+  def time_struct({{_,_,_},{h, m, s}}), do: Calendar.Time.from_erl!({h, m, s})
+  # datetime tuple with microseconds
+  def time_struct({{_,_,_},{h, m, s, usec}}), do: Calendar.Time.from_erl!({h, m, s}, usec)
 end
