@@ -37,6 +37,7 @@ defmodule Calendar.DateTime.Format.Strftime do
   defp string_for_conv_spec(dt, :R, _) do strftime! dt, "%H:%M" end
   defp string_for_conv_spec(dt, :T, _) do strftime! dt, "%H:%M:%S" end
   defp string_for_conv_spec(dt, :F, _) do strftime! dt, "%Y-%m-%d" end
+  defp string_for_conv_spec(dt, :c, _) do strftime! dt, "%a %b %e %T %Y" end
   defp string_for_conv_spec(dt, :m, _) do "#{dt.month}"|>pad end
   defp string_for_conv_spec(dt, :e, _) do "#{dt.day}"|>pad(2, hd ' ') end
   defp string_for_conv_spec(dt, :d, _) do "#{dt.day}"|>pad end

@@ -71,6 +71,34 @@ defmodule Calendar.DateTime.Format do
   end
 
   @doc """
+  Format a DateTime as an RFC 822 timestamp.
+
+  Note that this format is old and uses only 2 digits to denote the year!
+
+  ## Examples
+      iex> Calendar.DateTime.from_erl!({{2010, 3, 13}, {11, 23, 03}}, "America/Los_Angeles") |> rfc822
+      "Sat, 13 Mar 10 11:23:03 -0800"
+      iex> Calendar.DateTime.from_erl!({{2010, 3, 13}, {11, 23, 03}}, "Etc/UTC") |> rfc822
+      "Sat, 13 Mar 10 11:23:03 +0000"
+  """
+  def rfc822(%Calendar.DateTime{} = dt) do
+    strftime! dt, "%a, %d %b %y %T %z"
+  end
+
+  @doc """
+  Format a DateTime as an RFC 850 timestamp.
+
+  Note that this format is old and uses only 2 digits to denote the year!
+
+  ## Examples
+      iex> Calendar.DateTime.from_erl!({{2010, 3, 13}, {11, 23, 03}}, "America/Los_Angeles") |> rfc850
+      "Sat, 13-Mar-10 11:23:03 PST"
+  """
+  def rfc850(%Calendar.DateTime{} = dt) do
+    strftime! dt, "%a, %d-%b-%y %T %Z"
+  end
+
+  @doc """
   Takes a DateTime.
   Returns a string with the time in RFC3339 (a profile of ISO 8601)
 
