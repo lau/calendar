@@ -297,6 +297,37 @@ defmodule Calendar.Date do
   end
 
   @doc """
+  Day number in year for provided `date`.
+
+  ## Examples
+
+      iex> {2015, 1, 1} |> day_number_in_year
+      1
+      iex> {2015, 2, 1} |> day_number_in_year
+      32
+      # 2015 has 365 days
+      iex> {2015, 12, 31} |> day_number_in_year
+      365
+      # 2000 was leap year and had 366 days
+      iex> {2000, 12, 31} |> day_number_in_year
+      366
+  """
+  def day_number_in_year(date) do
+    date = date |> contained_date
+    day_count_previous_months = Enum.map(previous_months_for_month(date.month),
+      fn month ->
+        :calendar.last_day_of_the_month(date.year, month)
+      end)
+    |> Enum.reduce(0, fn(day_count, acc) -> day_count + acc end)
+    day_count_previous_months+date.day
+  end
+  # a list or range of previous month names
+  defp previous_months_for_month(1), do: []
+  defp previous_months_for_month(month) do
+    1..(month-1)
+  end
+
+  @doc """
   Returns `true` if the `date` is a Monday.
 
   ## Examples
