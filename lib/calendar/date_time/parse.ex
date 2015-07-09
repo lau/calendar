@@ -65,7 +65,7 @@ defmodule Calendar.DateTime.Parse do
     two_digit_year
     |> possible_years(year_guessing_base)
     |> Enum.map(fn year -> {year, abs(year_guessing_base-year)} end)
-    |> Enum.min_by(fn {year, diff} -> diff end)
+    |> Enum.min_by(fn {_year, diff} -> diff end)
     |> elem(0)
   end
   defp possible_years(two_digit_year, year_guessing_base) do
