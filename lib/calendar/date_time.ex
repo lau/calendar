@@ -13,7 +13,7 @@ defmodule Calendar.DateTime do
   defstruct [:year, :month, :day, :hour, :min, :sec, :usec, :timezone, :abbr, :utc_off, :std_off]
 
   @doc """
-  Like DateTime.now("Etc/UTC")
+  Like DateTime.now!("Etc/UTC")
   """
   def now_utc do
     erl_timestamp = :os.timestamp
@@ -29,23 +29,32 @@ defmodule Calendar.DateTime do
 
   ## Examples
 
-      iex > DateTime.now "UTC"
+      iex > DateTime.now! "UTC"
       %Calendar.DateTime{abbr: "UTC", day: 15, hour: 2,
        min: 39, month: 10, sec: 53, std_off: 0, timezone: "UTC", utc_off: 0,
        year: 2014}
 
-      iex > DateTime.now "Europe/Copenhagen"
+      iex > DateTime.now! "Europe/Copenhagen"
       %Calendar.DateTime{abbr: "CEST", day: 15, hour: 4,
        min: 41, month: 10, sec: 1, std_off: 3600, timezone: "Europe/Copenhagen",
        utc_off: 3600, year: 2014}
   """
-  def now("Etc/UTC"), do: now_utc
-  def now(timezone) do
+  def now!("Etc/UTC"), do: now_utc
+  def now!(timezone) do
     {now_utc_secs, usec} = now_utc |> gregorian_seconds_and_usec
     period_list = TimeZoneData.periods_for_time(timezone, now_utc_secs, :utc)
     period = hd period_list
     now_utc_secs + period.utc_off + period.std_off
     |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off, usec)
+  end
+
+  @doc """
+  Like now/1 without a bang. Deprecated version of now!/1
+  """
+  def now(timezone) do
+    IO.puts :stderr, "Warning: now/1 is deprecated. Use now!/1 instead (with a !) " <>
+                     "In the future now/1 will return a tuple with {:ok, [DateTime]}\n" <> Exception.format_stacktrace()
+    now!(timezone)
   end
 
   @doc """

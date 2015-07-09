@@ -4,13 +4,13 @@ defmodule DateTimeTest do
   doctest Calendar.DateTime
 
   test "now" do
-    assert Calendar.DateTime.now("America/Montevideo").year > 1900
+    assert Calendar.DateTime.now!("America/Montevideo").year > 1900
     # the test below needs to be changed if there are changes on Iceland
-    assert Calendar.DateTime.now("Atlantic/Reykjavik").abbr == "GMT"
+    assert Calendar.DateTime.now!("Atlantic/Reykjavik").abbr == "GMT"
   end
 
   test "to erl" do
-    {{year,_,_},{_,_,_}} = Calendar.DateTime.to_erl(Calendar.DateTime.now("UTC"))
+    {{year,_,_},{_,_,_}} = Calendar.DateTime.to_erl(Calendar.DateTime.now!("Etc/UTC"))
     assert year > 1900
   end
 
