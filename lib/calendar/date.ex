@@ -255,18 +255,45 @@ defmodule Calendar.Date do
     Stream.unfold(prev_day!(from_date), fn n -> if n == prev_day!(until_date) do nil else {n, n |> prev_day!} end end)
   end
 
-
   @doc """
   Day of the week as an integer. Monday is 1, Tuesday is 2 and so on.
+  ISO-8601. Sunday is 7.
+  Results can be between 1 and 7.
 
   ## Examples
 
-      iex> {2015, 7, 6} |> day_of_the_week
+      iex> {2015, 7, 6} |> day_of_the_week # Monday
       1
+      iex> {2015, 7, 7} |> day_of_the_week # Tuesday
+      2
+      iex> {2015, 7, 5} |> day_of_the_week # Sunday
+      7
   """
   def day_of_the_week(date) do
     date = date |> contained_date
     date |> to_erl |> :calendar.day_of_the_week
+  end
+
+  @doc """
+  Day of the week as an integer with Sunday being 0.
+  Monday is 1, Tuesday is 2 and so on. Results can be
+  between 0 and 6.
+
+  ## Examples
+
+      iex> {2015, 7, 5} |> day_of_the_week_zb # Sunday
+      0
+      iex> {2015, 7, 6} |> day_of_the_week_zb # Monday
+      1
+      iex> {2015, 7, 7} |> day_of_the_week_zb # Tuesday
+      2
+  """
+  def day_of_the_week_zb(date) do
+    num = date |> day_of_the_week
+    case num do
+      7 -> 0
+      _ -> num
+    end
   end
 
   @doc """
