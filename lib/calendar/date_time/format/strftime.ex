@@ -86,22 +86,11 @@ defmodule Calendar.DateTime.Format.Strftime do
   end
 
   def iso_week_number(dt) do
-    {date, _} = DateTime.to_erl(dt)
-    :calendar.iso_week_number(date)
+    dt |> Calendar.Date.week_number
   end
 
   defp day_number_in_year(dt) do
-    day_count_previous_months = Enum.map(previous_months_for_month(dt.month),
-      fn month ->
-        :calendar.last_day_of_the_month(dt.year, month)
-      end)
-    |> Enum.reduce(0, fn(day_count, acc) -> day_count + acc end)
-    day_count_previous_months+dt.day
-  end
-  # a list or range of previous month names
-  defp previous_months_for_month(1), do: []
-  defp previous_months_for_month(month) do
-    1..(month-1)
+    dt |> Calendar.Date.day_number_in_year
   end
 
   defp day_of_the_week_zero_sunday(dt) do # sunday is 0
@@ -119,8 +108,7 @@ defmodule Calendar.DateTime.Format.Strftime do
 
   defp day_of_the_week_zero_based(dt), do: day_of_the_week(dt)-1 # monday is 0
   defp day_of_the_week(dt) do
-    {date, _} = DateTime.to_erl(dt)
-    :calendar.day_of_the_week(date)
+    dt |> Calendar.Date.day_of_the_week
   end
   defp names_for_language(:en) do
     %{weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
