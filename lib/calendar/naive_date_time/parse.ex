@@ -37,6 +37,10 @@ defmodule Calendar.NaiveDateTime.Parse do
       iex> iso8601("1996-12-19T16:39:57")
       {:ok, %Calendar.NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, usec: nil}, nil}
 
+      # With fractional seconds
+      iex> iso8601("1996-12-19T16:39:57.123")
+      {:ok, %Calendar.NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, usec: 123000}, nil}
+
       # With Z denoting 0 offset
       iex> iso8601("1996-12-19T16:39:57Z")
       {:ok, %Calendar.NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, usec: nil}, 0}
