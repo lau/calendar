@@ -148,6 +148,28 @@ defmodule Calendar.NaiveDateTime do
   end
 
   @doc """
+  If you have a naive datetime and you know the offset, promote it to a
+  UTC DateTime.
+
+  ## Examples
+
+      # A naive datetime at 2:37:22 with a 3600 second offset will return
+      # a UTC DateTime with the same date, but at 1:37:22
+      iex> with_offset_to_datetime_utc {{2014,10,15},{2,37,22}}, 3600
+      {:ok, %Calendar.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 1, min: 37, month: 10, sec: 22, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2014} }
+      iex> with_offset_to_datetime_utc{{2014,10,15},{2,37,22}}, 999_999_999_999_999_999_999_999_999
+      {:error, nil}
+  """
+  def with_offset_to_datetime_utc(ndt, total_utc_offset) do
+    ndt = ndt |> contained_ndt
+    {tag, advanced_ndt} = ndt |> advance(total_utc_offset*-1)
+    case tag do
+      :ok -> to_date_time(advanced_ndt, "Etc/UTC")
+      _ -> {:error, nil}
+    end
+  end
+
+  @doc """
   Takes a NaiveDateTime and an integer.
   Returns the `naive_date_time` advanced by the number
   of seconds found in the `seconds` argument.
