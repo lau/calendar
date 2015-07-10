@@ -3,6 +3,33 @@ defmodule Calendar.NaiveDateTime.Parse do
   import Calendar.ParseUtil
 
   @doc """
+  Parse ASN.1 GeneralizedTime.
+
+  Returns tuple with {:ok, [NaiveDateTime], UTC offset (optional)}
+
+  ## Examples
+
+      iex> "19851106210627.3" |> asn1_generalized
+      {:ok, %Calendar.NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, min: 6, sec: 27, usec: 300_000}, nil}
+      iex> "19851106210627.3Z" |> asn1_generalized
+      {:ok, %Calendar.NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, min: 6, sec: 27, usec: 300_000}, 0}
+      iex> "19851106210627.3-5000" |> asn1_generalized
+      {:ok, %Calendar.NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, min: 6, sec: 27, usec: 300_000}, -180000}
+  """
+  def asn1_generalized(string) do
+    captured = string |> capture_generalized_time_string
+    if captured do
+      parse_captured_iso8601(captured, captured["z"], captured["offset_hours"], captured["offset_mins"])
+    else
+      {:bad_format, nil, nil}
+    end
+  end
+  defp capture_generalized_time_string(string) do
+    ~r/(?<year>[\d]{4})(?<month>[\d]{2})(?<day>[\d]{2})(?<hour>[\d]{2})(?<min>[\d]{2})(?<sec>[\d]{2})(\.(?<fraction>[\d]+))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2})(?<offset_mins>[\d]{2}))?/
+    |> Regex.named_captures string
+  end
+
+  @doc """
   Parses a "C time" string.
 
   ## Examples
