@@ -88,6 +88,47 @@ defmodule Calendar.Time do
     {h12, time.min, time.sec, time.usec, ampm}
   end
 
+  @doc """
+  The number of the second in the day with 00:00:00 being second 1
+  and 23:59:59 being number 86400
+
+  ## Examples
+
+      iex> {0, 0, 0} |> second_in_day
+      1
+      iex> {23, 59, 59} |> second_in_day
+      86400
+  """
+  def second_in_day(time) do
+    time = time |> contained_time
+    ndt = Calendar.NaiveDateTime.from_erl!({{0,1,1}, time|>to_erl})
+    ndt |> Calendar.NaiveDateTime.gregorian_seconds
+    |> +1
+  end
+
+  @doc """
+  Create a Calendar.Time struct from an integer being the number of the
+  second of the day.
+
+  00:00:00 being second 1
+  and 23:59:59 being number 86400
+
+  ## Examples
+
+      iex> 1 |> from_second_in_day
+      {0, 0, 0}
+      iex> 43201 |> from_second_in_day
+      {12, 0, 0}
+      iex> 86400 |> from_second_in_day
+      {23, 59, 59}
+  """
+  def from_second_in_day(second) when second >= 1 and second <= 86400 do
+    {_date, time} = second
+    |> -1
+    |>:calendar.gregorian_seconds_to_datetime
+    time
+  end
+
   defp x24h_to_12_h(0) do {12, :am} end
   defp x24h_to_12_h(12) do {12, :pm} end
   defp x24h_to_12_h(hour) when hour >= 1 and hour < 12 do {hour, :am} end
