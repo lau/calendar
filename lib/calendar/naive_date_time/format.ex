@@ -1,5 +1,5 @@
 defmodule Calendar.NaiveDateTime.Format do
-  alias Calendar.DateTime.Format.Strftime
+  alias Calendar.Strftime
   alias Calendar.NaiveDateTime
 
   @doc """

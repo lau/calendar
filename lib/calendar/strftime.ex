@@ -1,6 +1,7 @@
-defmodule Calendar.DateTime.Format.Strftime do
-  @moduledoc false
-  alias Calendar.DateTime
+defmodule Calendar.Strftime do
+  @moduledoc """
+  Format different types of time representations as strings.
+  """
 
   # documentation for this is in Calendar.Formatter
   def strftime!(dt, string, lang\\:en) do
@@ -85,7 +86,7 @@ defmodule Calendar.DateTime.Format.Strftime do
     Enum.fetch!(names_for_language(lang)[:months], dt.month-1)
   end
 
-  def iso_week_number(dt) do
+  defp iso_week_number(dt) do
     dt |> Calendar.Date.week_number
   end
 
@@ -108,7 +109,7 @@ defmodule Calendar.DateTime.Format.Strftime do
 
   defp day_of_the_week_zero_based(dt), do: day_of_the_week(dt)-1 # monday is 0
   defp day_of_the_week(dt) do
-    dt |> Calendar.Date.day_of_the_week
+    dt |> Calendar.Date.day_of_week
   end
   defp names_for_language(:en) do
     %{weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
