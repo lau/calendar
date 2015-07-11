@@ -49,7 +49,7 @@ Calendar has 4 basic types of structs:
 * `DateTime` - datetimes where the timezone is known e.g. 2015-12-24 14:30:00 in America/New_York or 2015-12-24 17:30:00 in UTC
 * `NaiveDateTime` - datetimes without timezone information e.g. 2015-12-24 14:30:00
 
-## Polymorphism
+## Polymorphism and protocols
 
 The functions of each module are appropriate for that type. For instance the `Date` module has a function `next_day!` that returns a `Date` struct for the next day of a provided date. Any Calendar type that contains a date can be used as an argument. So in addition to `Date`, a `DateTime` or `NaiveDateTime` can be used. Also erlang-style tuples with a date or date-time can be used. Example:
 
@@ -65,7 +65,7 @@ Calendar.NaiveDateTime.from_erl!({{2015, 12, 24}, {13, 45, 55}}) |> Calendar.Dat
 %Calendar.Date{day: 25, month: 12, year: 2015}
 ```
 
-In the same fashion other tuples with at least the same amount of information can be used with other modules. E.g.` NaiveDateTime`, `DateTime`, `Time` structs can be used in the `Time` module. `DateTime` structs and erlang style datetime tuples can be used in the `NaiveDateTime` module.
+In the same fashion other tuples with at least the same amount of information can be used with other modules. E.g.` NaiveDateTime`, `DateTime`, `Time` structs can be used in the `Time` module because they all contain an hour, minute and second. `DateTime` structs and erlang style datetime tuples can be used in the `NaiveDateTime` module because they contain a date and a time.
 
 ## Date examples
 
@@ -96,9 +96,30 @@ false
 {2015, 28}
 ```
 
+## NaiveDateTime
+
+Use NaiveDateTime modules when you have a date-time, but do not know the
+timezone.
+
+```elixir
+# An erlang style datetime tuple advanced 10 seconds
+{{1999, 12, 31}, {23, 59, 59}} |> Calendar.NaiveDateTime.advance!(10)
+%Calendar.NaiveDateTime{day: 1, hour: 0, min: 0, month: 1, sec: 9, usec: nil,
+ year: 2000}
+```
+
 ## DateTime usage examples
 
 For these example first either alias DateTime with this command: `alias Calendar.DateTime` or for use within a module add `use Calendar` to the module.
+
+The time right now for a specified time zone:
+
+```elixir
+cph = DateTime.now! "Europe/Copenhagen"
+%Calendar.DateTime{abbr: "CEST", day: 5, hour: 21,
+ min: 59, month: 10, sec: 24, std_off: 3600, timezone: "Europe/Copenhagen",
+ usec: 678805, utc_off: 3600, year: 2014}
+```
 
 Get a DateTime struct for the 4th of October 2014 at 23:44:32 in the city of
 Montevideo:
@@ -138,8 +159,11 @@ mvd |> DateTime.Format.strftime! "The day is %A. The time in 12 hour notation is
 Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
 
 ```elixir
-mvd |> DateTime.Format.rfc3339
+> mvd |> DateTime.Format.rfc3339
 "2014-10-04T23:44:32-03:00"
+# or ISO 8601 basic
+> mvd |> DateTime.Format.iso_8601_basic
+"20141004T234432-0300"
 ```
 
 Format as a unix timestamp:
@@ -152,19 +176,13 @@ mvd |> DateTime.Format.unix
 Parsing an RFC 3339 timestamp as UTC:
 
 ```elixir
-DateTime.Parse.rfc3339_utc "2014-10-04T23:44:32.4999Z"
+{:ok, parsed} = DateTime.Parse.rfc3339_utc "2014-10-04T23:44:32.4999Z"
 {:ok, %Calendar.DateTime{abbr: "UTC", day: 4, usec: 499900, hour: 23,
         min: 44, month: 10, sec: 32, std_off: 0, timezone: "Etc/UTC",
         utc_off: 0, year: 2014}}
-```
-
-The time right now for a specified time zone:
-
-```elixir
-cph = DateTime.now "Europe/Copenhagen"
-%Calendar.DateTime{abbr: "CEST", day: 5, hour: 21,
- min: 59, month: 10, sec: 24, std_off: 3600, timezone: "Europe/Copenhagen",
- usec: 678805, utc_off: 3600, year: 2014}
+# Format the parsed DateTime as ISO 8601 Basic
+parsed |> DateTime.Format.iso_8601_basic
+"20141004T234432Z"
 ```
 
 Transform a DateTime struct to an Erlang style tuple:
