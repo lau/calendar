@@ -290,18 +290,41 @@ defmodule Calendar.Date do
   ISO-8601. Sunday is 7.
   Results can be between 1 and 7.
 
+  See also `day_of_week_zb/1`
+
   ## Examples
 
-      iex> {2015, 7, 6} |> day_of_the_week # Monday
+      iex> {2015, 7, 6} |> day_of_week # Monday
       1
-      iex> {2015, 7, 7} |> day_of_the_week # Tuesday
+      iex> {2015, 7, 7} |> day_of_week # Tuesday
       2
-      iex> {2015, 7, 5} |> day_of_the_week # Sunday
+      iex> {2015, 7, 5} |> day_of_week # Sunday
       7
   """
-  def day_of_the_week(date) do
+  def day_of_week(date) do
     date = date |> contained_date
     date |> to_erl |> :calendar.day_of_the_week
+  end
+
+  @doc """
+  Day of the week as an integer. Monday is 1, Tuesday is 2 and so on.
+  ISO-8601. Sunday is 7.
+  Results can be between 1 and 7.
+
+  See also `day_of_week_zb/1`
+
+  ## Examples
+
+      iex> {2015, 7, 6} |> day_of_week_name # Monday
+      "Monday"
+      iex> {2015, 7, 7} |> day_of_week_name # Tuesday
+      "Tuesday"
+      iex> {2015, 7, 5} |> day_of_week_name # Sunday
+      "Sunday"
+  """
+  def day_of_week_name(date, lang\\:en) do
+    date = date |> contained_date
+    date |> Calendar.Strftime.strftime!("%A", lang)
   end
 
   @doc """
@@ -311,15 +334,15 @@ defmodule Calendar.Date do
 
   ## Examples
 
-      iex> {2015, 7, 5} |> day_of_the_week_zb # Sunday
+      iex> {2015, 7, 5} |> day_of_week_zb # Sunday
       0
-      iex> {2015, 7, 6} |> day_of_the_week_zb # Monday
+      iex> {2015, 7, 6} |> day_of_week_zb # Monday
       1
-      iex> {2015, 7, 7} |> day_of_the_week_zb # Tuesday
+      iex> {2015, 7, 7} |> day_of_week_zb # Tuesday
       2
   """
-  def day_of_the_week_zb(date) do
-    num = date |> day_of_the_week
+  def day_of_week_zb(date) do
+    num = date |> day_of_week
     case num do
       7 -> 0
       _ -> num
@@ -367,9 +390,7 @@ defmodule Calendar.Date do
       iex> {2015, 7, 7} |> monday?
       false
   """
-  def monday?(date) do
-    day_of_the_week(date) == 1
-  end
+  def monday?(date), do: day_of_week(date) == 1
 
   @doc """
   Returns `true` if the `date` is a Tuesday.
@@ -381,9 +402,7 @@ defmodule Calendar.Date do
       iex> {2015, 7, 7} |> tuesday?
       true
   """
-  def tuesday?(date) do
-    day_of_the_week(date) == 2
-  end
+  def tuesday?(date), do: day_of_week(date) == 2
 
   @doc """
   Returns `true` if the `date` is a Wednesday.
@@ -395,9 +414,7 @@ defmodule Calendar.Date do
       iex> {2015, 7, 9} |> wednesday?
       false
   """
-  def wednesday?(date) do
-    day_of_the_week(date) == 3
-  end
+  def wednesday?(date), do: day_of_week(date) == 3
 
   @doc """
   Returns `true` if the `date` is a Thursday.
@@ -409,9 +426,7 @@ defmodule Calendar.Date do
       iex> {2015, 7, 7} |> thursday?
       false
   """
-  def thursday?(date) do
-    day_of_the_week(date) == 4
-  end
+  def thursday?(date), do: day_of_week(date) == 4
 
   @doc """
   Returns `true` if the `date` is a Friday.
@@ -423,9 +438,7 @@ defmodule Calendar.Date do
       iex> {2015, 7, 7} |> friday?
       false
   """
-  def friday?(date) do
-    day_of_the_week(date) == 5
-  end
+  def friday?(date), do: day_of_week(date) == 5
 
   @doc """
   Returns `true` if the `date` is a Saturday.
@@ -437,9 +450,7 @@ defmodule Calendar.Date do
       iex> {2015, 7, 7} |> saturday?
       false
   """
-  def saturday?(date) do
-    day_of_the_week(date) == 6
-  end
+  def saturday?(date), do: day_of_week(date) == 6
 
   @doc """
   Returns `true` if the `date` is a Sunday.
@@ -451,9 +462,7 @@ defmodule Calendar.Date do
       iex> {2015, 7, 7} |> sunday?
       false
   """
-  def sunday?(date) do
-    day_of_the_week(date) == 7
-  end
+  def sunday?(date), do: day_of_week(date) == 7
 
   defp contained_date(date_container), do: ContainsDate.date_struct(date_container)
 end
