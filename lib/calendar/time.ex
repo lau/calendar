@@ -95,38 +95,99 @@ defmodule Calendar.Time do
   ## Examples
 
       iex> {0, 0, 0} |> second_in_day
-      1
+      0
       iex> {23, 59, 59} |> second_in_day
-      86400
+      86399
   """
   def second_in_day(time) do
     time = time |> contained_time
-    ndt = Calendar.NaiveDateTime.from_erl!({{0,1,1}, time|>to_erl})
-    ndt |> Calendar.NaiveDateTime.gregorian_seconds
-    |> +1
+    time
+    |> to_erl
+    |> :calendar.time_to_seconds
   end
 
   @doc """
   Create a Calendar.Time struct from an integer being the number of the
   second of the day.
 
-  00:00:00 being second 1
-  and 23:59:59 being number 86400
+  00:00:00 being second 0
+  and 23:59:59 being number 86399
 
   ## Examples
 
-      iex> 1 |> from_second_in_day
-      {0, 0, 0}
-      iex> 43201 |> from_second_in_day
-      {12, 0, 0}
-      iex> 86400 |> from_second_in_day
-      {23, 59, 59}
+      iex> 0 |> from_second_in_day
+      %Calendar.Time{hour: 0, min: 0, sec: 0, usec: nil}
+      iex> 43200 |> from_second_in_day
+      %Calendar.Time{hour: 12, min: 0, sec: 0, usec: nil}
+      iex> 86399 |> from_second_in_day
+      %Calendar.Time{hour: 23, min: 59, sec: 59, usec: nil}
   """
-  def from_second_in_day(second) when second >= 1 and second <= 86400 do
-    {_date, time} = second
-    |> -1
-    |>:calendar.gregorian_seconds_to_datetime
+  def from_second_in_day(second) when second >= 0 and second <= 86399 do
+    {h, m, s} = second
+    |> :calendar.seconds_to_time
+    %Calendar.Time{hour: h, min: m, sec: s}
+  end
+
+  @doc """
+  Takes a time and returns a new time with the next second.
+  If the provided time is 23:59:59 it returns a Time for 00:00:00.
+
+  ## Examples
+
+      iex> {12, 0, 0} |> next_second
+      %Calendar.Time{hour: 12, min: 0, sec: 1, usec: nil}
+      # Preserves microseconds
+      iex> {12, 0, 0, 123456} |> next_second
+      %Calendar.Time{hour: 12, min: 0, sec: 1, usec: 123456}
+      # At the end of the day it goes to 00:00:00
+      iex> {23, 59, 59} |> next_second
+      %Calendar.Time{hour: 0, min: 0, sec: 0, usec: nil}
+      iex> {23, 59, 59, 300000} |> next_second
+      %Calendar.Time{hour: 0, min: 0, sec: 0, usec: 300000}
+  """
+  def next_second(time), do: time |> contained_time |> do_next_second
+  defp do_next_second(%Calendar.Time{hour: 23, min: 59, sec: sec, usec: usec}) when sec >= 59 do
+    %Calendar.Time{hour: 0, min: 0, sec: 0, usec: usec}
+  end
+  defp do_next_second(time) do
     time
+    |> second_in_day
+    |> +1
+    |> from_second_in_day
+    |> add_usec_to_time(time.usec)
+  end
+  defp add_usec_to_time(time, nil), do: time
+  defp add_usec_to_time(time, usec) do
+    %{time | :usec => usec}
+  end
+
+  @doc """
+  Takes a time and returns a new time with the previous second.
+  If the provided time is 00:00:00 it returns a Time for 23:59:59.
+
+  ## Examples
+
+      iex> {12, 0, 0} |> prev_second
+      %Calendar.Time{hour: 11, min: 59, sec: 59, usec: nil}
+      # Preserves microseconds
+      iex> {12, 0, 0, 123456} |> prev_second
+      %Calendar.Time{hour: 11, min: 59, sec: 59, usec: 123456}
+      # At the beginning of the day it goes to 23:59:59
+      iex> {0, 0, 0} |> prev_second
+      %Calendar.Time{hour: 23, min: 59, sec: 59, usec: nil}
+      iex> {0, 0, 0, 200_000} |> prev_second
+      %Calendar.Time{hour: 23, min: 59, sec: 59, usec: 200_000}
+  """
+  def prev_second(time), do: time |> contained_time |> do_prev_second
+  defp do_prev_second(%Calendar.Time{hour: 0, min: 0, sec: 0, usec: usec}) do
+    %Calendar.Time{hour: 23, min: 59, sec: 59, usec: usec}
+  end
+  defp do_prev_second(time) do
+    time
+    |> second_in_day
+    |> -1
+    |> from_second_in_day
+    |> add_usec_to_time(time.usec)
   end
 
   defp x24h_to_12_h(0) do {12, :am} end
@@ -189,4 +250,20 @@ defimpl Calendar.ContainsTime, for: Tuple do
   def time_struct({{_,_,_},{h, m, s}}), do: Calendar.Time.from_erl!({h, m, s})
   # datetime tuple with microseconds
   def time_struct({{_,_,_},{h, m, s, usec}}), do: Calendar.Time.from_erl!({h, m, s}, usec)
+end
+
+defimpl Range.Iterator, for: Calendar.Time do
+  alias Calendar.Time
+  def next(first, _ .. last) do
+    if (Time.second_in_day(last)-Time.second_in_day(first))>=0  do
+      &(&1 |> Time.next_second)
+    else
+      &(&1 |> Time.prev_second)
+    end
+  end
+
+  def count(first, _ .. last) do
+    (Time.second_in_day(first)-Time.second_in_day(last))
+    |> abs
+  end
 end
