@@ -271,4 +271,7 @@ defimpl Calendar.ContainsNaiveDateTime, for: Tuple do
   def ndt_struct({{year, month, day}, {hour, min, sec}}) do
     Calendar.NaiveDateTime.from_erl!({{year, month, day}, {hour, min, sec}})
   end
+  def ndt_struct({{year, month, day}, {hour, min, sec, usec}}) do
+    Calendar.NaiveDateTime.from_erl!({{year, month, day}, {hour, min, sec}}, usec)
+  end
 end
