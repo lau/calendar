@@ -76,7 +76,8 @@ defmodule Calendar.Date do
   @doc """
   Takes a Date struct and returns a tuple with the ISO week number
   and the year that the week belongs to.
-  Note that the year returned does not always match the year provided.
+  Note that the year returned is not always the same as the year provided
+  as an argument.
 
       iex> from_erl!({2014,12,31}) |> week_number
       {2015, 1}
@@ -86,6 +87,35 @@ defmodule Calendar.Date do
   def week_number(date) do
     date = date |> contained_date
     :calendar.iso_week_number(date|>to_erl)
+  end
+
+  @doc """
+  Takes a year and an ISO week number and returns the date range.
+
+      iex> dates_for_week_number(2015, 1)
+      %Calendar.Date{year: 2014, month: 12, day: 29}..%Calendar.Date{year: 2015, month: 1, day: 4}
+      iex> dates_for_week_number(2015, 2)
+      %Calendar.Date{year: 2015, month: 1, day: 5}..%Calendar.Date{year: 2015, month: 1, day: 11}
+  """
+  def dates_for_week_number(year, week_num) do
+    gross_range = from_erl!({year-1, 12, 23})..from_erl!({year, 12, 31})
+    list = gross_range |> Enum.filter fn(x) -> in_week?(x, year, week_num) end
+    hd(list)..hd(Enum.reverse(list))
+  end
+  @doc "Like dates_for_week_number/2 but takes a tuple of {year, week_num} instead"
+  def dates_for_week_number({year, week_num}), do: dates_for_week_number(year, week_num)
+
+  @doc """
+  Takes a date, a year and an ISO week number and returns true if the date is in
+  the week.
+
+      iex> {2015, 1, 1} |> in_week? 2015, 1
+      true
+      iex> {2015, 5, 5} |> in_week? 2015, 1
+      false
+  """
+  def in_week?(date, year, week_num) do
+    date |> week_number == {year, week_num}
   end
 
   @doc """
