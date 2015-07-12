@@ -46,7 +46,12 @@ defmodule Calendar.NaiveDateTime do
       iex>from_erl({{2014, 9, 26}, {17, 10, 20}}, 321321)
       {:ok, %Calendar.NaiveDateTime{day: 26, hour: 17, min: 10, month: 9, sec: 20, year: 2014, usec: 321321} }
 
+      # Invalid date
       iex>from_erl({{2014, 99, 99}, {17, 10, 20}})
+      {:error, :invalid_datetime}
+
+      # Invalid time
+      iex>from_erl({{2014, 9, 26}, {17, 70, 20}})
       {:error, :invalid_datetime}
   """
   def from_erl({{year, month, day}, {hour, min, sec}}, usec \\ nil) do
@@ -57,8 +62,9 @@ defmodule Calendar.NaiveDateTime do
     end
   end
 
-  defp validate_erl_datetime({date, _}) do
-    :calendar.valid_date date
+  defp validate_erl_datetime({date, time}) do
+    {time_tag, _ } = Calendar.Time.from_erl(time)
+    :calendar.valid_date(date) && time_tag == :ok
   end
 
   @doc """
@@ -240,14 +246,12 @@ defmodule Calendar.NaiveDateTime do
   end
 
   @doc """
-  Like DateTime.Format.strftime! but for NaiveDateTime.
-
-  Refer to documentation for DateTime.Format.strftime!
-
-      iex> from_erl!({{2014,10,15},{2,37,22}}) |> strftime! "%Y %h %d"
-      "2014 Oct 15"
+  DEPRICATED. Use `Calendar.Strftime.strftime!/3` instead - it works the same way.
   """
   def strftime!(ndt, string, lang \\ :en) do
+    IO.puts :stderr, "Warning: strftime!/1 in Calendar.NaiveDateTime is deprecated." <>
+                     "The function has been moved so use Calendar.Strftime.strftime! instead. " <>
+                     Exception.format_stacktrace()
     ndt
     |> contained_ndt
     |> to_date_time_utc

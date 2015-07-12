@@ -1,6 +1,11 @@
 defmodule FormatterStrfTimeTest do
   use ExUnit.Case, async: true
   alias Calendar.Strftime
+  alias Calendar.DateTime
+  alias Calendar.NaiveDateTime
+  alias Calendar.Date
+  alias Calendar.Time
+  import Strftime
   doctest Strftime
 
   test "strftime" do

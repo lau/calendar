@@ -212,27 +212,17 @@ defmodule Calendar.Date do
   end
 
   @doc """
-  Format date as string.
-
-  Takes
-
-  * `date` - a Date struct
-  * `string` - formatting string
-  * `lang` (optional) - language code
-
-  ## Examples
-
-      iex> strftime!(from_erl!({2014,12,27}), "%Y-%m-%d")
-      "2014-12-27"
-      iex> strftime!({2014,12,27}, "%a, %Y-%m-%d")
-      "Sat, 2014-12-27"
+  DEPRICATED. Use `Calendar.Strftime.strftime!/3` instead - it works the same way.
   """
   def strftime!(date, string, lang \\ :en) do
+    IO.puts :stderr, "Warning: strftime!/1 in Calendar.Date is deprecated." <>
+                     "The function has been moved so use Calendar.Strftime.strftime! instead. " <>
+                     Exception.format_stacktrace()
     date = contained_date(date)
     date_erl = date |> to_erl
     {date_erl, {0, 0, 0}}
     |> NaiveDateTime.from_erl!
-    |> NaiveDateTime.strftime! string, lang
+    |> Calendar.Strftime.strftime! string, lang
   end
 
   @doc """
@@ -307,11 +297,8 @@ defmodule Calendar.Date do
   end
 
   @doc """
-  Day of the week as an integer. Monday is 1, Tuesday is 2 and so on.
-  ISO-8601. Sunday is 7.
-  Results can be between 1 and 7.
-
-  See also `day_of_week_zb/1`
+  The name of the day of the week as a string.
+  Takes a language code as the second argument. Defaults to :en for English.
 
   ## Examples
 

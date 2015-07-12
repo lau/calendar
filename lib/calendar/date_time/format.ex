@@ -4,56 +4,12 @@ defmodule Calendar.DateTime.Format do
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
 
   @doc """
-  Generate a string from a DateTime formatted by a format string. Similar to strftime! known from UNIX.
-
-  # Example
-      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%A %Y-%m-%e %H:%M:%S"
-      "Saturday 2014-09- 6 17:10:20"
-
-      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%a %d.%m.%y"
-      "Sat 06.09.14"
-
-      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%A %d/%m/%Y", :da
-      "lørdag 06/09/2014"
-
-      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"UTC") |> DateTime.Format.strftime! "%A %d/%m/%Y", :es
-      "sábado 06/09/2014"
-
-  | conversion spec. | Description                                                     | Example            |
-  | -----------------|:---------------------------------------------------------------:| ------------------:|
-  | %a               | Abbreviated name of day                                         | _Mon_              |
-  | %A               | Full name of day                                                | _Monday_           |
-  | %b               | Abbreviated month name                                          | _Jan_              |
-  | %h               | (Equivalent to %b)                                              |                    |
-  | %B               | Full month name                                                 | _January_          |
-  | %j               | Day of the year as a decimal number (001 to 366).               | _002_              |
-  | %u               | Day of the week as a decimal number (1 through 7). Also see %w  | _1_ for Monday     |
-  | %w               | Day of the week as a decimal number (0 through 6). Also see %u  | _0_ for Sunday     |
-  | %V               | Week number (ISO 8601). (01 through 53)                         | _02_ for week 2    |
-  | %G               | Year for ISO 8601 week number (see %V). Not the same as %Y!     | _2015_             |
-  | %g               | 2 digit version of %G. Iso week-year. (00 through 99)           | _15_ for 2015      |
-  | %y               | 2 digit version of %Y. (00 through 99)                          | _15_ for 2015      |
-  | %Y               | The year in four digits. (0001 through 9999)                    | _2015_             |
-  | %C               | Century number as two digits. 21st century will be 20.          | _20_ for year 2015 |
-  | %I               | Hour as decimal number using 12 hour clock. (01-12)             | _07_ for 19:00     |
-  | %l               | Like %I but with single digits preceded by a space.             | _7_ for 19:00     |
-  | %P               | am or pm for 12 hour clock. In lower case.                      | _pm_ for 19:00     |
-  | %p               | AM or PM for 12 hour clock. In upper case.                      | _PM_ for 19:00     |
-  | %r               | Time in 12 hour notation. Equivalent to %I:%M:%S %p.            | _07:25:41 PM_      |
-  | %R               | Time in 24 hour notation excluding seconds. Equivalent of %H:%M.| _19:25_            |
-  | %T               | Time in 24 hour notation. Equivalent of %H:%M:%S.               | _19:25:41_         |
-  | %F               | Date in ISO 8601 format. Equivalent of %Y-%m-%d.                | _2015-02-05_       |
-  | %m               | Month as decimal number (01-12).                                | _01_ for January   |
-  | %e               | Day of the month as decimal number. Leading space if 1-digit.   | _5_ for 2015-02-05|
-  | %d               | Day of the month as decimal number. Leading zero. (01-31).      | _05_ for 2015-02-05|
-  | %H               | Hour as decimal number using 24 hour clock (00-23).             | _08_ for 08:25     |
-  | %k               | Like %H, but with leading space instead of leading zero.        | _8_ for 08:25     |
-  | %M               | Minute as decimal number (00-59).                               | _04_ for 19:04     |
-  | %S               | Seconds as decimal number (00-60).                              | _02_ for 19:04:02  |
-  | %z               | Hour and minute timezone offset from UTC.                       | _-0200_            |
-  | %Z               | Time zone abbreviation. Sometimes depends on DST.               | _UYST_             |
+  Deprecated in this module: The function has instead been moved to the `Calendar.Strftime` module.
   """
   def strftime!(dt, string, lang\\:en) do
+    IO.puts :stderr, "Warning: strftime!/1 in Calendar.DateTime.Format is deprecated." <>
+                     "The function has been moved so use Calendar.Strftime.strftime! instead. " <>
+                     Exception.format_stacktrace()
     Strftime.strftime!(dt, string, lang)
   end
 
@@ -67,7 +23,7 @@ defmodule Calendar.DateTime.Format do
       "Sat, 13 Mar 2010 11:23:03 +0000"
   """
   def rfc2822(%Calendar.DateTime{} = dt) do
-    strftime! dt, "%a, %d %b %Y %T %z"
+    Strftime.strftime! dt, "%a, %d %b %Y %T %z"
   end
 
   @doc """
@@ -82,7 +38,7 @@ defmodule Calendar.DateTime.Format do
       "Sat, 13 Mar 10 11:23:03 +0000"
   """
   def rfc822(%Calendar.DateTime{} = dt) do
-    strftime! dt, "%a, %d %b %y %T %z"
+    Strftime.strftime! dt, "%a, %d %b %y %T %z"
   end
 
   @doc """
@@ -95,7 +51,7 @@ defmodule Calendar.DateTime.Format do
       "Sat, 13-Mar-10 11:23:03 PST"
   """
   def rfc850(%Calendar.DateTime{} = dt) do
-    strftime! dt, "%a, %d-%b-%y %T %Z"
+    Strftime.strftime! dt, "%a, %d-%b-%y %T %Z"
   end
 
   @doc """
