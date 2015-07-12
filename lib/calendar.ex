@@ -10,6 +10,8 @@ defmodule Calendar do
       alias Calendar.Date
       alias Calendar.Time
       alias Calendar.TimeZoneData
+      alias Calendar.TzPeriod
+      alias Calendar.Strftime
     end
   end
 end
