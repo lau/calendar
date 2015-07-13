@@ -18,36 +18,20 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.7.0"},  ]
+  [  {:calendar, "~> 0.8.0"},  ]
 end
 ```
 
 Then run `mix deps.get` which will fetch Calendar via the hex package manager.
 
-You can then call Calendar functions like this: `Calendar.DateTime.now_utc`. But in order to avoid typing Calendar all the time you can add `use Calendar` to your modules. This aliases Calendar modules such as `DateTime`, `Time`, `Date` and `NaiveDateTime`. Which means that you can call for instance `DateTime.now_utc` without writing `Calendar.` Example:
-
-```elixir
-defmodule NewYearsHttpLib do
-  use Calendar
-
-  def httpdate_new_years(year) do
-    {:ok, dt} = DateTime.from_erl({{year,1,1},{0,0,0}}, "Etc/UTC")
-    DateTime.Format.httpdate(dt)
-  end
-
-  # Calling httpdate_new_years(2015) will return
-  # "Thu, 01 Jan 2015 00:00:00 GMT"
-end
-```
-
 ## Types
 
 Calendar has 4 basic types of structs:
 
-* `Date` - a simple date without time e.g. 2015-12-24
-* `Time` - a simple time without a date e.g. 14:30:00 or 15:21:12.532985
-* `DateTime` - datetimes where the timezone is known e.g. 2015-12-24 14:30:00 in America/New_York or 2015-12-24 17:30:00 in UTC
-* `NaiveDateTime` - datetimes without timezone information e.g. 2015-12-24 14:30:00
+* `Date` - a simple date without time e.g. `2015-12-24`
+* `Time` - a simple time without a date e.g. `14:30:00` or `15:21:12.532985`
+* `NaiveDateTime` - datetimes without timezone information e.g. `2015-12-24 14:30:00`
+* `DateTime` - datetimes where the proper timezone name is known e.g. `2015-12-24 14:30:00` in `America/New_York` or `2015-12-24 17:30:00` in `Etc/UTC`
 
 ## Polymorphism and protocols
 
@@ -87,13 +71,21 @@ The Date module is used for handling dates.
 > jan_first |> Calendar.Date.friday?
 false
 # What day of the week is it?
-> jan_first |> Calendar.Date.day_of_the_week
-4 # the fourth day of the week, so thursday
+> jan_first |> Calendar.Date.day_of_week_name
+"Thursday"
+# In Spanish by passing :es as language code
+jan_first |> Calendar.Date.day_of_week_name :es
+"jueves"
 
 # Use the DateTime module to get the time right now and
 # pipe it to the Date module to get the week number
 > Calendar.DateTime.now_utc |> Calendar.Date.week_number
 {2015, 28}
+# Pipe the week number tuple into another funciton to get a Range
+# of the dates for that week
+> Calendar.DateTime.now_utc |> Calendar.Date.week_number |> Calendar.Date.dates_for_week_number
+%Calendar.Date{day: 6, month: 7,
+ year: 2015}..%Calendar.Date{day: 12, month: 7, year: 2015}
 ```
 
 ## NaiveDateTime
@@ -106,6 +98,16 @@ timezone.
 {{1999, 12, 31}, {23, 59, 59}} |> Calendar.NaiveDateTime.advance!(10)
 %Calendar.NaiveDateTime{day: 1, hour: 0, min: 0, month: 1, sec: 9, usec: nil,
  year: 2000}
+# Parse a "C Time" string.
+> {:ok, ndt} = "Wed Apr  9 07:53:03 2003" |> Calendar.NaiveDateTime.Parse.asctime
+{:ok,
+ %Calendar.NaiveDateTime{day: 9, hour: 7, min: 53, month: 4, sec: 3, usec: nil,
+  year: 2003}}
+# NaiveDateTime.Format.asctime can take a naive datetime and format it
+# as a as a C time string. We format the NaiveDateTime struct we just got from
+# parsing and get the same result as the original input:
+> ndt |> Calendar.NaiveDateTime.Format.asctime
+"Wed Apr  9 07:53:03 2003"
 ```
 
 ## DateTime usage examples
@@ -147,13 +149,6 @@ london = mvd |> DateTime.shift_zone! "Europe/London"
 london |> DateTime.shift_zone! "Etc/UTC"
 %Calendar.DateTime{abbr: "UTC", day: 5, hour: 2, min: 44, month: 10, sec: 32,
  std_off: 0, timezone: "Etc/UTC", usec: nil, utc_off: 0, year: 2014}
-```
-
-Formatting a DateTime using "strftime":
-
-```elixir
-mvd |> DateTime.Format.strftime! "The day is %A. The time in 12 hour notation is %I:%M:%S %p"
-"The day is Saturday. The time in 12 hour notation is 11:44:32 PM"
 ```
 
 Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
@@ -201,6 +196,38 @@ DateTime.from_erl!({{2014,10,4},{23,44,32}}, "Europe/Oslo") |> DateTime.advance(
   std_off: 3600, timezone: "Europe/Oslo", usec: nil, utc_off: 3600, year: 2014}}
 ```
 
+## String formatting
+
+Calendar has polymorphic string formatting that does not get you into
+trouble by silently using fake data.
+
+If you need a well known format, such as RFC 3339 the `DateTime.Format` and
+`NaiveDateTime.Format` modules have functions for a lot of those. In case you
+want to do something custom or want to format simple `Date`s or `Time`s, you
+can use the `Strftime` module. It uses formatting strings already known from
+the strftime "standard".
+
+The strftime function takes all the struct types: Date, Time, DateTime,
+NaiveDateTime and datetime tuples. You just have to make sure that the
+conversion specs (the codes with the %-signs) are appropriate for whatever is
+input.
+
+```elixir
+# a Date struct works fine with these conversion specs (%a, %d, %m, %y)
+# because they just require a date
+Calendar.Date.from_erl!({2014,9,6}) |> Calendar.Strftime.strftime "%a %d.%m.%y"
+{:ok, "Sat 06.09.14"}
+# A tuple like this is treated as a NaiveDateTime and also works because
+# it contains a date.
+{{2014,9,6}, {12, 13, 34}} |> Calendar.Strftime.strftime "%a %d.%m.%y"
+{:ok, "Sat 06.09.14"}
+# Trying to use date conversion specs and passing a Time struct results in an
+# error because a Time struct does not have the year or any other of the
+# data necessary for the string "%a %d.%m.%y"
+Calendar.Time.from_erl!({12, 30, 59}) |> Calendar.Strftime.strftime "%a %d.%m.%y"
+{:error, :missing_data_for_conversion_spec}
+```
+
 ## Documentation
 
 Documentation can be found at http://hexdocs.pm/calendar/
@@ -219,13 +246,31 @@ safe manner.
 The purpose of Calendar is to have an easy to use library for handling
 dates, time and datetimes that gives correct results.
 
-Instead of treating everything as the same kind of datetime, the different
+Instead of treating everything as a datetime, the different
 types (Date, Time, NaiveDateTime, DateTime) provide clarity and safety
 from certain bugs.
 
 Before Calendar, there was no Elixir library with
-with correct time zone support. The timezone information was later
+correct time zone support. The timezone information was later
 extracted from Calendar into the Tzdata library.
+
+## "use" macro
+
+You can then call Calendar functions like this: `Calendar.DateTime.now_utc`. But in order to avoid typing Calendar all the time you can add `use Calendar` to your modules. This aliases Calendar modules such as `DateTime`, `Time`, `Date` and `NaiveDateTime`. Which means that you can call for instance `DateTime.now_utc` without writing `Calendar.` Example:
+
+```elixir
+defmodule NewYearsHttpLib do
+  use Calendar
+
+  def httpdate_new_years(year) do
+    {:ok, dt} = DateTime.from_erl({{year,1,1},{0,0,0}}, "Etc/UTC")
+    DateTime.Format.httpdate(dt)
+  end
+
+  # Calling httpdate_new_years(2015) will return
+  # "Thu, 01 Jan 2015 00:00:00 GMT"
+end
+```
 
 ## Name change from Kalends, upgrade instructions.
 

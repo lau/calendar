@@ -1,5 +1,22 @@
 # Changelog
+### Changed
 
+- DateTime.now/1 has been deprecated in favor of DateTime.now!/1
+- Deprecate strftime! functions that are not in the Strftime module
+  Existing code calling strftime functions should use the same function
+  with the Strftime module instead.
+
+### Added
+
+- Strftime module
+- function with_offset_to_datetime_utc to NaiveDateTime
+- ISO 8601 Basic formatting to DateTime.Format
+- Date function for day of week numbers with 0 being Sunday
+- Date funciion day_number_in_year
+- DateTime.Parse rfc822
+- second_in_day and from_second_in_day functions to Time
+- Date now has a function for week ranges
+- For NaiveDateTime protocol accept micro erl style tuples
 
 ## [0.7.0] - 2015-07-07
 ### Added
