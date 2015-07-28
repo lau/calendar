@@ -196,6 +196,23 @@ defmodule Calendar.Time do
   defp x24h_to_12_h(hour) when hour > 12 do {hour - 12, :pm} end
 
   @doc """
+  Difference in seconds between two times.
+
+  Takes two Time structs: `first_time` and `second_time`.
+  Subtracts `second_time` from `first_time`.
+
+      iex> from_erl!({0, 0, 30}) |> diff from_erl!({0, 0, 10})
+      20
+      iex> from_erl!({0, 0, 10}) |> diff from_erl!({0, 0, 30})
+      -20
+  """
+  def diff(first_time_cont, second_time_cont) do
+    first_time = contained_time(first_time_cont)
+    second_time = contained_time(second_time_cont)
+    second_in_day(first_time) - second_in_day(second_time)
+  end
+
+  @doc """
   Returns true if provided time is AM in the twelve hour clock
   system. Otherwise false.
 
