@@ -1,4 +1,10 @@
 # Changelog
+
+### Changed
+- Date.dates_for_week_number/2 now returns a list instead of a Range.
+  This was done because custom ranges will probably be deprecated in the future.
+
+## [0.8.0] - 2015-07-14
 ### Changed
 
 - DateTime.now/1 has been deprecated in favor of DateTime.now!/1

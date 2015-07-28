@@ -62,11 +62,6 @@ The Date module is used for handling dates.
 # Get a date that is 10000 days ahead of that one
 > ten_k_days_later = jan_first |> Calendar.Date.advance!(10000)
 %Calendar.Date{day: 19, month: 5, year: 2042}
-# Get a Range between the two and take 3 dates
-> jan_first..ten_k_days_later |> Enum.take(3)
-[%Calendar.Date{day: 1, month: 1, year: 2015},
- %Calendar.Date{day: 2, month: 1, year: 2015},
- %Calendar.Date{day: 3, month: 1, year: 2015}]
 # Is it friday?
 > jan_first |> Calendar.Date.friday?
 false
@@ -81,11 +76,16 @@ jan_first |> Calendar.Date.day_of_week_name :es
 # pipe it to the Date module to get the week number
 > Calendar.DateTime.now_utc |> Calendar.Date.week_number
 {2015, 28}
-# Pipe the week number tuple into another funciton to get a Range
+# Pipe the week number tuple into another function to get a list
 # of the dates for that week
 > Calendar.DateTime.now_utc |> Calendar.Date.week_number |> Calendar.Date.dates_for_week_number
-%Calendar.Date{day: 6, month: 7,
- year: 2015}..%Calendar.Date{day: 12, month: 7, year: 2015}
+[%Calendar.Date{day: 6, month: 7, year: 2015},
+ %Calendar.Date{day: 7, month: 7, year: 2015},
+ %Calendar.Date{day: 8, month: 7, year: 2015},
+ %Calendar.Date{day: 9, month: 7, year: 2015},
+ %Calendar.Date{day: 10, month: 7, year: 2015},
+ %Calendar.Date{day: 11, month: 7, year: 2015},
+ %Calendar.Date{day: 12, month: 7, year: 2015}]
 ```
 
 ## NaiveDateTime
