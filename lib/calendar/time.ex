@@ -20,6 +20,23 @@ defmodule Calendar.Time do
   end
 
   @doc """
+  Takes a Time struct and returns an Ecto style time four-tuple with microseconds.
+
+  If the Time struct has its usec field set to nil, 0 will be used for usec.
+
+  ## Examples
+
+      iex> from_erl!({10, 20, 25}, 123456) |> to_micro_erl
+      {10, 20, 25, 123456}
+      # If `usec` is nil, 0 is used instead as the last element in the tuple
+      iex> {10, 20, 25} |> from_erl! |> to_micro_erl
+      {10, 20, 25, 0}
+  """
+  def to_micro_erl(%Calendar.Time{hour: hour, min: min, sec: sec, usec: usec}) do
+    {hour, min, sec, if(usec != nil) do usec else 0 end}
+  end
+
+  @doc """
   Create a Time struct using an erlang style tuple and optionally a fractional second.
 
       iex> from_erl({20,14,15})

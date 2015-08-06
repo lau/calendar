@@ -1,8 +1,14 @@
 # Changelog
 
 ### Changed
+
 - Date.dates_for_week_number/2 now returns a list instead of a Range.
   This was done because custom ranges will probably be deprecated in the future.
+
+### Added
+
+- Time.diff/2 function (Fabian Keunecke)
+- Time.to_micro_erl function that returns a four-tuple with usec
 
 ## [0.8.0] - 2015-07-14
 ### Changed
