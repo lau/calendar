@@ -1,5 +1,6 @@
 # Changelog
 
+## [0.8.1] - 2015-08-08
 ### Changed
 
 - Date.dates_for_week_number/2 now returns a list instead of a Range.
