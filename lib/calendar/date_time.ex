@@ -49,7 +49,10 @@ defmodule Calendar.DateTime do
   end
 
   @doc """
-  Like now/1 without a bang. Deprecated version of now!/1
+  Deprecated version of `now!/1` with an exclamation point.
+  Works the same way as `now!/1`.
+
+  In the future `now/1` will return a tuple with {:ok, [DateTime]}
   """
   def now(timezone) do
     IO.puts :stderr, "Warning: now/1 is deprecated. Use now!/1 instead (with a !) " <>
