@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.0] - 2015-08-11
+### Added
+
+- Support for Elixir 1.1.0-dev
+
+### Removed
+
+- Range functionality via Range.Iterator has been removed for Date and Time.
+  This was done because it is not going to be supported in Elixir 1.1
+
 ## [0.8.1] - 2015-08-08
 ### Changed
 

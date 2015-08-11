@@ -198,7 +198,7 @@ defmodule Calendar.NaiveDateTime do
       |>from_gregorian_seconds!(ndt.usec)
       {:ok, advanced}
     rescue
-      e in FunctionClauseError -> e
+      FunctionClauseError ->
       {:error, :function_clause_error}
     end
   end

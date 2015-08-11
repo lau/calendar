@@ -104,9 +104,8 @@ defmodule Calendar.Date do
             %Calendar.Date{day: 11, month: 1, year: 2015}]
   """
   def dates_for_week_number(year, week_num) do
-    gross_range = from_erl!({year-1, 12, 23})..from_erl!({year, 12, 31})
-    list = gross_range |> Enum.filter fn(x) -> in_week?(x, year, week_num) end
-    list
+    days_after_until(from_erl!({year-1, 12, 23}), from_erl!({year, 12, 31}))
+    |> Enum.filter fn(x) -> in_week?(x, year, week_num) end
   end
   @doc "Like dates_for_week_number/2 but takes a tuple of {year, week_num} instead"
   def dates_for_week_number({year, week_num}), do: dates_for_week_number(year, week_num)
@@ -475,18 +474,4 @@ defimpl Calendar.ContainsDate, for: Calendar.NaiveDateTime do
 end
 defimpl Calendar.ContainsDate, for: Tuple do
   def date_struct({y, m, d}), do: Calendar.Date.from_erl!({y, m, d})
-end
-
-defimpl Range.Iterator, for: Calendar.Date do
-  def next(first, _ .. last) do
-    if Calendar.Date.diff(last, first)>=0  do
-      &(&1 |> Calendar.Date.next_day!)
-    else
-      &(&1 |> Calendar.Date.prev_day!)
-    end
-  end
-
-  def count(first, _ .. last) do
-    Calendar.Date.diff(last, first) |> abs
-  end
 end

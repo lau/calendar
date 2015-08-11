@@ -285,19 +285,3 @@ defimpl Calendar.ContainsTime, for: Tuple do
   # datetime tuple with microseconds
   def time_struct({{_,_,_},{h, m, s, usec}}), do: Calendar.Time.from_erl!({h, m, s}, usec)
 end
-
-defimpl Range.Iterator, for: Calendar.Time do
-  alias Calendar.Time
-  def next(first, _ .. last) do
-    if (Time.second_in_day(last)-Time.second_in_day(first))>=0  do
-      &(&1 |> Time.next_second)
-    else
-      &(&1 |> Time.prev_second)
-    end
-  end
-
-  def count(first, _ .. last) do
-    (Time.second_in_day(first)-Time.second_in_day(last))
-    |> abs
-  end
-end

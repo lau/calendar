@@ -41,7 +41,6 @@ defmodule Calendar.NaiveDateTime.Parse do
   def asctime(string) do
     cap = string |> capture_asctime_string
     month_num = month_number_for_month_name(cap["month"])
-    cap
     NaiveDateTime.from_erl({{cap["year"]|>to_int, month_num, cap["day"]|>to_int}, {cap["hour"]|>to_int, cap["min"]|>to_int, cap["sec"]|>to_int}})
   end
 

@@ -35,6 +35,7 @@ defmodule Calendar.TimeZoneData do
       iex> Calendar.TimeZoneData.zone_exists? "Europe/Jersey"
       true
   """
+  def zone_exists?("Etc/UTC"), do: true
   def zone_exists?(name), do: TZSource.zone_exists?(name)
 
   @doc """

@@ -18,7 +18,7 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.8.1"},  ]
+  [  {:calendar, "~> 0.9.0"},  ]
 end
 ```
 

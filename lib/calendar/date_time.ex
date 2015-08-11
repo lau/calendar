@@ -136,7 +136,7 @@ defmodule Calendar.DateTime do
       |>shift_zone!(date_time.timezone)
       {:ok, advanced}
     rescue
-      e in FunctionClauseError -> e
+      FunctionClauseError ->
       {:error, :function_clause_error}
     end
   end
