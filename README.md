@@ -241,6 +241,11 @@ This makes it easy to save the different types of time and date
 representations to a database. And later work with them in an easy and
 safe manner.
 
+## Phoenix
+
+If you want to use Calendar with Phoenix, there is a library that
+takes care of that: https://github.com/lau/phoenix_calendar
+
 ## Raison d'être
 
 The purpose of Calendar is to have an easy to use library for handling
