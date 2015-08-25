@@ -18,11 +18,26 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.9.0"},  ]
+  [  {:calendar, "~> 0.10.0"},  ]
 end
 ```
 
+Also add `tzdata` to the list of applications in the mix.exs file:
+
+```elixir
+  def application do
+    [applications: [:logger, :tzdata]]
+  end
+```
+
 Then run `mix deps.get` which will fetch Calendar via the hex package manager.
+
+## Upgrading from versions earlier than 0.10.0
+
+Calendar 0.10.0 supports Tzdata ~> 0.5.1 as well as ~> 0.1.7
+
+With Tzdata 0.5.1 it is now necessary to have tzdata in the application list
+as described above in the "Getting started" secion.
 
 ## Types
 

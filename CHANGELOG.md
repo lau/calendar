@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.0] - 2015-08-25
+
+### Changed
+
+- Now supports Tzdata ~> 0.5.1
+
 ## [0.9.0] - 2015-08-11
 ### Added
 
