@@ -307,6 +307,21 @@ For existing users of Kalends: Kalends has changed its name to Calendar. To upgr
 There are no confirmed bugs as this is written. But if you do find a problem,
 please create an issue on the GitHub page: https://github.com/lau/calendar
 
+## Trouble shooting
+
+Problem: an error like this occours:
+
+```
+** (exit) an exception was raised:
+    ** (ArgumentError) argument error
+        (stdlib) :ets.lookup(:tzdata_current_release, :release_version)
+        lib/tzdata/release_reader.ex:41: Tzdata.ReleaseReader.current_release_from_table/0
+        lib/tzdata/release_reader.ex:13: Tzdata.ReleaseReader.simple_lookup/1
+```
+
+Solution: add :tzdata to the application list in the mix.exs file of your
+project. Refer to the "Getting started" section of this readme.
+
 ## License
 
 Calendar is released under the MIT license. See the LICENSE file.
