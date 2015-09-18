@@ -474,4 +474,6 @@ defimpl Calendar.ContainsDate, for: Calendar.NaiveDateTime do
 end
 defimpl Calendar.ContainsDate, for: Tuple do
   def date_struct({y, m, d}), do: Calendar.Date.from_erl!({y, m, d})
+  def date_struct({{y, m, d}, {_hour, _min, _sec}}), do: Calendar.Date.from_erl!({y, m, d})
+  def date_struct({{y, m, d}, {_hour, _min, _sec, _usec}}), do: Calendar.Date.from_erl!({y, m, d})
 end
