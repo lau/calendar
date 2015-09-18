@@ -1,12 +1,14 @@
 defmodule Calendar.DateTime.Format do
   alias Calendar.DateTime
   alias Calendar.Strftime
+  alias Calendar.ContainsDateTime
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
 
   @doc """
   Deprecated in this module: The function has instead been moved to the `Calendar.Strftime` module.
   """
   def strftime!(dt, string, lang\\:en) do
+    dt = dt |> contained_date_time
     IO.puts :stderr, "Warning: strftime!/1 in Calendar.DateTime.Format is deprecated." <>
                      "The function has been moved so use Calendar.Strftime.strftime! instead. " <>
                      Exception.format_stacktrace()
@@ -22,7 +24,8 @@ defmodule Calendar.DateTime.Format do
       iex> Calendar.DateTime.from_erl!({{2010, 3, 13}, {11, 23, 03}}, "Etc/UTC") |> rfc2822
       "Sat, 13 Mar 2010 11:23:03 +0000"
   """
-  def rfc2822(%Calendar.DateTime{} = dt) do
+  def rfc2822(dt) do
+    dt = dt |> contained_date_time
     Strftime.strftime! dt, "%a, %d %b %Y %T %z"
   end
 
@@ -37,7 +40,8 @@ defmodule Calendar.DateTime.Format do
       iex> Calendar.DateTime.from_erl!({{2010, 3, 13}, {11, 23, 03}}, "Etc/UTC") |> rfc822
       "Sat, 13 Mar 10 11:23:03 +0000"
   """
-  def rfc822(%Calendar.DateTime{} = dt) do
+  def rfc822(dt) do
+    dt = dt |> contained_date_time
     Strftime.strftime! dt, "%a, %d %b %y %T %z"
   end
 
@@ -50,7 +54,8 @@ defmodule Calendar.DateTime.Format do
       iex> Calendar.DateTime.from_erl!({{2010, 3, 13}, {11, 23, 03}}, "America/Los_Angeles") |> rfc850
       "Sat, 13-Mar-10 11:23:03 PST"
   """
-  def rfc850(%Calendar.DateTime{} = dt) do
+  def rfc850(dt) do
+    dt = dt |> contained_date_time
     Strftime.strftime! dt, "%a, %d-%b-%y %T %Z"
   end
 
@@ -65,6 +70,7 @@ defmodule Calendar.DateTime.Format do
       "20140926T171020-0300"
   """
   def iso_8601_basic(dt) do
+    dt = dt |> contained_date_time
     offset_part = rfc3339_offset_part(dt, dt.timezone)
     |> String.replace(":", "")
     Strftime.strftime!(dt, "%Y%m%dT%H%M%S")<>offset_part
@@ -83,14 +89,15 @@ defmodule Calendar.DateTime.Format do
 
   With microseconds
 
-      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20, 5}}, "America/Montevideo") |> Calendar.DateTime.Format.rfc3339
       "2014-09-26T17:10:20.000005-03:00"
   """
-  def rfc3339(dt) do
+  def rfc3339(%Calendar.DateTime{} = dt) do
     Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
     rfc3330_usec_part(dt.usec, 6)<>
     rfc3339_offset_part(dt, dt.timezone)
   end
+  def rfc3339(dt), do: dt |> contained_date_time |> rfc3339
 
   defp rfc3339_offset_part(_, time_zone) when time_zone == "UTC" or time_zone == "Etc/UTC", do: "Z"
   defp rfc3339_offset_part(dt, _) do
@@ -157,10 +164,13 @@ defmodule Calendar.DateTime.Format do
     # if the provided DateTime does not have usec defined, we set it to 0
     rfc3339(%{dt | usec: 0}, decimal_count)
   end
-  def rfc3339(dt, decimal_count) when decimal_count >= 0 and decimal_count <=6 do
+  def rfc3339(%Calendar.DateTime{} = dt, decimal_count) when decimal_count >= 0 and decimal_count <=6 do
     Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
     rfc3330_usec_part(dt.usec, decimal_count)<>
     rfc3339_offset_part(dt, dt.timezone)
+  end
+  def rfc3339(dt, decimal_count) do
+    dt |> contained_date_time |> rfc3339(decimal_count)
   end
 
   @doc """
@@ -175,6 +185,7 @@ defmodule Calendar.DateTime.Format do
       "Sat, 06 Sep 2014 09:09:08 GMT"
   """
   def httpdate(dt) do
+    dt = dt |> contained_date_time
     dt
     |> DateTime.shift_zone!("UTC")
     |> Strftime.strftime!("%a, %d %b %Y %H:%M:%S GMT")
@@ -189,6 +200,7 @@ defmodule Calendar.DateTime.Format do
       1_000_000_000
   """
   def unix(date_time) do
+    date_time = date_time |> contained_date_time
     date_time
     |> DateTime.shift_zone!("UTC")
     |> DateTime.gregorian_seconds
@@ -207,13 +219,16 @@ defmodule Calendar.DateTime.Format do
       iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> DateTime.Format.unix_micro
       1_000_000_000.0
   """
-  def unix_micro(date_time = %Calendar.DateTime{usec: usec}) when usec == nil do
+  def unix_micro(%Calendar.DateTime{usec: usec} = date_time) when usec == nil do
     date_time |> unix |> + 0.0
   end
-  def unix_micro(date_time) do
+  def unix_micro(%Calendar.DateTime{} = date_time) do
     date_time
     |> unix
     |> + (date_time.usec/1_000_000)
+  end
+  def unix_micro(date_time) do
+    date_time |> contained_date_time |> unix_micro
   end
 
   @doc """
@@ -228,6 +243,7 @@ defmodule Calendar.DateTime.Format do
       1_000_000_000_098
   """
   def js_ms(date_time) do
+    date_time = date_time |> contained_date_time
     whole_secs = date_time
     |> unix
     |> Kernel.* 1000
@@ -240,5 +256,9 @@ defmodule Calendar.DateTime.Format do
      |> String.slice(0..2)  # take first 3 numbers to get milliseconds
      |> Integer.parse
      |> elem(0) # return the integer part
+  end
+
+  defp contained_date_time(dt_container) do
+    ContainsDateTime.dt_struct(dt_container)
   end
 end

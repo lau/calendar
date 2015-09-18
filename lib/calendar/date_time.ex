@@ -1,3 +1,10 @@
+defprotocol Calendar.ContainsDateTime do
+  @doc """
+  Returns a Calendar.DateTime struct for the provided data
+  """
+  def dt_struct(data)
+end
+
 defmodule Calendar.DateTime do
   @moduledoc """
   DateTime provides a struct which represents a certain time and date in a
@@ -7,6 +14,7 @@ defmodule Calendar.DateTime do
   DateTime structs.
   """
   alias Calendar.TimeZoneData
+  alias Calendar.ContainsDateTime
   require Calendar.Date
   require Calendar.Time
 
@@ -80,6 +88,7 @@ defmodule Calendar.DateTime do
     %Calendar.DateTime{second_before | sec: 60}
   end
   def shift_zone!(date_time, timezone) do
+    date_time = date_time |> contained_date_time
     date_time
     |>shift_to_utc
     |>shift_from_utc(timezone)
@@ -127,7 +136,8 @@ defmodule Calendar.DateTime do
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York",123456) |> advance(-999999999999)
       {:error, :function_clause_error}
   """
-  def advance(%Calendar.DateTime{} = date_time, seconds) do
+  def advance(date_time, seconds) do
+    date_time = date_time |> contained_date_time
     try do
       in_utc = date_time |> shift_zone!("Etc/UTC")
       greg_secs = in_utc |> gregorian_seconds
@@ -259,12 +269,15 @@ defmodule Calendar.DateTime do
   end
 
   defp shift_to_utc(%Calendar.DateTime{timezone: "Etc/UTC"} = dt), do: dt
-  defp shift_to_utc(date_time) do
+  defp shift_to_utc(%Calendar.DateTime{} = date_time) do
     greg_secs = :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
     period_list = TimeZoneData.periods_for_time(date_time.timezone, greg_secs, :wall)
     period = period_by_offset(period_list, date_time.utc_off, date_time.std_off)
     greg_secs-period.utc_off-period.std_off
     |>from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.usec)
+  end
+  defp shift_to_utc(date_time) do
+    date_time |> contained_date_time |> shift_to_utc
   end
 
   # When we have a list of 2 periods, return the one where UTC offset
@@ -369,6 +382,11 @@ defmodule Calendar.DateTime do
                               utc_off: -10800, std_off: 0, usec: 987654} }
 
   """
+  def from_erl({date, {h, m, s, usec}}, timezone, _ignored_extra_usec) do
+    date_time = {date, {h, m, s}}
+    validity = validate_erl_datetime(date_time, timezone)
+    from_erl_validity(date_time, timezone, validity, usec)
+  end
   def from_erl(date_time, timezone, usec \\ nil) do
     validity = validate_erl_datetime(date_time, timezone)
     from_erl_validity(date_time, timezone, validity, usec)
@@ -480,6 +498,9 @@ defmodule Calendar.DateTime do
   def to_erl(%Calendar.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec}) do
     {{year, month, day}, {hour, min, sec}}
   end
+  def to_erl(date_time) do
+    date_time |> contained_date_time |> to_erl
+  end
 
   @doc """
   Takes a DateTime struct and returns an Ecto style datetime tuple. This is
@@ -502,6 +523,9 @@ defmodule Calendar.DateTime do
   def to_micro_erl(%Calendar.DateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec}) do
     {{year, month, day}, {hour, min, sec, usec}}
   end
+  def to_micro_erl(date_time) do
+    date_time |> contained_date_time |> to_micro_erl
+  end
 
   @doc """
   Takes a DateTime struct and returns a Date struct representing the date part
@@ -510,9 +534,10 @@ defmodule Calendar.DateTime do
       iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Calendar.DateTime.to_date
       %Calendar.Date{day: 15, month: 10, year: 2014}
   """
-  def to_date(dt) do
+  def to_date(%Calendar.DateTime{} = dt) do
     %Calendar.Date{year: dt.year, month: dt.month, day: dt.day}
   end
+  def to_date(dt), do: dt |> contained_date_time |> to_date
 
   @doc """
   Takes a DateTime struct and returns a Time struct representing the time part
@@ -521,9 +546,10 @@ defmodule Calendar.DateTime do
       iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Calendar.DateTime.to_time
       %Calendar.Time{usec: nil, hour: 2, min: 37, sec: 22}
   """
-  def to_time(dt) do
+  def to_time(%Calendar.DateTime{} = dt) do
     %Calendar.Time{hour: dt.hour, min: dt.min, sec: dt.sec, usec: dt.usec}
   end
+  def to_time(dt), do: dt |> contained_date_time |> to_time
 
   @doc """
   Returns a tuple with a Date struct and a Time struct.
@@ -531,9 +557,10 @@ defmodule Calendar.DateTime do
       iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Calendar.DateTime.to_date_and_time
       {%Calendar.Date{day: 15, month: 10, year: 2014}, %Calendar.Time{usec: nil, hour: 2, min: 37, sec: 22}}
   """
-  def to_date_and_time(dt) do
+  def to_date_and_time(%Calendar.DateTime{} = dt) do
     {to_date(dt), to_time(dt)}
   end
+  def to_date_and_time(dt), do: dt |> contained_date_time |> to_date_and_time
 
   @doc """
   Takes an NaiveDateTime and a time zone identifier and returns a DateTime
@@ -567,12 +594,18 @@ defmodule Calendar.DateTime do
       63578970620
   """
   def gregorian_seconds(date_time) do
+    date_time = date_time |> contained_date_time
     :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
   end
 
   def gregorian_seconds_and_usec(date_time) do
+    date_time = date_time |> contained_date_time
     usec = date_time.usec
     {gregorian_seconds(date_time), usec}
+  end
+
+  defp contained_date_time(dt_container) do
+    ContainsDateTime.dt_struct(dt_container)
   end
 
   defp validate_erl_datetime({date, time}, timezone) do
@@ -604,4 +637,8 @@ defmodule Calendar.DateTime do
   defp valid_time_part_of_datetime(_, _, _) do
     false
   end
+end
+
+defimpl Calendar.ContainsDateTime, for: Calendar.DateTime do
+  def dt_struct(data), do: data
 end
