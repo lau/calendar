@@ -4,7 +4,7 @@ defmodule Calendar.Mixfile do
   def project do
     [app: :calendar,
      name: "Calendar",
-     version: "0.10.0",
+     version: "0.10.1",
      elixir: "~> 1.1.0 or ~> 1.0.0 or ~> 1.1.0-dev",
      package: package,
      description: description,
@@ -17,7 +17,7 @@ defmodule Calendar.Mixfile do
 
   def deps do
     [
-      {:tzdata, "~> 0.5.1 or ~> 0.1.7"},
+      {:tzdata, "~> 0.5.2 or ~> 0.1.7"},
       {:ex_doc, "~> 0.8", only: :dev},
       {:inch_ex, only: :docs},
      ]

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.1] - 2015-09-18
+### Added
+
+- Add protocol for DateTime
+- add .iex.exs file with aliases for DateTime, Date, Time etc.
+
 ## [0.10.0] - 2015-08-25
 
 ### Changed
