@@ -22,11 +22,11 @@ defp deps do
 end
 ```
 
-Also add `tzdata` to the list of applications in the mix.exs file:
+Also add `calendar` to the list of applications in the mix.exs file:
 
 ```elixir
   def application do
-    [applications: [:logger, :tzdata]]
+    [applications: [:logger, :calendar]]
   end
 ```
 
@@ -36,7 +36,7 @@ Then run `mix deps.get` which will fetch Calendar via the hex package manager.
 
 Calendar 0.10.0 supports Tzdata ~> 0.5.1 as well as ~> 0.1.7
 
-With Tzdata 0.5.1 it is now necessary to have tzdata in the application list
+With Tzdata 0.5.1 it is now necessary to have calendar in the application list
 as described above in the "Getting started" secion.
 
 ## Types
@@ -319,7 +319,7 @@ Problem: an error like this occours:
         lib/tzdata/release_reader.ex:13: Tzdata.ReleaseReader.simple_lookup/1
 ```
 
-Solution: add :tzdata to the application list in the mix.exs file of your
+Solution: add :calendar to the application list in the mix.exs file of your
 project. Refer to the "Getting started" section of this readme.
 
 ## License
