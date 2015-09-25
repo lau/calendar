@@ -3,7 +3,7 @@ elixir:
   - 1.0.4
   - 1.1.0
 otp_release:
-  - 17.1
+  - 17.3
   - 18.1
 env: MIX_ENV=test
 after_script:
