@@ -78,6 +78,9 @@ defmodule Calendar.NaiveDateTime do
   def to_erl(%Calendar.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec}) do
     {{year, month, day}, {hour, min, sec}}
   end
+  def to_erl(ndt) do
+    ndt |> contained_ndt |> to_erl
+  end
 
   @doc """
   Takes a NaiveDateTime struct and returns an Ecto style datetime tuple. This is
@@ -99,6 +102,9 @@ defmodule Calendar.NaiveDateTime do
   end
   def to_micro_erl(%Calendar.NaiveDateTime{year: year, month: month, day: day, hour: hour, min: min, sec: sec, usec: usec}) do
     {{year, month, day}, {hour, min, sec, usec}}
+  end
+  def to_micro_erl(ndt) do
+    ndt |> contained_ndt |> to_micro_erl
   end
 
   @doc """
