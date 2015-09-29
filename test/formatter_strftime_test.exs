@@ -8,6 +8,14 @@ defmodule FormatterStrfTimeTest do
   import Strftime
   doctest Strftime
 
+  test "polymorphism, naivedatetimes" do
+    date = Date.from_erl!({2011, 11, 1})
+    assert Strftime.strftime!({{2011, 11, 1}, {9, 7, 6}}, "%b") == "Nov"
+    assert Strftime.strftime!({{2011, 11, 1}, {9, 7, 6}}, "%Y") == "2011"
+    assert Strftime.strftime!(date, "%b") == "Nov"
+    assert Strftime.strftime!({{2011, 11, 1}, {9, 7, 6}}, "%M") == "07"
+  end
+
   test "strftime" do
     dt = Calendar.DateTime.from_erl!({{2014, 11, 3}, {1, 41, 2}}, "UTC", 123456)
     dt_sunday = Calendar.DateTime.from_erl!({{2014, 11, 2}, {1, 41, 2}}, "UTC")

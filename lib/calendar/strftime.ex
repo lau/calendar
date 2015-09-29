@@ -1,4 +1,7 @@
 defmodule Calendar.Strftime do
+  alias Calendar.ContainsDate
+  alias Calendar.ContainsTime
+
   @moduledoc """
   Format different types of time representations as strings.
   """
@@ -9,8 +12,18 @@ defmodule Calendar.Strftime do
 
   # Examples
 
+      # Passing NaiveDateTime struct
       iex> {{2014,9,6},{17,10,20}} |> NaiveDateTime.from_erl! |> strftime! "%A %Y-%m-%e %H:%M:%S"
       "Saturday 2014-09- 6 17:10:20"
+      # Passing naive date time tuple
+      iex> {{2014,9,6},{17,10,20}} |> strftime! "%A %Y-%m-%e %H:%M:%S"
+      "Saturday 2014-09- 6 17:10:20"
+      # Passing Date struct
+      iex> {2014,9,6} |> Date.from_erl! |> strftime! "%A %Y-%m-%e"
+      "Saturday 2014-09- 6"
+      # Passing Time struct
+      iex> {17,10,20} |> Time.from_erl! |> strftime! "%H:%M:%S"
+      "17:10:20"
   """
   def strftime!(dt, string, lang\\:en) do
     parse_for_con_specs(string)
@@ -24,6 +37,10 @@ defmodule Calendar.Strftime do
   # Examples
 
       iex> {{2014,9,6},{17,10,20}} |> NaiveDateTime.from_erl! |> strftime "%A %Y-%m-%e %H:%M:%S"
+      {:ok, "Saturday 2014-09- 6 17:10:20"}
+
+      # Passing erlang style naive date time tuple directly
+      iex> {{2014,9,6},{17,10,20}} |> strftime "%A %Y-%m-%e %H:%M:%S"
       {:ok, "Saturday 2014-09- 6 17:10:20"}
 
       iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"Etc/UTC") |> strftime "%A %Y-%m-%e %H:%M:%S"
@@ -102,7 +119,6 @@ defmodule Calendar.Strftime do
   """
   def strftime(dt, string, lang\\:en) do
     try do
-      dt = dt |> tuple_to_naive_datetime
       {:ok, strftime!(dt, string, lang)}
     rescue
       _error in [KeyError, Protocol.UndefinedError] ->
@@ -135,26 +151,26 @@ defmodule Calendar.Strftime do
   defp string_for_conv_spec(dt, :V, _) do "#{elem(iso_week_number(dt),1)}"|>pad end
   defp string_for_conv_spec(dt, :G, _) do "#{elem(iso_week_number(dt),0)}"|>pad(4) end
   defp string_for_conv_spec(dt, :g, _) do string_for_conv_spec(dt, :G, nil)|>String.slice(-2..-1) end
-  defp string_for_conv_spec(dt, :y, _) do "#{dt.year}" |> String.slice(-2..-1) end
-  defp string_for_conv_spec(dt, :Y, _) do "#{dt.year}"|>pad(4) end
-  defp string_for_conv_spec(dt, :C, _) do "#{(dt.year/100.0)|>trunc}" end
-  defp string_for_conv_spec(dt, :I, _) do "#{dt.hour|>x24h_to_12_h|>elem(0)}"|>pad end
-  defp string_for_conv_spec(dt, :l, _) do "#{dt.hour|>x24h_to_12_h|>elem(0)}"|>pad(2, hd ' ') end
-  defp string_for_conv_spec(dt, :P, _) do "#{dt.hour|>x24h_to_12_h|>elem(1)}" end
-  defp string_for_conv_spec(dt, :p, _) do "#{dt.hour|>x24h_to_12_h|>elem(1)}"|>String.upcase end
+  defp string_for_conv_spec(dt, :y, _) do dt=to_date(dt);"#{dt.year}" |> String.slice(-2..-1) end
+  defp string_for_conv_spec(dt, :Y, _) do dt=to_date(dt);"#{dt.year}"|>pad(4) end
+  defp string_for_conv_spec(dt, :C, _) do dt=to_date(dt);"#{(dt.year/100.0)|>trunc}" end
+  defp string_for_conv_spec(dt, :I, _) do dt=to_time(dt);"#{dt.hour|>x24h_to_12_h|>elem(0)}"|>pad end
+  defp string_for_conv_spec(dt, :l, _) do dt=to_time(dt);"#{dt.hour|>x24h_to_12_h|>elem(0)}"|>pad(2, hd ' ') end
+  defp string_for_conv_spec(dt, :P, _) do dt=to_time(dt);"#{dt.hour|>x24h_to_12_h|>elem(1)}" end
+  defp string_for_conv_spec(dt, :p, _) do dt=to_time(dt);"#{dt.hour|>x24h_to_12_h|>elem(1)}"|>String.upcase end
   defp string_for_conv_spec(dt, :r, _) do strftime! dt, "%I:%M:%S %p" end
   defp string_for_conv_spec(dt, :R, _) do strftime! dt, "%H:%M" end
   defp string_for_conv_spec(dt, :T, _) do strftime! dt, "%H:%M:%S" end
   defp string_for_conv_spec(dt, :F, _) do strftime! dt, "%Y-%m-%d" end
-  defp string_for_conv_spec(dt, :c, _) do strftime! dt, "%a %b %e %T %Y" end
+  defp string_for_conv_spec(dt, :c, lang) do strftime! dt, "%a %b %e %T %Y", lang end
   defp string_for_conv_spec(dt, :v, _) do strftime! dt, "%e-%b-%Y" end
-  defp string_for_conv_spec(dt, :m, _) do "#{dt.month}"|>pad end
-  defp string_for_conv_spec(dt, :e, _) do "#{dt.day}"|>pad(2, hd ' ') end
-  defp string_for_conv_spec(dt, :d, _) do "#{dt.day}"|>pad end
-  defp string_for_conv_spec(dt, :H, _) do "#{dt.hour}"|>pad end
-  defp string_for_conv_spec(dt, :k, _) do "#{dt.hour}"|>pad(2, hd ' ') end
-  defp string_for_conv_spec(dt, :M, _) do "#{dt.min}"|>pad end
-  defp string_for_conv_spec(dt, :S, _) do "#{dt.sec}"|>pad end
+  defp string_for_conv_spec(dt, :m, _) do dt=to_date(dt);"#{dt.month}"|>pad end
+  defp string_for_conv_spec(dt, :e, _) do dt=to_date(dt);"#{dt.day}"|>pad(2, hd ' ') end
+  defp string_for_conv_spec(dt, :d, _) do dt=to_date(dt);"#{dt.day}"|>pad end
+  defp string_for_conv_spec(dt, :H, _) do dt=to_time(dt);"#{dt.hour}"|>pad end
+  defp string_for_conv_spec(dt, :k, _) do dt=to_time(dt);"#{dt.hour}"|>pad(2, hd ' ') end
+  defp string_for_conv_spec(dt, :M, _) do dt=to_time(dt);"#{dt.min}"|>pad end
+  defp string_for_conv_spec(dt, :S, _) do dt=to_time(dt);"#{dt.sec}"|>pad end
   defp string_for_conv_spec(dt, :z, _) do z_offset_part(dt) end
   defp string_for_conv_spec(dt, :Z, _) do "#{dt.abbr}" end
 
@@ -182,16 +198,18 @@ defmodule Calendar.Strftime do
   end
 
   defp weekday_abbr(dt, lang) do
-    Enum.fetch!(names_for_language(lang)[:weekdays_abbr], day_of_the_week_zero_based(dt))
+    Enum.fetch!(names_for_language(lang)[:weekdays_abbr], day_of_the_week_off_by_one(dt))
   end
   defp weekday(dt, lang) do
-    Enum.fetch!(names_for_language(lang)[:weekdays], day_of_the_week_zero_based(dt))
+    Enum.fetch!(names_for_language(lang)[:weekdays], day_of_the_week_off_by_one(dt))
   end
 
   defp month_abbr(dt, lang) do
+    dt = dt |> to_date
     Enum.fetch!(names_for_language(lang)[:months_abbr], dt.month-1)
   end
   defp month(dt, lang) do
+    dt = dt |> to_date
     Enum.fetch!(names_for_language(lang)[:months], dt.month-1)
   end
 
@@ -216,10 +234,17 @@ defmodule Calendar.Strftime do
   defp x24h_to_12_h(hour) when hour >= 1 and hour < 12 do {hour, :am} end
   defp x24h_to_12_h(hour) when hour > 12 do {hour - 12, :pm} end
 
-  defp day_of_the_week_zero_based(dt), do: day_of_the_week(dt)-1 # monday is 0
+  defp day_of_the_week_off_by_one(data) do
+    date = to_date(data)
+    date |> day_of_the_week |> - 1
+  end
   defp day_of_the_week(dt) do
     dt |> Calendar.Date.day_of_week
   end
+
+  defp to_date(data), do: ContainsDate.date_struct(data)
+  defp to_time(data), do: ContainsTime.time_struct(data)
+
   defp names_for_language(:en) do
     %{weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
       weekdays_abbr: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],

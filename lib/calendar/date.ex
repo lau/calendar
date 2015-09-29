@@ -191,6 +191,12 @@ defmodule Calendar.Date do
       # Date tuple turned back 2 days
       iex> {2014,12,27} |> advance(-2)
       {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      # When passing a DateTime, NaiveDateTime or datetime tuple
+      # the time part is ignored. A Date struct is returned.
+      iex> {{2014,12,27}, {21,30,59}} |> NaiveDateTime.from_erl! |> advance(-2)
+      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      iex> {{2014,12,27}, {21,30,59}} |> advance(-2)
+      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
   """
   def advance(date, days) when is_integer(days) do
     date = date |> contained_date

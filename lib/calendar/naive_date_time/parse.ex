@@ -44,6 +44,20 @@ defmodule Calendar.NaiveDateTime.Parse do
     NaiveDateTime.from_erl({{cap["year"]|>to_int, month_num, cap["day"]|>to_int}, {cap["hour"]|>to_int, cap["min"]|>to_int, cap["sec"]|>to_int}})
   end
 
+  @doc """
+  Like `asctime/1`, but returns the result without tagging it with :ok.
+
+  ## Examples
+      iex> asctime!("Wed Apr  9 07:53:03 2003")
+      %Calendar.NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, min: 53, sec: 3, usec: nil}
+      iex> asctime!("Thu, Apr 10 07:53:03 2003")
+      %Calendar.NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, min: 53, sec: 3, usec: nil}
+  """
+  def asctime!(string) do
+    {:ok, result} = asctime(string)
+    result
+  end
+
   defp capture_asctime_string(string) do
     ~r/(?<month>[^\d]{3})[\s]+(?<day>[\d]{1,2})[\s]+(?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})[^\d]?(?<year>[\d]{4})/
     |> Regex.named_captures string
