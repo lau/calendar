@@ -25,7 +25,7 @@ defmodule Calendar.Mixfile do
 
   defp package do
     %{ licenses: ["MIT"],
-       contributors: ["Lau Taarnskov"],
+       maintainers: ["Lau Taarnskov"],
        links: %{ "GitHub" => "https://github.com/lau/calendar"},
        files: ~w(lib priv mix.exs README* LICENSE*
                     license* CHANGELOG* changelog* src tzdata) }
