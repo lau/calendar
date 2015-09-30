@@ -128,11 +128,6 @@ defmodule Calendar.Strftime do
     end
   end
 
-  defp tuple_to_naive_datetime({{y, month, d}, {h, min, s}}) do
-    Calendar.NaiveDateTime.from_erl!({{y, month, d}, {h, min, s}})
-  end
-  defp tuple_to_naive_datetime(dt), do: dt
-
   defp parse_for_con_specs(string) do
     Regex.scan(~r/\%[a-zA-Z]/, string)
     |> Enum.map fn(x) -> hd(x)|>String.replace("%","")|>String.to_atom end
