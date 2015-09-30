@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.2] - 2015-09-29
+### Changed
+
+- Make Strftime functions work better with more kinds of input
+
+### Added
+
+- Make NaiveDateTime.to_erl and .to_micro_erl accept any argument that implements ContainsNaiveDateTime.
+- add .iex.exs file alias Calendar.TimeZoneData.
+
 ## [0.10.1] - 2015-09-18
 ### Added
 
