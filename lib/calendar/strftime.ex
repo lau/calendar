@@ -250,7 +250,7 @@ defmodule Calendar.Strftime do
   defp names_for_language(:da) do
     %{weekdays: ["mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag"],
       weekdays_abbr: ["man", "tir", "ons", "tor", "fre", "lør", "søn"],
-      months: ["Januar", "Februar", "Marts", "April", "Maj", "Juni", "Juli", "August", "September", "Oktober", "November", "December"],
+      months: ["januar", "februar", "marts", "april", "maj", "juni", "juli", "august", "september", "oktober", "november", "december"],
       months_abbr: ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"],
     }
   end
