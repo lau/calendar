@@ -233,6 +233,18 @@ defmodule Calendar.DateTime.Parse do
   end
 
   @doc """
+  Like `httpdate/1`, but returns the result without tagging it with :ok
+  in case of success. In case of errors it raises.
+
+      iex> httpdate!("Sat, 06 Sep 2014 09:09:08 GMT")
+      %Calendar.DateTime{year: 2014, month: 9, day: 6, hour: 9, min: 9, sec: 8, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}
+  """
+  def httpdate!(rfc2616_string) do
+    {:ok, dt} = httpdate(rfc2616_string)
+    dt
+  end
+
+  @doc """
   Parse RFC 3339 timestamp strings as UTC. If the timestamp is not in UTC it
   will be shifted to UTC.
 

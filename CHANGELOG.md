@@ -1,5 +1,9 @@
 # Changelog
 
+### Added
+
+- DateTime.Parse.httpdate!/1 function to complement httpdate/1
+
 ## [0.10.2] - 2015-09-29
 ### Changed
 
