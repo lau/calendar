@@ -1,3 +1,11 @@
+defmodule SomethingThatContainsDateTime do
+  defstruct []
+end
+
+defimpl Calendar.ContainsDateTime, for: SomethingThatContainsDateTime do
+  def dt_struct(_), do: Calendar.DateTime.from_erl!({{2015, 1, 1}, {1, 1, 1}}, "UTC", 0)
+end
+
 defmodule DateTimeTest do
   use ExUnit.Case, async: true
   import Calendar.DateTime
@@ -72,5 +80,9 @@ defmodule DateTimeTest do
     assert tag == :ok
     {tag, _date_time} = from_erl({{2015, 7, 1}, {1, 59, 60}}, "Europe/Berlin")
     assert tag == :ok
+  end
+
+  test "to_erl works for anything that contains a date time" do
+    assert to_erl(%SomethingThatContainsDateTime{}) == {{2015, 1, 1}, {1, 1, 1}}
   end
 end
