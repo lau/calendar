@@ -15,8 +15,9 @@ defmodule Calendar.Time do
   @doc """
   Takes a Time struct and returns an erlang style time tuple.
   """
-  def to_erl(%Calendar.Time{hour: hour, min: min, sec: sec}) do
-    {hour, min, sec}
+  def to_erl(time) do
+    time = time |> contained_time
+    {time.hour, time.min, time.sec}
   end
 
   @doc """
