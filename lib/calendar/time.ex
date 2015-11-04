@@ -14,11 +14,18 @@ defmodule Calendar.Time do
 
   @doc """
   Takes a Time struct and returns an erlang style time tuple.
+
+  ## Examples
+
+      iex> from_erl!({10, 20, 25}, 123456) |> to_erl
+      {10, 20, 25}
+      iex> {10, 20, 25} |> to_erl
+      {10, 20, 25}
   """
-  def to_erl(time) do
-    time = time |> contained_time
-    {time.hour, time.min, time.sec}
+  def to_erl(%Calendar.Time{hour: hour, min: min, sec: sec}) do
+    {hour, min, sec}
   end
+  def to_erl(t), do: t |> contained_time |> to_erl
 
   @doc """
   Takes a Time struct and returns an Ecto style time four-tuple with microseconds.
@@ -32,10 +39,13 @@ defmodule Calendar.Time do
       # If `usec` is nil, 0 is used instead as the last element in the tuple
       iex> {10, 20, 25} |> from_erl! |> to_micro_erl
       {10, 20, 25, 0}
+      iex> {10, 20, 25} |> to_micro_erl
+      {10, 20, 25, 0}
   """
   def to_micro_erl(%Calendar.Time{hour: hour, min: min, sec: sec, usec: usec}) do
     {hour, min, sec, if(usec != nil) do usec else 0 end}
   end
+  def to_micro_erl(t), do: t |> contained_time |> to_micro_erl
 
   @doc """
   Create a Time struct using an erlang style tuple and optionally a fractional second.
