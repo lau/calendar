@@ -1,8 +1,20 @@
 # Changelog
 
+## [0.11.0] - 2015-11-04
+### Changed
+
+- Added a protocol for translations: `Calendar.CalendarTranslations`.
+  A module `Calendar.DefaultTranslations` is included and used by default.
+  Calendar can be configured to use another module for translations.
+
+- Date.days_after_until/2 is now days_after_until/3 with the 3rd argument
+  for an option to include the first argument in the result.
+
 ### Added
 
 - DateTime.Parse.httpdate!/1 function to complement httpdate/1
+- Date.to_erl and Time.to_erl functions accepts any input that implements
+  the correct Contains... protocol
 
 ## [0.10.2] - 2015-09-29
 ### Changed

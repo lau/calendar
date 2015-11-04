@@ -290,6 +290,8 @@ defmodule Calendar.Date do
 
       iex> days_before_until({2014,12,27}, {2014,12,24}) |> Enum.to_list
       [%Calendar.Date{day: 26, month: 12, year: 2014}, %Calendar.Date{day: 25, month: 12, year: 2014}, %Calendar.Date{day: 24, month: 12, year: 2014}]
+      iex> days_before_until({2014,12,27}, {2014,12,24}, false) |> Enum.to_list
+      [%Calendar.Date{day: 26, month: 12, year: 2014}, %Calendar.Date{day: 25, month: 12, year: 2014}, %Calendar.Date{day: 24, month: 12, year: 2014}]
       iex> days_before_until({2014,12,27}, {2014,12,24}, true) |> Enum.to_list
       [%Calendar.Date{day: 27, month: 12, year: 2014}, %Calendar.Date{day: 26, month: 12, year: 2014}, %Calendar.Date{day: 25, month: 12, year: 2014}, %Calendar.Date{day: 24, month: 12, year: 2014}]
   """
