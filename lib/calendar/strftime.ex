@@ -257,7 +257,13 @@ defmodule Calendar.Strftime do
     data
   end
   defp translation_module do
-    {:ok, trans_mod} = Application.fetch_env(:calendar, :translation_module)
+    fetch_result =  Application.fetch_env(:calendar, :translation_module)
+    if fetch_result == :error do
+      trans_mod = Calendar.DefaultTranslations
+    else
+      {:ok, configured_module} = fetch_result
+      trans_mod = configured_module
+    end
     trans_mod
   end
 end
