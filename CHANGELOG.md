@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.11.1] - 2015-11-04
+### Fixed
+
+- Bug when no translation module was configured.
+
 ## [0.11.0] - 2015-11-04
 ### Changed
 
