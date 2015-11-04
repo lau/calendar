@@ -263,26 +263,43 @@ defmodule Calendar.Date do
 
   @doc """
   Get a stream of dates. Takes a starting date and an end date. Includes end date.
-  Does not include start date.
+  Does not include start date unless `true` is passed
+  as the third argument.
 
-      iex> days_after_until(from_erl!({2014,12,27}), from_erl!({2014,12,29})) |> Enum.to_list
+      iex> days_after_until({2014,12,27}, {2014,12,29}) |> Enum.to_list
       [%Calendar.Date{day: 28, month: 12, year: 2014}, %Calendar.Date{day: 29, month: 12, year: 2014}]
+      iex> days_after_until({2014,12,27}, {2014,12,29}, true) |> Enum.to_list
+      [%Calendar.Date{day: 27, month: 12, year: 2014}, %Calendar.Date{day: 28, month: 12, year: 2014}, %Calendar.Date{day: 29, month: 12, year: 2014}]
   """
-  def days_after_until(from_date, until_date) do
+  def days_after_until(from_date, until_date, include_from_date \\ false) when include_from_date == false do
     from_date = from_date |> contained_date
     until_date = until_date |> contained_date
     Stream.unfold(next_day!(from_date), fn n -> if n == next_day!(until_date) do nil else {n, n |> next_day!} end end)
   end
+  def days_after_until(from_date, until_date, include_from_date) when include_from_date == true do
+    before_from_date = from_date |> contained_date |> prev_day!
+    days_after_until(before_from_date, until_date)
+  end
+
 
   @doc """
   Get a stream of dates going back in time. Takes a starting date and an end date. Includes end date.
   End date should be before start date.
-  Does not include start date.
+  Does not include start date unless `true` is passed
+  as the third argument.
 
-      iex> days_before_until(from_erl!({2014,12,27}), from_erl!({2014,12,24})) |> Enum.to_list
+      iex> days_before_until({2014,12,27}, {2014,12,24}) |> Enum.to_list
       [%Calendar.Date{day: 26, month: 12, year: 2014}, %Calendar.Date{day: 25, month: 12, year: 2014}, %Calendar.Date{day: 24, month: 12, year: 2014}]
+      iex> days_before_until({2014,12,27}, {2014,12,24}, true) |> Enum.to_list
+      [%Calendar.Date{day: 27, month: 12, year: 2014}, %Calendar.Date{day: 26, month: 12, year: 2014}, %Calendar.Date{day: 25, month: 12, year: 2014}, %Calendar.Date{day: 24, month: 12, year: 2014}]
   """
-  def days_before_until(from_date, until_date) do
+  def days_before_until(from_date, until_date,  include_from_date) when include_from_date == true do
+    after_from_date = from_date |> contained_date |> next_day!
+    days_before_until(after_from_date, until_date)
+  end
+  def days_before_until(from_date, until_date, include_from_date \\ false) when include_from_date == false do
+    from_date = from_date |> contained_date
+    until_date = until_date |> contained_date
     Stream.unfold(prev_day!(from_date), fn n -> if n == prev_day!(until_date) do nil else {n, n |> prev_day!} end end)
   end
 
