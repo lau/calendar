@@ -193,19 +193,19 @@ defmodule Calendar.Strftime do
   end
 
   defp weekday_abbr(dt, lang) do
-    Enum.fetch!(names_for_language(lang)[:weekdays_abbr], day_of_the_week_off_by_one(dt))
+    Enum.fetch!(weekday_names_abbr(lang), day_of_the_week_off_by_one(dt))
   end
   defp weekday(dt, lang) do
-    Enum.fetch!(names_for_language(lang)[:weekdays], day_of_the_week_off_by_one(dt))
+    Enum.fetch!(weekday_names(lang), day_of_the_week_off_by_one(dt))
   end
 
   defp month_abbr(dt, lang) do
     dt = dt |> to_date
-    Enum.fetch!(names_for_language(lang)[:months_abbr], dt.month-1)
+    Enum.fetch!(month_names_abbr(lang), dt.month-1)
   end
   defp month(dt, lang) do
     dt = dt |> to_date
-    Enum.fetch!(names_for_language(lang)[:months], dt.month-1)
+    Enum.fetch!(month_names(lang), dt.month-1)
   end
 
   defp iso_week_number(dt) do
@@ -240,28 +240,89 @@ defmodule Calendar.Strftime do
   defp to_date(data), do: ContainsDate.date_struct(data)
   defp to_time(data), do: ContainsTime.time_struct(data)
 
-  defp names_for_language(:en) do
-    %{weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-      weekdays_abbr: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-      months_abbr: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    }
+  defp weekday_names(lang) do
+    {:ok, data} = translation_module.weekday_names(lang)
+    data
   end
-  defp names_for_language(:da) do
-    %{weekdays: ["mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag"],
-      weekdays_abbr: ["man", "tir", "ons", "tor", "fre", "lør", "søn"],
-      months: ["januar", "februar", "marts", "april", "maj", "juni", "juli", "august", "september", "oktober", "november", "december"],
-      months_abbr: ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"],
-    }
+  defp weekday_names_abbr(lang) do
+    {:ok, data} = translation_module.weekday_names_abbr(lang)
+    data
   end
-  defp names_for_language(:es) do
-    %{weekdays: ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"],
-      weekdays_abbr: ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"],
-      months: ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre" ],
-      months_abbr: ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
-    }
+  defp month_names(lang) do
+    {:ok, data} = translation_module.month_names(lang)
+    data
   end
-  defp names_for_language(_) do
-    raise "unknown language code"
+  defp month_names_abbr(lang) do
+    {:ok, data} = translation_module.month_names_abbr(lang)
+    data
+  end
+  defp translation_module do
+    {:ok, trans_mod} = Application.fetch_env(:calendar, :translation_module)
+    trans_mod
+  end
+end
+
+defprotocol Calendar.CalendarTranslations do
+  @doc """
+  Returns a list of weekdays for the provided language code.
+  The first element in Monday. The last is Sunday.
+  """
+  def weekday_names(language_code)
+
+  @doc """
+  Returns a list of abbreviated weekdays for the provided language code.
+  """
+  def weekday_names_abbr(language_code)
+
+  @doc """
+  Returns a list of months for the provided language code.
+  """
+  def month_names(language_code)
+
+  @doc """
+  Returns a list of months for the provided language code.
+  """
+  def month_names_abbr(language_code)
+end
+
+defmodule Calendar.DefaultTranslations do
+  def weekday_names(:en) do
+    {:ok, ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] }
+  end
+  def weekday_names(:da) do
+    {:ok, ["mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag"] }
+  end
+  def weekday_names(:es) do
+    {:ok,  ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"] }
+  end
+
+  def weekday_names_abbr(:en) do
+    {:ok, ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] }
+  end
+  def weekday_names_abbr(:da) do
+    {:ok, ["man", "tir", "ons", "tor", "fre", "lør", "søn"] }
+  end
+  def weekday_names_abbr(:es) do
+    {:ok,  ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"] }
+  end
+
+  def month_names(:en) do
+    {:ok, ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] }
+  end
+  def month_names(:da) do
+    {:ok, ["januar", "februar", "marts", "april", "maj", "juni", "juli", "august", "september", "oktober", "november", "december"]}
+  end
+  def month_names(:es) do
+    {:ok, ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre" ] }
+  end
+
+  def month_names_abbr(:en) do
+    {:ok, ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] }
+  end
+  def month_names_abbr(:da) do
+    {:ok, ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"] }
+  end
+  def month_names_abbr(:es) do
+    {:ok, ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"] }
   end
 end
