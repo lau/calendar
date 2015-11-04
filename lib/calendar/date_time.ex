@@ -382,12 +382,13 @@ defmodule Calendar.DateTime do
                               utc_off: -10800, std_off: 0, usec: 987654} }
 
   """
+  def from_erl(date_time, timezone, usec \\ nil)
   def from_erl({date, {h, m, s, usec}}, timezone, _ignored_extra_usec) do
     date_time = {date, {h, m, s}}
     validity = validate_erl_datetime(date_time, timezone)
     from_erl_validity(date_time, timezone, validity, usec)
   end
-  def from_erl(date_time, timezone, usec \\ nil) do
+  def from_erl(date_time, timezone, usec) do
     validity = validate_erl_datetime(date_time, timezone)
     from_erl_validity(date_time, timezone, validity, usec)
   end
