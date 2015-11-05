@@ -268,29 +268,6 @@ defmodule Calendar.Strftime do
   end
 end
 
-defprotocol Calendar.CalendarTranslations do
-  @doc """
-  Returns a list of weekdays for the provided language code.
-  The first element in Monday. The last is Sunday.
-  """
-  def weekday_names(language_code)
-
-  @doc """
-  Returns a list of abbreviated weekdays for the provided language code.
-  """
-  def weekday_names_abbr(language_code)
-
-  @doc """
-  Returns a list of months for the provided language code.
-  """
-  def month_names(language_code)
-
-  @doc """
-  Returns a list of months for the provided language code.
-  """
-  def month_names_abbr(language_code)
-end
-
 defmodule Calendar.DefaultTranslations do
   def weekday_names(:en) do
     {:ok, ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] }
