@@ -123,8 +123,8 @@ defmodule Calendar.Strftime do
     rescue
       _error in [KeyError, Protocol.UndefinedError] ->
         {:error, :missing_data_for_conversion_spec}
-      _error ->
-        {:error, nil}
+      error ->
+        {:error, error}
     end
   end
 
@@ -278,6 +278,9 @@ defmodule Calendar.DefaultTranslations do
   def weekday_names(:es) do
     {:ok,  ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"] }
   end
+  def weekday_names(:nl) do
+    {:ok, ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag"] }
+  end
 
   def weekday_names_abbr(:en) do
     {:ok, ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] }
@@ -287,6 +290,9 @@ defmodule Calendar.DefaultTranslations do
   end
   def weekday_names_abbr(:es) do
     {:ok,  ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"] }
+  end
+  def weekday_names_abbr(:nl) do
+    {:ok,  ["ma", "di", "wo", "do", "vr", "za", "zo"] }
   end
 
   def month_names(:en) do
@@ -298,6 +304,9 @@ defmodule Calendar.DefaultTranslations do
   def month_names(:es) do
     {:ok, ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre" ] }
   end
+  def month_names(:nl) do
+    {:ok, ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december" ] }
+  end
 
   def month_names_abbr(:en) do
     {:ok, ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] }
@@ -307,5 +316,8 @@ defmodule Calendar.DefaultTranslations do
   end
   def month_names_abbr(:es) do
     {:ok, ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"] }
+  end
+  def month_names_abbr(:nl) do
+    {:ok, ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"] }
   end
 end
