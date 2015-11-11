@@ -638,6 +638,22 @@ defmodule Calendar.DateTime do
   defp valid_time_part_of_datetime(_, _, _) do
     false
   end
+
+  @doc """
+  Returns true when first is before the second.
+  """
+  def before?(first, second) do
+    {:ok, sec, usec} = diff(first, second)
+    sec < 0 || usec < 0
+  end
+
+  @doc """
+  Returns true when first is after second
+  """
+  def after?(first, second) do
+    {:ok, sec, usec} = diff(first, second)
+    sec > 0 || usec > 0
+  end
 end
 
 defimpl Calendar.ContainsDateTime, for: Calendar.DateTime do
