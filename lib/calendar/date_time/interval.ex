@@ -1,4 +1,4 @@
-defmodule Calendar.Interval do
+defmodule Calendar.DateTime.Interval do
 @moduledoc """
 An `Interval` consists of a start and an end `DateTime`.
 """
@@ -13,7 +13,7 @@ An `Interval` consists of a start and an end `DateTime`.
   Returns true when the interval contains the given datetime.
   """
   @spec includes?(t, %Calendar.DateTime{}) :: boolean
-  def includes?(%Interval{from: from, to: to}, datetime) do
+  def includes?(%DateTime.Interval{from: from, to: to}, datetime) do
     DateTime.before?(from, datetime) && DateTime.after?(to, datetime)
   end
 end
