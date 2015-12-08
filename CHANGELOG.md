@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.11.2] - 2015-12-08
+### Added
+
+- Addded `NaiveDateTime.diff/2` function. It works similarly to `DateTime.diff/2`
+
+### Fixed
+
+- In `DateTime.diff/2` sometimes a difference of less than a second would be returned
+  with positive microseconds, when they should have been negative.
+
 ## [0.11.1] - 2015-11-04
 ### Fixed
 
