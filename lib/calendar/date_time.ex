@@ -169,6 +169,12 @@ defmodule Calendar.DateTime do
 
   Returns tuple with {:ok, seconds, microseconds}
 
+  If the first argument is later (e.g. greater) the second, the result will be positive.
+
+  In case of a negative result the second element (seconds) will be negative. This is always
+  the case if both of the arguments have the microseconds as nil or 0. But if the difference
+  is less than a second and the result is negative, then the microseconds will be negative.
+
   ## Examples
 
       # March 30th 2014 02:00:00 in Central Europe the time changed from
@@ -210,6 +216,13 @@ defmodule Calendar.DateTime do
 
       iex> diff(from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 10), from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 999999))
       {:ok, 0, -999989}
+
+      # 0:29:10.999999 and 0:29:11 should result in -1 microseconds
+      iex> diff(from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC", 999999), from_erl!({{2014,10,2},{0,29,11}}, "Etc/UTC"))
+      {:ok, 0, -1}
+
+      iex> diff(from_erl!({{2014,10,2},{0,29,11}}, "Etc/UTC"), from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC", 999999))
+      {:ok, 0, 1}
   """
   # If any datetime usec is nil, set it to 0
   def diff(%Calendar.DateTime{usec: nil} = first_dt, %Calendar.DateTime{usec: nil} = second_dt) do
@@ -236,6 +249,11 @@ defmodule Calendar.DateTime do
   defp diff_sort_out_decimal({:ok, sec, usec}) when sec > 0 and usec < 0 do
     sec = sec - 1
     usec = 1_000_000 + usec
+    {:ok, sec, usec}
+  end
+  defp diff_sort_out_decimal({:ok, sec, usec}) when sec == -1 and usec > 0 do
+    sec = sec + 1
+    usec = usec - 1_000_000
     {:ok, sec, usec}
   end
   defp diff_sort_out_decimal({:ok, sec, usec}) when sec < 0 and usec > 0 do

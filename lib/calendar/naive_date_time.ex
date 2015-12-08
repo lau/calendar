@@ -245,6 +245,77 @@ defmodule Calendar.NaiveDateTime do
     |> :calendar.datetime_to_gregorian_seconds
   end
 
+  @doc """
+  The difference between two naive datetimes. In seconds and microseconds.
+
+  Returns tuple with {:ok, seconds, microseconds}
+
+  If the first argument is later (e.g. greater) the second, the result will be positive.
+
+  In case of a negative result the second element (seconds) will be negative. This is always
+  the case if both of the arguments have the microseconds as nil or 0. But if the difference
+  is less than a second and the result is negative, then the microseconds will be negative.
+
+  ## Examples
+
+      # The first NaiveDateTime is 40 seconds after the second NaiveDateTime
+      iex> diff({{2014,10,2},{0,29,50}}, {{2014,10,2},{0,29,10}})
+      {:ok, 40, 0}
+      # The first NaiveDateTime is 40 seconds before the second NaiveDateTime
+      iex> diff({{2014,10,2},{0,29,10}}, {{2014,10,2},{0,29,50}})
+      {:ok, -40, 0}
+      iex> diff(from_erl!({{2014,10,2},{0,29,10}},999999), from_erl!({{2014,10,2},{0,29,50}}))
+      {:ok, -39, 1}
+      iex> diff(from_erl!({{2014,10,2},{0,29,10}},999999), from_erl!({{2014,10,2},{0,29,11}}))
+      {:ok, 0, -1}
+      iex> diff(from_erl!({{2014,10,2},{0,29,11}}), from_erl!({{2014,10,2},{0,29,10}},999999))
+      {:ok, 0, 1}
+  """
+  def diff(%Calendar.NaiveDateTime{usec: nil} = first_dt, %Calendar.NaiveDateTime{usec: nil} = second_dt) do
+    diff(Map.put(first_dt, :usec, 0), Map.put(second_dt, :usec, 0))
+  end
+  def diff(%Calendar.NaiveDateTime{usec: nil} = first_dt, %Calendar.NaiveDateTime{} = second_dt) do
+    diff(Map.put(first_dt, :usec, 0), second_dt)
+  end
+  def diff(%Calendar.NaiveDateTime{} = first_dt, %Calendar.NaiveDateTime{usec: nil} = second_dt) do
+    diff(first_dt, Map.put(second_dt, :usec, 0))
+  end
+  def diff(%Calendar.NaiveDateTime{usec: 0} = first_dt, %Calendar.NaiveDateTime{usec: 0} = second_dt) do
+    first_utc = first_dt |> gregorian_seconds
+    second_utc = second_dt |> gregorian_seconds
+    {:ok, first_utc - second_utc, 0}
+  end
+  def diff(%Calendar.NaiveDateTime{usec: first_usec} = first_dt, %Calendar.NaiveDateTime{usec: second_usec} = second_dt) do
+    {:ok, sec, 0} = diff(Map.put(first_dt, :usec, 0), Map.put(second_dt, :usec, 0))
+    usec = first_usec - second_usec
+    diff_sort_out_decimal {:ok, sec, usec}
+  end
+  def diff(ndt1, ndt2) do
+    diff(contained_ndt(ndt1), contained_ndt(ndt2))
+  end
+  # NOTE: this function is copied from DateTime
+  defp diff_sort_out_decimal({:ok, sec, usec}) when sec > 0 and usec < 0 do
+    sec = sec - 1
+    usec = 1_000_000 + usec
+    {:ok, sec, usec}
+  end
+  defp diff_sort_out_decimal({:ok, sec, usec}) when sec == -1 and usec > 0 do
+    sec = sec + 1
+    usec = usec - 1_000_000
+    {:ok, sec, usec}
+  end
+  defp diff_sort_out_decimal({:ok, sec, usec}) when sec < 0 and usec > 0 do
+    sec = sec + 1
+    usec = 1_000_000 - usec
+    {:ok, sec, usec}
+  end
+  defp diff_sort_out_decimal({:ok, sec, usec}) when sec < 0 and usec < 0 do
+    {:ok, sec, abs(usec)}
+  end
+  defp diff_sort_out_decimal({:ok, sec, usec}) do
+    {:ok, sec, usec}
+  end
+
   defp from_gregorian_seconds!(gregorian_seconds, usec) do
     gregorian_seconds
     |>:calendar.gregorian_seconds_to_datetime
