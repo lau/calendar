@@ -141,7 +141,7 @@ defmodule Calendar.NaiveDateTime do
   """
   def to_date_time(ndt, timezone) do
     ndt = ndt |> contained_ndt
-    DateTime.from_erl(to_erl(ndt), timezone)
+    DateTime.from_erl(to_erl(ndt), timezone, ndt.usec)
   end
 
   @doc """
@@ -248,7 +248,7 @@ defmodule Calendar.NaiveDateTime do
   @doc """
   The difference between two naive datetimes. In seconds and microseconds.
 
-  Returns tuple with {:ok, seconds, microseconds}
+  Returns tuple with {:ok, seconds, microseconds, :before or :after or :same_time}
 
   If the first argument is later (e.g. greater) the second, the result will be positive.
 
@@ -260,60 +260,83 @@ defmodule Calendar.NaiveDateTime do
 
       # The first NaiveDateTime is 40 seconds after the second NaiveDateTime
       iex> diff({{2014,10,2},{0,29,50}}, {{2014,10,2},{0,29,10}})
-      {:ok, 40, 0}
+      {:ok, 40, 0, :after}
       # The first NaiveDateTime is 40 seconds before the second NaiveDateTime
       iex> diff({{2014,10,2},{0,29,10}}, {{2014,10,2},{0,29,50}})
-      {:ok, -40, 0}
+      {:ok, -40, 0, :before}
       iex> diff(from_erl!({{2014,10,2},{0,29,10}},999999), from_erl!({{2014,10,2},{0,29,50}}))
-      {:ok, -39, 1}
+      {:ok, -39, 1, :before}
       iex> diff(from_erl!({{2014,10,2},{0,29,10}},999999), from_erl!({{2014,10,2},{0,29,11}}))
-      {:ok, 0, -1}
+      {:ok, 0, -1, :before}
       iex> diff(from_erl!({{2014,10,2},{0,29,11}}), from_erl!({{2014,10,2},{0,29,10}},999999))
-      {:ok, 0, 1}
+      {:ok, 0, 1, :after}
+      iex> diff(from_erl!({{2014,10,2},{0,29,11}}), from_erl!({{2014,10,2},{0,29,11}}))
+      {:ok, 0, 0, :same_time}
   """
-  def diff(%Calendar.NaiveDateTime{usec: nil} = first_dt, %Calendar.NaiveDateTime{usec: nil} = second_dt) do
-    diff(Map.put(first_dt, :usec, 0), Map.put(second_dt, :usec, 0))
-  end
-  def diff(%Calendar.NaiveDateTime{usec: nil} = first_dt, %Calendar.NaiveDateTime{} = second_dt) do
-    diff(Map.put(first_dt, :usec, 0), second_dt)
-  end
-  def diff(%Calendar.NaiveDateTime{} = first_dt, %Calendar.NaiveDateTime{usec: nil} = second_dt) do
-    diff(first_dt, Map.put(second_dt, :usec, 0))
-  end
-  def diff(%Calendar.NaiveDateTime{usec: 0} = first_dt, %Calendar.NaiveDateTime{usec: 0} = second_dt) do
-    first_utc = first_dt |> gregorian_seconds
-    second_utc = second_dt |> gregorian_seconds
-    {:ok, first_utc - second_utc, 0}
-  end
-  def diff(%Calendar.NaiveDateTime{usec: first_usec} = first_dt, %Calendar.NaiveDateTime{usec: second_usec} = second_dt) do
-    {:ok, sec, 0} = diff(Map.put(first_dt, :usec, 0), Map.put(second_dt, :usec, 0))
-    usec = first_usec - second_usec
-    diff_sort_out_decimal {:ok, sec, usec}
+  def diff(%Calendar.NaiveDateTime{} = first_dt, %Calendar.NaiveDateTime{} = second_dt) do
+    first_dt_utc  = first_dt  |> to_date_time_utc
+    second_dt_utc = second_dt |> to_date_time_utc
+    DateTime.diff(first_dt_utc, second_dt_utc)
   end
   def diff(ndt1, ndt2) do
     diff(contained_ndt(ndt1), contained_ndt(ndt2))
   end
-  # NOTE: this function is copied from DateTime
-  defp diff_sort_out_decimal({:ok, sec, usec}) when sec > 0 and usec < 0 do
-    sec = sec - 1
-    usec = 1_000_000 + usec
-    {:ok, sec, usec}
+
+  @doc """
+  Takes a two `NaiveDateTime`s and returns true if the first
+  one is greater than the second. Otherwise false. Greater than
+  means that it is later then the second datetime.
+
+  ## Examples
+
+      iex> {{2014,1,1}, {10,10,10}} |> after? {{1999, 1, 1}, {11, 11, 11}}
+      true
+      iex> {{2014,1,1}, {10,10,10}} |> after? {{2020, 1, 1}, {11, 11, 11}}
+      false
+      iex> {{2014,1,1}, {10,10,10}} |> after? {{2014, 1, 1}, {10, 10, 10}}
+      false
+  """
+  def after?(ndt1, ndt2) do
+    {_, _, _, comparison} = diff(ndt1, ndt2)
+    comparison == :after
   end
-  defp diff_sort_out_decimal({:ok, sec, usec}) when sec == -1 and usec > 0 do
-    sec = sec + 1
-    usec = usec - 1_000_000
-    {:ok, sec, usec}
+
+  @doc """
+  Takes a two `NaiveDateTime`s and returns true if the first
+  one is less than the second. Otherwise false. Less than
+  means that it is earlier then the second datetime.
+
+  ## Examples
+
+      iex> {{2014,1,1}, {10,10,10}} |> before? {{1999, 1, 1}, {11, 11, 11}}
+      false
+      iex> {{2014,1,1}, {10,10,10}} |> before? {{2020, 1, 1}, {11, 11, 11}}
+      true
+      iex> {{2014,1,1}, {10,10,10}} |> before? {{2014, 1, 1}, {10, 10, 10}}
+      false
+  """
+  def before?(ndt1, ndt2) do
+    {_, _, _, comparison} = diff(ndt1, ndt2)
+    comparison == :before
   end
-  defp diff_sort_out_decimal({:ok, sec, usec}) when sec < 0 and usec > 0 do
-    sec = sec + 1
-    usec = 1_000_000 - usec
-    {:ok, sec, usec}
-  end
-  defp diff_sort_out_decimal({:ok, sec, usec}) when sec < 0 and usec < 0 do
-    {:ok, sec, abs(usec)}
-  end
-  defp diff_sort_out_decimal({:ok, sec, usec}) do
-    {:ok, sec, usec}
+  @doc """
+  Takes a two `NaiveDateTime`s and returns true if the first
+  is equal to the second one.
+
+  In this context equal means that they happen at the same time.
+
+  ## Examples
+
+      iex> {{2014,1,1}, {10,10,10}} |> same_time? {{1999, 1, 1}, {11, 11, 11}}
+      false
+      iex> {{2014,1,1}, {10,10,10}} |> same_time? {{2020, 1, 1}, {11, 11, 11}}
+      false
+      iex> {{2014,1,1}, {10,10,10}} |> same_time? {{2014, 1, 1}, {10, 10, 10}}
+      true
+  """
+  def same_time?(ndt1, ndt2) do
+    {_, _, _, comparison} = diff(ndt1, ndt2)
+    comparison == :same_time
   end
 
   defp from_gregorian_seconds!(gregorian_seconds, usec) do
