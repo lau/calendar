@@ -178,6 +178,46 @@ defmodule Calendar.Date do
   end
 
   @doc """
+  Returns true if the first date is before the second date
+
+      iex> from_erl!({2014,12,27}) |> before? from_erl!({2014,12,20})
+      false
+      iex> from_erl!({2014,12,27}) |> before? from_erl!({2014,12,29})
+      true
+  """
+  def before?(first_date_cont, second_date_cont) do
+    diff(first_date_cont, second_date_cont) < 0
+  end
+
+  @doc """
+  Returns true if the first date is after the second date
+
+      iex> from_erl!({2014,12,27}) |> after? from_erl!({2014,12,20})
+      true
+      iex> from_erl!({2014,12,27}) |> after? from_erl!({2014,12,29})
+      false
+  """
+  def after?(first_date_cont, second_date_cont) do
+    diff(first_date_cont, second_date_cont) > 0
+  end
+
+  @doc """
+  Takes two variables that contain a date.
+
+  Returns true if the dates are the same.
+
+      iex> from_erl!({2014,12,27}) |> same_date? from_erl!({2014,12,27})
+      true
+      iex> from_erl!({2014,12,27}) |> same_date? {2014,12,27}
+      true
+      iex> from_erl!({2014,12,27}) |> same_date? from_erl!({2014,12,29})
+      false
+  """
+  def same_date?(first_date_cont, second_date_cont) do
+    diff(first_date_cont, second_date_cont) == 0
+  end
+
+  @doc """
   Advances `date` by `days` number of days.
 
   ## Examples
