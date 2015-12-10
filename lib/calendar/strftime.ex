@@ -40,7 +40,7 @@ defmodule Calendar.Strftime do
       {:ok, "Saturday 2014-09- 6 17:10:20"}
 
       # Passing erlang style naive date time tuple directly
-      iex> {{2014,9,6},{17,10,20}} |> strftime "%A %Y-%m-%e %H:%M:%S"
+      iex> {{2014,9,6},{17,10,20}} |> strftime("%A %Y-%m-%e %H:%M:%S")
       {:ok, "Saturday 2014-09- 6 17:10:20"}
 
       iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"Etc/UTC") |> strftime("%A %Y-%m-%e %H:%M:%S")
