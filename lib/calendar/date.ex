@@ -105,7 +105,7 @@ defmodule Calendar.Date do
   """
   def dates_for_week_number(year, week_num) do
     days_after_until(from_erl!({year-1, 12, 23}), from_erl!({year, 12, 31}))
-    |> Enum.filter fn(x) -> in_week?(x, year, week_num) end
+    |> Enum.filter(fn(x) -> in_week?(x, year, week_num) end)
   end
   @doc "Like dates_for_week_number/2 but takes a tuple of {year, week_num} instead"
   def dates_for_week_number({year, week_num}), do: dates_for_week_number(year, week_num)
