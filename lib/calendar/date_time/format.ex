@@ -122,7 +122,7 @@ defmodule Calendar.DateTime.Format do
     ".#{usec |> pad(6)}"
   end
   defp rfc3330_usec_part(usec, precision) when precision >= 1 and precision <=6 do
-    ".#{usec |> pad(6)}" |> String.slice 0..precision
+    ".#{usec |> pad(6)}" |> String.slice(0..precision)
   end
   defp pad(subject, len, char\\?0) do
     String.rjust("#{subject}", len, char)
@@ -246,7 +246,7 @@ defmodule Calendar.DateTime.Format do
     date_time = date_time |> contained_date_time
     whole_secs = date_time
     |> unix
-    |> Kernel.* 1000
+    |> Kernel.*(1000)
     whole_secs + micro_to_mil(date_time.usec)
   end
 

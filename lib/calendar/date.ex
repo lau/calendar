@@ -273,7 +273,7 @@ defmodule Calendar.Date do
     date_erl = date |> to_erl
     {date_erl, {0, 0, 0}}
     |> NaiveDateTime.from_erl!
-    |> Calendar.Strftime.strftime! string, lang
+    |> Calendar.Strftime.strftime!(string, lang)
   end
 
   @doc """

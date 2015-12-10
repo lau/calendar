@@ -355,7 +355,7 @@ defmodule Calendar.NaiveDateTime do
     ndt
     |> contained_ndt
     |> to_date_time_utc
-    |> Calendar.DateTime.Format.strftime! string, lang
+    |> Calendar.DateTime.Format.strftime!(string, lang)
   end
 
   defp contained_ndt(ndt_container) do

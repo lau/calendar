@@ -30,7 +30,7 @@ defmodule Calendar.ParseUtil do
 
   def capture_rfc2822_string(string) do
     ~r/(?<day>[\d]{1,2})[\s]+(?<month>[^\d]{3})[\s]+(?<year>[\d]{4})[\s]+(?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})[^\d]?(((?<offset_sign>[+-])(?<offset_hours>[\d]{2})(?<offset_mins>[\d]{2})|(?<offset_letters>[A-Z]{1,3})))?/
-    |> Regex.named_captures string
+    |> Regex.named_captures(string)
   end
 
   # Takes strings of hours and mins and return secs

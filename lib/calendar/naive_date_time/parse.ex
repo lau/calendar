@@ -26,7 +26,7 @@ defmodule Calendar.NaiveDateTime.Parse do
   end
   defp capture_generalized_time_string(string) do
     ~r/(?<year>[\d]{4})(?<month>[\d]{2})(?<day>[\d]{2})(?<hour>[\d]{2})(?<min>[\d]{2})(?<sec>[\d]{2})(\.(?<fraction>[\d]+))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2})(?<offset_mins>[\d]{2}))?/
-    |> Regex.named_captures string
+    |> Regex.named_captures(string)
   end
 
   @doc """
@@ -60,7 +60,7 @@ defmodule Calendar.NaiveDateTime.Parse do
 
   defp capture_asctime_string(string) do
     ~r/(?<month>[^\d]{3})[\s]+(?<day>[\d]{1,2})[\s]+(?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})[^\d]?(?<year>[\d]{4})/
-    |> Regex.named_captures string
+    |> Regex.named_captures(string)
   end
 
   @doc """
@@ -123,7 +123,7 @@ defmodule Calendar.NaiveDateTime.Parse do
 
   defp capture_iso8601_string(string) do
     ~r/(?<year>[\d]{4})[^\d]?(?<month>[\d]{2})[^\d]?(?<day>[\d]{2})[^\d](?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})(\.(?<fraction>[\d]+))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):?(?<offset_mins>[\d]{2}))?/
-    |> Regex.named_captures string
+    |> Regex.named_captures(string)
   end
 
   defp erl_date_time_from_regex_map(mapped) do

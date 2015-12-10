@@ -102,12 +102,12 @@ defmodule Calendar.TimeZoneData do
   """
   def leap_seconds do
     TZSource.leap_seconds
-    |> Enum.map fn(dt) ->
+    |> Enum.map(fn(dt) ->
       {{year, month, day}, {hour, min, sec}} = dt
       %Calendar.DateTime{abbr: "UTC", usec: 0, timezone: "Etc/UTC", utc_off: 0,
         std_off: 0, year: year, month: month, day: day, hour: hour, min: min,
         sec: sec}
-    end
+      end)
   end
 
   @doc """

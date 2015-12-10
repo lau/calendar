@@ -130,7 +130,7 @@ defmodule Calendar.Strftime do
 
   defp parse_for_con_specs(string) do
     Regex.scan(~r/\%[a-zA-Z]/, string)
-    |> Enum.map fn(x) -> hd(x)|>String.replace("%","")|>String.to_atom end
+    |> Enum.map(fn(x) -> hd(x)|>String.replace("%","")|>String.to_atom end)
   end
 
   # Takes for instance a DateTime for 2014-9-6 17:10:20 and :Y and returns "2014"
@@ -258,11 +258,9 @@ defmodule Calendar.Strftime do
   end
   defp translation_module do
     fetch_result =  Application.fetch_env(:calendar, :translation_module)
-    if fetch_result == :error do
-      trans_mod = Calendar.DefaultTranslations
-    else
-      {:ok, configured_module} = fetch_result
-      trans_mod = configured_module
+    trans_mod = case fetch_result do
+      :error ->  Calendar.DefaultTranslations
+      {:ok, configured_module} -> configured_module
     end
     trans_mod
   end
