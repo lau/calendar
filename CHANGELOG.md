@@ -1,5 +1,16 @@
 # Changelog
 
+### Changed
+
+- `DateTime.diff/2` and `NaiveDateTime.diff/2` functions now returns a 4 tuple instead of 3 tuple. The first 3 elements work the same way as before. The fourth element
+  can be `:before`, `:after` or `:same_time`.
+
+### Added
+
+- Added functions `Date.before?`, `Date.after?`, `Date.same_date?`
+- Added functions `DateTime.before?`, `DateTime.after?`, `DateTime.same_time?`
+- Added functions `NaiveDateTime.before?`, `NaiveDateTime.after?`, `NaiveDateTime.same_time?`
+
 ## [0.11.2] - 2015-12-08
 ### Added
 
