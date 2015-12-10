@@ -74,7 +74,7 @@ defmodule Calendar.DateTime do
 
   ## Example
 
-      iex> from_erl!({{2014,10,2},{0,29,10}},"America/New_York") |> shift_zone! "Europe/Copenhagen"
+      iex> from_erl!({{2014,10,2},{0,29,10}},"America/New_York") |> shift_zone!("Europe/Copenhagen")
       %Calendar.DateTime{abbr: "CEST", day: 2, hour: 6, min: 29, month: 10, sec: 10,
                         timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014}
 
@@ -283,13 +283,13 @@ defmodule Calendar.DateTime do
 
       # The wall times of the two times are the same, but the one in Los Angeles
       # happens after the one in UTC because Los Angeles is behind UTC
-      iex> from_erl!({{2014,1,1}, {11,11,11}}, "America/Los_Angeles") |> after? from_erl!({{2014, 1, 1}, {11, 11, 11}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {11,11,11}}, "America/Los_Angeles") |> after?(from_erl!({{2014, 1, 1}, {11, 11, 11}}, "Etc/UTC"))
       true
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> after? from_erl!({{1999, 1, 1}, {11, 11, 11}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> after?(from_erl!({{1999, 1, 1}, {11, 11, 11}}, "Etc/UTC"))
       true
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> after? from_erl!({{2020, 1, 1}, {11, 11, 11}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> after?(from_erl!({{2020, 1, 1}, {11, 11, 11}}, "Etc/UTC"))
       false
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> after? from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> after?(from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC"))
       false
   """
   def after?(dt1, dt2) do
@@ -304,11 +304,11 @@ defmodule Calendar.DateTime do
 
   ## Examples
 
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> before? from_erl!({{1999, 1, 1}, {11, 11, 11}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> before?(from_erl!({{1999, 1, 1}, {11, 11, 11}}, "Etc/UTC"))
       false
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> before? from_erl!({{2020, 1, 1}, {11, 11, 11}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> before?(from_erl!({{2020, 1, 1}, {11, 11, 11}}, "Etc/UTC"))
       true
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> before? from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> before?(from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC"))
       false
   """
   def before?(dt1, dt2) do
@@ -321,16 +321,16 @@ defmodule Calendar.DateTime do
 
   ## Examples
 
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> same_time? from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> same_time?(from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC"))
       true
       # 10:00 in London is the same time as 11:00 in Copenhagen
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Europe/London") |> same_time? from_erl!({{2014, 1, 1}, {11, 10, 10}}, "Europe/Copenhagen")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Europe/London") |> same_time?(from_erl!({{2014, 1, 1}, {11, 10, 10}}, "Europe/Copenhagen"))
       true
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "America/Godthab") |> same_time? from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "America/Godthab") |> same_time?(from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC"))
       false
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> same_time? from_erl!({{2020, 1, 1}, {11, 11, 11}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Etc/UTC") |> same_time?(from_erl!({{2020, 1, 1}, {11, 11, 11}}, "Etc/UTC"))
       false
-      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Europe/London") |> same_time? from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC")
+      iex> from_erl!({{2014,1,1}, {10,10,10}}, "Europe/London") |> same_time?(from_erl!({{2014, 1, 1}, {10, 10, 10}}, "Etc/UTC"))
       true
   """
   def same_time?(dt1, dt2) do
@@ -657,8 +657,8 @@ defmodule Calendar.DateTime do
   @doc """
   Takes an NaiveDateTime and a time zone identifier and returns a DateTime
 
-      iex> Calendar.NaiveDateTime.from_erl!({{2014,10,15},{2,37,22}}) |> from_naive "UTC"
-      {:ok, %Calendar.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "UTC", utc_off: 0, year: 2014}}
+      iex> Calendar.NaiveDateTime.from_erl!({{2014,10,15},{2,37,22}}) |> from_naive("Etc/UTC")
+      {:ok, %Calendar.DateTime{abbr: "UTC", day: 15, usec: nil, hour: 2, min: 37, month: 10, sec: 22, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2014}}
   """
   def from_naive(ndt, timezone) do
     ndt |> Calendar.NaiveDateTime.to_erl

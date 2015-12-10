@@ -114,9 +114,9 @@ defmodule Calendar.Date do
   Takes a date, a year and an ISO week number and returns true if the date is in
   the week.
 
-      iex> {2015, 1, 1} |> in_week? 2015, 1
+      iex> {2015, 1, 1} |> in_week?(2015, 1)
       true
-      iex> {2015, 5, 5} |> in_week? 2015, 1
+      iex> {2015, 5, 5} |> in_week?(2015, 1)
       false
   """
   def in_week?(date, year, week_num) do
@@ -166,9 +166,9 @@ defmodule Calendar.Date do
   Takes two Date structs: `first_date` and `second_date`.
   Subtracts `second_date` from `first_date`.
 
-      iex> from_erl!({2014,12,27}) |> diff from_erl!({2014,12,20})
+      iex> from_erl!({2014,12,27}) |> diff(from_erl!({2014,12,20}))
       7
-      iex> from_erl!({2014,12,27}) |> diff from_erl!({2014,12,29})
+      iex> from_erl!({2014,12,27}) |> diff(from_erl!({2014,12,29}))
       -2
   """
   def diff(first_date_cont, second_date_cont) do
@@ -180,9 +180,9 @@ defmodule Calendar.Date do
   @doc """
   Returns true if the first date is before the second date
 
-      iex> from_erl!({2014,12,27}) |> before? from_erl!({2014,12,20})
+      iex> from_erl!({2014,12,27}) |> before?(from_erl!({2014,12,20}))
       false
-      iex> from_erl!({2014,12,27}) |> before? from_erl!({2014,12,29})
+      iex> from_erl!({2014,12,27}) |> before?(from_erl!({2014,12,29}))
       true
   """
   def before?(first_date_cont, second_date_cont) do
@@ -192,9 +192,9 @@ defmodule Calendar.Date do
   @doc """
   Returns true if the first date is after the second date
 
-      iex> from_erl!({2014,12,27}) |> after? from_erl!({2014,12,20})
+      iex> from_erl!({2014,12,27}) |> after?(from_erl!({2014,12,20}))
       true
-      iex> from_erl!({2014,12,27}) |> after? from_erl!({2014,12,29})
+      iex> from_erl!({2014,12,27}) |> after?(from_erl!({2014,12,29}))
       false
   """
   def after?(first_date_cont, second_date_cont) do
@@ -206,11 +206,11 @@ defmodule Calendar.Date do
 
   Returns true if the dates are the same.
 
-      iex> from_erl!({2014,12,27}) |> same_date? from_erl!({2014,12,27})
+      iex> from_erl!({2014,12,27}) |> same_date?(from_erl!({2014,12,27}))
       true
-      iex> from_erl!({2014,12,27}) |> same_date? {2014,12,27}
+      iex> from_erl!({2014,12,27}) |> same_date?({2014,12,27})
       true
-      iex> from_erl!({2014,12,27}) |> same_date? from_erl!({2014,12,29})
+      iex> from_erl!({2014,12,27}) |> same_date?(from_erl!({2014,12,29}))
       false
   """
   def same_date?(first_date_cont, second_date_cont) do

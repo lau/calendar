@@ -229,9 +229,9 @@ defmodule Calendar.Time do
   Takes two Time structs: `first_time` and `second_time`.
   Subtracts `second_time` from `first_time`.
 
-      iex> from_erl!({0, 0, 30}) |> diff from_erl!({0, 0, 10})
+      iex> from_erl!({0, 0, 30}) |> diff(from_erl!({0, 0, 10}))
       20
-      iex> from_erl!({0, 0, 10}) |> diff from_erl!({0, 0, 30})
+      iex> from_erl!({0, 0, 10}) |> diff(from_erl!({0, 0, 30}))
       -20
   """
   def diff(first_time_cont, second_time_cont) do
