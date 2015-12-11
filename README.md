@@ -18,7 +18,7 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.11.1"},  ]
+  [  {:calendar, "~> 0.12.0"},  ]
 end
 ```
 
@@ -87,6 +87,16 @@ false
 jan_first |> Calendar.Date.day_of_week_name :es
 "jueves"
 
+# Compare dates
+> jan_first |> Calendar.Date.before?({2015, 12, 24})
+true
+> jan_first |> Calendar.Date.diff({2015, 12, 24})
+-357
+# Because of protocols, datetimes can also be provided as arguments,
+# but only the date will be used
+> jan_first |> Calendar.Date.diff({{2015, 12, 24}, {9, 10, 10}})
+-357
+
 # Use the DateTime module to get the time right now and
 # pipe it to the Date module to get the week number
 > Calendar.DateTime.now_utc |> Calendar.Date.week_number
@@ -101,6 +111,7 @@ jan_first |> Calendar.Date.day_of_week_name :es
  %Calendar.Date{day: 10, month: 7, year: 2015},
  %Calendar.Date{day: 11, month: 7, year: 2015},
  %Calendar.Date{day: 12, month: 7, year: 2015}]
+
 ```
 
 ## NaiveDateTime
@@ -123,6 +134,15 @@ timezone.
 # parsing and get the same result as the original input:
 > ndt |> Calendar.NaiveDateTime.Format.asctime
 "Wed Apr  9 07:53:03 2003"
+# Compare with another naive datetime in the form of an erlang style datetime tuple
+# Returns the difference in seconds, microseconds and if it is before after or at the
+# same time
+> ndt |> Calendar.NaiveDateTime.diff({{2003, 4, 8}, {10, 0, 0}})
+{:ok, 78783, 0, :after}
+# There are also boolean functions to just find out if a naive datetime is before or
+# after another one
+> ndt |> Calendar.NaiveDateTime.after? {{2003, 4, 8}, {10, 0, 0}}
+true
 ```
 
 ## DateTime usage examples
