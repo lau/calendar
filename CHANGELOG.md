@@ -1,5 +1,6 @@
 # Changelog
 
+## [0.12.0] - 2015-12-10
 ### Changed
 
 - `DateTime.diff/2` and `NaiveDateTime.diff/2` functions now returns a 4 tuple instead of 3 tuple. The first 3 elements work the same way as before. The fourth element
