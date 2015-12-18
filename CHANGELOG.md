@@ -1,4 +1,10 @@
 # Changelog
+## [0.12.1] - 2015-12-18
+### Fixed
+
+- `DateTime.diff/2` only accepted Calendar.DateTime structs as parameters. Now
+   it also accepts structs implementing the `Calendar.ContainsDateTime` protocol.
+   This also affected related functions `before?`, `after?`, `same_time?`
 
 ## [0.12.0] - 2015-12-10
 ### Changed

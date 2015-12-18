@@ -246,6 +246,9 @@ defmodule Calendar.DateTime do
     usec = first_usec - second_usec
     diff_sort_out_decimal {:ok, sec, usec}
   end
+  def diff(first_cdt, second_cdt) do
+    diff(contained_date_time(first_cdt), contained_date_time(second_cdt))
+  end
 
   defp gt_lt_eq(0, 0), do: :same_time
   defp gt_lt_eq(sec, _) when sec < 0, do: :before
