@@ -355,10 +355,9 @@ defmodule Calendar.DateTime do
   """
 
   def shift_zone(date_time, timezone) do
-    if TimeZoneData.zone_exists?(timezone) do
-      {:ok, shift_zone!(date_time, timezone)}
-    else
-      {:invalid_time_zone, nil}
+    case TimeZoneData.zone_exists?(timezone) do
+      true -> {:ok, shift_zone!(date_time, timezone)}
+      false -> {:invalid_time_zone, nil}
     end
   end
 
@@ -709,28 +708,20 @@ defmodule Calendar.DateTime do
   # Validate time part of a datetime
   # The date and timezone part is only used for leap seconds
   defp valid_time_part_of_datetime(date, {h, m, 60}, "Etc/UTC") do
-    if TimeZoneData.leap_seconds_erl |> Enum.member?({date, {h, m, 60}}) do
-      true
-    else
-      false
-    end
+    TimeZoneData.leap_seconds_erl |> Enum.member?({date, {h, m, 60}})
   end
   defp valid_time_part_of_datetime(date, {h, m, 60}, timezone) do
     {tag, utc_datetime} = from_erl({date, {h, m, 59}}, timezone)
-    if tag != :ok do
-      false
-    else
-      {date_utc, {h, m, s}} = utc_datetime
+    case tag do
+      :ok -> {date_utc, {h, m, s}} = utc_datetime
         |> shift_zone!("Etc/UTC")
         |> to_erl
-      valid_time_part_of_datetime(date_utc, {h, m, s+1}, "Etc/UTC")
+        valid_time_part_of_datetime(date_utc, {h, m, s+1}, "Etc/UTC")
+      _ -> false
     end
   end
-  defp valid_time_part_of_datetime(_date, {h, m, s}, _timezone) when h>=0 and h<=23 and m>=0 and m<=59 and s>=0 and s<=60 do
-    true
-  end
-  defp valid_time_part_of_datetime(_, _, _) do
-    false
+  defp valid_time_part_of_datetime(_date, {h, m, s}, _timezone) do
+    h>=0 and h<=23 and m>=0 and m<=59 and s>=0 and s<=60
   end
 end
 
