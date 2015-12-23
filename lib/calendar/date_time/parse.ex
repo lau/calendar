@@ -53,7 +53,7 @@ defmodule Calendar.DateTime.Parse do
   defp change_captured_year_to_four_digit(cap, year_guessing_base) do
     changed_year = to_int(cap["year"])
     |> two_to_four_digit_year(year_guessing_base)
-    |> Integer.to_string
+    |> to_string
     %{cap | "year" => changed_year}
   end
   defp two_to_four_digit_year(year, year_guessing_base) when year < 100 do
