@@ -230,8 +230,10 @@ defmodule Calendar.Strftime do
   defp x24h_to_12_h(hour) when hour > 12 do {hour - 12, :pm} end
 
   defp day_of_the_week_off_by_one(data) do
-    date = to_date(data)
-    date |> day_of_the_week |> - 1
+    data
+    |> to_date
+    |> day_of_the_week
+    |> - 1
   end
   defp day_of_the_week(dt) do
     dt |> Calendar.Date.day_of_week

@@ -43,7 +43,7 @@ defmodule Calendar.Time do
       {10, 20, 25, 0}
   """
   def to_micro_erl(%Calendar.Time{hour: hour, min: min, sec: sec, usec: usec}) do
-    {hour, min, sec, if(usec != nil) do usec else 0 end}
+    {hour, min, sec, if usec do usec else 0 end}
   end
   def to_micro_erl(t), do: t |> contained_time |> to_micro_erl
 
@@ -66,10 +66,9 @@ defmodule Calendar.Time do
       {:error, :invalid_time}
   """
   def from_erl({hour, min, sec}, usec\\nil) do
-    if valid_time({hour, min, sec}, usec) do
-      {:ok, %Calendar.Time{hour: hour, min: min, sec: sec, usec: usec}}
-    else
-      {:error, :invalid_time}
+    case valid_time({hour, min, sec}, usec) do
+      true -> {:ok, %Calendar.Time{hour: hour, min: min, sec: sec, usec: usec}}
+      false -> {:error, :invalid_time}
     end
   end
 
@@ -90,11 +89,8 @@ defmodule Calendar.Time do
   defp valid_time(time, usec) do
     valid_time(time) && (usec==nil || (usec >= 0 && usec < 1_000_000))
   end
-  defp valid_time({hour, min, sec}) when (hour >=0 and hour <= 23 and min >= 0 and min < 60 and sec >=0 and sec <= 60) do
-    true
-  end
-  defp valid_time({_hour, _min, _sec}) do
-    false
+  defp valid_time({hour, min, sec}) do
+    hour >=0 and hour <= 23 and min >= 0 and min < 60 and sec >=0 and sec <= 60
   end
 
   @doc """
@@ -128,8 +124,8 @@ defmodule Calendar.Time do
       86399
   """
   def second_in_day(time) do
-    time = time |> contained_time
     time
+    |> contained_time
     |> to_erl
     |> :calendar.time_to_seconds
   end

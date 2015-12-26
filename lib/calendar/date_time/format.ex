@@ -8,11 +8,12 @@ defmodule Calendar.DateTime.Format do
   Deprecated in this module: The function has instead been moved to the `Calendar.Strftime` module.
   """
   def strftime!(dt, string, lang\\:en) do
-    dt = dt |> contained_date_time
     IO.puts :stderr, "Warning: strftime!/1 in Calendar.DateTime.Format is deprecated." <>
                      "The function has been moved so use Calendar.Strftime.strftime! instead. " <>
                      Exception.format_stacktrace()
-    Strftime.strftime!(dt, string, lang)
+    dt
+    |> contained_date_time
+    Strftime.strftime!(string, lang)
   end
 
   @doc """
@@ -25,8 +26,9 @@ defmodule Calendar.DateTime.Format do
       "Sat, 13 Mar 2010 11:23:03 +0000"
   """
   def rfc2822(dt) do
-    dt = dt |> contained_date_time
-    Strftime.strftime! dt, "%a, %d %b %Y %T %z"
+    dt
+    |> contained_date_time
+    |> Strftime.strftime! "%a, %d %b %Y %T %z"
   end
 
   @doc """
@@ -41,8 +43,9 @@ defmodule Calendar.DateTime.Format do
       "Sat, 13 Mar 10 11:23:03 +0000"
   """
   def rfc822(dt) do
-    dt = dt |> contained_date_time
-    Strftime.strftime! dt, "%a, %d %b %y %T %z"
+    dt
+    |> contained_date_time
+    |> Strftime.strftime! "%a, %d %b %y %T %z"
   end
 
   @doc """
@@ -55,8 +58,9 @@ defmodule Calendar.DateTime.Format do
       "Sat, 13-Mar-10 11:23:03 PST"
   """
   def rfc850(dt) do
-    dt = dt |> contained_date_time
-    Strftime.strftime! dt, "%a, %d-%b-%y %T %Z"
+    dt
+    |> contained_date_time
+    |> Strftime.strftime! "%a, %d-%b-%y %T %Z"
   end
 
   @doc """
