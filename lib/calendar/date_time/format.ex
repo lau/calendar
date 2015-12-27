@@ -13,7 +13,7 @@ defmodule Calendar.DateTime.Format do
                      Exception.format_stacktrace()
     dt
     |> contained_date_time
-    Strftime.strftime!(string, lang)
+    |> Strftime.strftime!(string, lang)
   end
 
   @doc """
