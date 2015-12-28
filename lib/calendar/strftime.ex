@@ -217,11 +217,7 @@ defmodule Calendar.Strftime do
   end
 
   defp day_of_the_week_zero_sunday(dt) do # sunday is 0
-    day = day_of_the_week(dt)
-    if day == 7 do
-      day = 0
-    end
-    day
+    dt |> day_of_the_week |> rem(7)
   end
 
   defp x24h_to_12_h(0) do {12, :am} end
@@ -230,8 +226,10 @@ defmodule Calendar.Strftime do
   defp x24h_to_12_h(hour) when hour > 12 do {hour - 12, :pm} end
 
   defp day_of_the_week_off_by_one(data) do
-    date = to_date(data)
-    date |> day_of_the_week |> - 1
+    data
+    |> to_date
+    |> day_of_the_week
+    |> - 1
   end
   defp day_of_the_week(dt) do
     dt |> Calendar.Date.day_of_week

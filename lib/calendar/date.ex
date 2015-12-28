@@ -35,10 +35,9 @@ defmodule Calendar.Date do
       {:error, :invalid_date}
   """
   def from_erl({year, month, day}) do
-    if :calendar.valid_date({year, month, day}) do
-      {:ok, %Calendar.Date{year: year, month: month, day: day}}
-    else
-      {:error, :invalid_date}
+    case :calendar.valid_date({year, month, day}) do
+      true -> {:ok, %Calendar.Date{year: year, month: month, day: day}}
+      false -> {:error, :invalid_date}
     end
   end
 
@@ -85,8 +84,10 @@ defmodule Calendar.Date do
       {2014, 52}
   """
   def week_number(date) do
-    date = date |> contained_date
-    :calendar.iso_week_number(date|>to_erl)
+    date
+    |> contained_date
+    |> to_erl
+    |> :calendar.iso_week_number
   end
 
   @doc """
@@ -343,8 +344,10 @@ defmodule Calendar.Date do
     Stream.unfold(prev_day!(from_date), fn n -> if n == prev_day!(until_date) do nil else {n, n |> prev_day!} end end)
   end
   def days_before_until(from_date, until_date,  _include_from_date = true) do
-    after_from_date = from_date |> contained_date |> next_day!
-    days_before_until(after_from_date, until_date)
+    from_date
+    |> contained_date
+    |> next_day!
+    |> days_before_until(until_date)
   end
 
   @doc """
@@ -364,8 +367,10 @@ defmodule Calendar.Date do
       7
   """
   def day_of_week(date) do
-    date = date |> contained_date
-    date |> to_erl |> :calendar.day_of_the_week
+    date
+    |> contained_date
+    |> to_erl
+    |> :calendar.day_of_the_week
   end
 
   @doc """
@@ -382,8 +387,9 @@ defmodule Calendar.Date do
       "Sunday"
   """
   def day_of_week_name(date, lang\\:en) do
-    date = date |> contained_date
-    date |> Calendar.Strftime.strftime!("%A", lang)
+    date
+    |> contained_date
+    |> Calendar.Strftime.strftime!("%A", lang)
   end
 
   @doc """

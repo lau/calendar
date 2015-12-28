@@ -88,8 +88,8 @@ defmodule Calendar.DateTime do
     %Calendar.DateTime{second_before | sec: 60}
   end
   def shift_zone!(date_time, timezone) do
-    date_time = date_time |> contained_date_time
     date_time
+    |> contained_date_time
     |>shift_to_utc
     |>shift_from_utc(timezone)
   end
@@ -139,11 +139,12 @@ defmodule Calendar.DateTime do
   def advance(date_time, seconds) do
     date_time = date_time |> contained_date_time
     try do
-      in_utc = date_time |> shift_zone!("Etc/UTC")
-      greg_secs = in_utc |> gregorian_seconds
-      advanced = greg_secs + seconds
-      |>from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.usec)
-      |>shift_zone!(date_time.timezone)
+      advanced = date_time
+      |> shift_zone!("Etc/UTC")
+      |> gregorian_seconds
+      |> + seconds
+      |> from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.usec)
+      |> shift_zone!(date_time.timezone)
       {:ok, advanced}
     rescue
       FunctionClauseError ->
