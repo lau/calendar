@@ -28,7 +28,7 @@ defmodule Calendar.DateTime.Format do
   def rfc2822(dt) do
     dt
     |> contained_date_time
-    |> Strftime.strftime! "%a, %d %b %Y %T %z"
+    |> Strftime.strftime!("%a, %d %b %Y %T %z")
   end
 
   @doc """
@@ -45,7 +45,7 @@ defmodule Calendar.DateTime.Format do
   def rfc822(dt) do
     dt
     |> contained_date_time
-    |> Strftime.strftime! "%a, %d %b %y %T %z"
+    |> Strftime.strftime!("%a, %d %b %y %T %z")
   end
 
   @doc """
@@ -60,7 +60,7 @@ defmodule Calendar.DateTime.Format do
   def rfc850(dt) do
     dt
     |> contained_date_time
-    |> Strftime.strftime! "%a, %d-%b-%y %T %Z"
+    |> Strftime.strftime!("%a, %d-%b-%y %T %Z")
   end
 
   @doc """
