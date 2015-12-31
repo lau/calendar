@@ -546,7 +546,8 @@ defimpl Calendar.ContainsDate, for: Calendar.NaiveDateTime do
   end
 end
 defimpl Calendar.ContainsDate, for: Tuple do
-  def date_struct({y, m, d}), do: Calendar.Date.from_erl!({y, m, d})
+  def date_struct({y, m, d}) when y > 23, do: Calendar.Date.from_erl!({y, m, d})
+  def date_struct({y, _m, _d}) when y <= 23, do: raise "date_struct/1 was called. ContainsDate protocol is not supported for 3-element-tuples where the year is 23 or less. This is to avoid accidently trying to use a time tuple as a date. If you want to work with a date from the year 23 or earlier, consider using a Calendar.Date struct instead."
   def date_struct({{y, m, d}, {_hour, _min, _sec}}), do: Calendar.Date.from_erl!({y, m, d})
   def date_struct({{y, m, d}, {_hour, _min, _sec, _usec}}), do: Calendar.Date.from_erl!({y, m, d})
 end
