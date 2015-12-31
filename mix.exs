@@ -18,7 +18,7 @@ defmodule Calendar.Mixfile do
 
   def deps do
     [
-      {:tzdata, "~> 0.5.4 or ~> 0.1.8"},
+      {:tzdata, "~> 0.5.6 or ~> 0.1.8"},
       {:ex_doc, "~> 0.10", only: :dev},
       {:inch_ex, only: :docs},
      ]
