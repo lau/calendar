@@ -59,6 +59,27 @@ Calendar.NaiveDateTime.from_erl!({{2015, 12, 24}, {13, 45, 55}}) |> Calendar.Dat
 
 In the same fashion other tuples with at least the same amount of information can be used with other modules. E.g.` NaiveDateTime`, `DateTime`, `Time` structs can be used in the `Time` module because they all contain an hour, minute and second. `DateTime` structs and erlang style datetime tuples can be used in the `NaiveDateTime` module because they contain a date and a time.
 
+An tuple example is the erlang style tuples returned by the `File.lstat!/2` function.
+The datetime tuple can be used in place of a NaiveDateTime, Date or Time.
+```elixir
+# Returns the mtime of the file mix.exs
+> File.lstat!("mix.exs").mtime
+{{2015, 12, 31}, {14, 30, 26}}
+# Format this datetime using one of the NaiveDateTime fun
+File.lstat!("mix.exs").mtime |> NaiveDateTime.Format.asctime
+"Thu Dec 31 14:30:26 2015"
+> File.lstat!("mix.exs").mtime |> Date.day_of_week_name
+"Thursday"
+# We know from the erlang documentation that lstat! by default returns UTC.
+# So we can explicitly cast the tuple to be a UTC datetime and then pipe that
+# to the DateTime.Format.unix function in order to get a UNIX timestamp
+> File.lstat!("mix.exs").mtime |> NaiveDateTime.to_date_time_utc |> DateTime.Format.unix
+1451572226
+# String formatting
+> File.lstat!("mix.exs").mtime |> Strftime.strftime!("%H:%M:%S")
+"14:30:26"
+```
+
 ## Date examples
 
 The Date module is used for handling dates.
