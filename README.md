@@ -59,8 +59,8 @@ Calendar.NaiveDateTime.from_erl!({{2015, 12, 24}, {13, 45, 55}}) |> Calendar.Dat
 
 In the same fashion other tuples with at least the same amount of information can be used with other modules. E.g.` NaiveDateTime`, `DateTime`, `Time` structs can be used in the `Time` module because they all contain an hour, minute and second. `DateTime` structs and erlang style datetime tuples can be used in the `NaiveDateTime` module because they contain a date and a time.
 
-An tuple example is the erlang style tuples returned by the `File.lstat!/2` function.
-The datetime tuple can be used in place of a NaiveDateTime, Date or Time.
+`File.lstat!/2` is an example of a function that returns datetime tuples.
+A datetime tuple can be used in place of a NaiveDateTime, Date or Time.
 ```elixir
 # Returns the mtime of the file mix.exs
 > File.lstat!("mix.exs").mtime
