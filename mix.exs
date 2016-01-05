@@ -34,8 +34,16 @@ defmodule Calendar.Mixfile do
 
   defp description do
     """
-    Calendar is a datetime library in pure Elixir with up-to-date timezone
-    support using the Olson database. Formerly known as Kalends.
+    Calendar is a datetime library for Elixir.
+
+    Providing explicit types for datetimes, dates and times.
+    Full timezone support via its sister package `tzdata`.
+
+    Safe parsing and formatting of standard formats (ISO, RFC, Unix, JS etc.)
+    plus strftime formatting. Easy and safe interoperability with erlang style
+    datetime tuples. Extendable through protocols.
+
+    Related packages are available for i18n, Ecto and Phoenix interoperability.
     """
   end
 end

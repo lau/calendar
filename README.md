@@ -1,16 +1,21 @@
 Calendar
 =======
-### (formerly known as Kalends)
 
 [![Build
 Status](https://travis-ci.org/lau/calendar.svg?branch=master)](https://travis-ci.org/lau/calendar)
 [![Inline docs](http://inch-ci.org/github/lau/calendar.svg)](http://hexdocs.pm/calendar/)
 [![Hex Version](http://img.shields.io/hexpm/v/calendar.svg?style=flat)](https://hex.pm/packages/calendar)
 
-Calendar is a date and time library for Elixir.
+Calendar is a datetime library for Elixir.
 
-The Olson/Eggert "Time Zone Database" is used. Years 1 through 9999
-are supported.
+Providing explicit types for datetimes, dates and times.
+Full timezone support via its sister package [tzdata](https://github.com/lau/tzdata).
+
+Safe parsing and formatting of standard formats (ISO, RFC, Unix, JS etc.)
+plus strftime formatting. Easy and safe interoperability with erlang style
+date, time, datetime tuples. Extendable through protocols.
+
+Related packages are available for [i18n](https://github.com/padde/calendar_translations), [Ecto](https://github.com/lau/calecto) and [Phoenix](https://github.com/lau/phoenix_calendar) interoperability.
 
 ## Getting started
 
@@ -68,11 +73,13 @@ A datetime tuple can be used in place of a NaiveDateTime, Date or Time.
 # Format this datetime using one of the NaiveDateTime fun
 File.lstat!("mix.exs").mtime |> NaiveDateTime.Format.asctime
 "Thu Dec 31 14:30:26 2015"
+# Using the tuple with the Date class, the date information is used
 > File.lstat!("mix.exs").mtime |> Date.day_of_week_name
 "Thursday"
 # We know from the erlang documentation that lstat! by default returns UTC.
-# So we can explicitly cast the tuple to be a UTC datetime and then pipe that
-# to the DateTime.Format.unix function in order to get a UNIX timestamp
+# But the tuple does not contain this information.
+# So we can explicitly cast the tuple to be a DateTime in UTC.
+# And then pipe that to the DateTime.Format.unix function in order to get a UNIX timestamp
 > File.lstat!("mix.exs").mtime |> NaiveDateTime.to_date_time_utc |> DateTime.Format.unix
 1451572226
 # String formatting
