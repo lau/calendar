@@ -529,6 +529,22 @@ defmodule Calendar.Date do
   """
   def sunday?(date), do: day_of_week(date) == 7
 
+  @doc """
+  Returns a string with the date in ISO format.
+
+  ## Examples
+
+      iex> {2015, 7, 12} |> to_s
+      "2015-07-12"
+      iex> {2015, 7, 7} |> to_s
+      "2015-07-07"
+  """
+  def to_s(date) do
+    date
+    |> contained_date
+    |> Calendar.Strftime.strftime!("%Y-%m-%d")
+  end
+
   defp contained_date(date_container), do: ContainsDate.date_struct(date_container)
 end
 
