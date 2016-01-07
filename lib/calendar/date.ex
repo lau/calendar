@@ -78,10 +78,12 @@ defmodule Calendar.Date do
   Note that the year returned is not always the same as the year provided
   as an argument.
 
-      iex> from_erl!({2014,12,31}) |> week_number
+      iex> from_erl!({2014, 12, 31}) |> week_number
       {2015, 1}
-      iex> from_erl!({2014,12,27}) |> week_number
+      iex> from_erl!({2014, 12, 27}) |> week_number
       {2014, 52}
+      iex> from_erl!({2016, 1, 3})   |> week_number
+      {2015, 53}
   """
   def week_number(date) do
     date
@@ -103,10 +105,27 @@ defmodule Calendar.Date do
             %Calendar.Date{day: 7, month: 1, year: 2015}, %Calendar.Date{day: 8, month: 1, year: 2015},
             %Calendar.Date{day: 9, month: 1, year: 2015}, %Calendar.Date{day: 10, month: 1, year: 2015},
             %Calendar.Date{day: 11, month: 1, year: 2015}]
+      iex> dates_for_week_number(2015, 53)
+      [%Calendar.Date{day: 28, month: 12, year: 2015}, %Calendar.Date{day: 29, month: 12, year: 2015},
+            %Calendar.Date{day: 30, month: 12, year: 2015}, %Calendar.Date{day: 31, month: 12, year: 2015},
+            %Calendar.Date{day: 1, month: 1, year: 2016}, %Calendar.Date{day: 2, month: 1, year: 2016},
+            %Calendar.Date{day: 3, month: 1, year: 2016}]
   """
   def dates_for_week_number(year, week_num) do
-    days_after_until(from_erl!({year-1, 12, 23}), from_erl!({year, 12, 31}))
+    days = days_after_until(from_erl!({year-1, 12, 23}), from_erl!({year, 12, 31})) |> Enum.to_list
+    days = days ++ first_seven_dates_of_year(year)
+    days
     |> Enum.filter(fn(x) -> in_week?(x, year, week_num) end)
+  end
+  defp first_seven_dates_of_year(year) do
+    [ from_erl!({year+1, 1, 1}),
+      from_erl!({year+1, 1, 2}),
+      from_erl!({year+1, 1, 3}),
+      from_erl!({year+1, 1, 4}),
+      from_erl!({year+1, 1, 5}),
+      from_erl!({year+1, 1, 6}),
+      from_erl!({year+1, 1, 7}),
+      ]
   end
   @doc "Like dates_for_week_number/2 but takes a tuple of {year, week_num} instead"
   def dates_for_week_number({year, week_num}), do: dates_for_week_number(year, week_num)
