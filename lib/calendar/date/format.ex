@@ -1,5 +1,4 @@
 defmodule Calendar.Date.Format do
-  alias Calendar.Date
   alias Calendar.Strftime
 
   @doc """
