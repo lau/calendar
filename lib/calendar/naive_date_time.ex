@@ -160,6 +160,21 @@ defmodule Calendar.NaiveDateTime do
   end
 
   @doc """
+  Create new NaiveDateTime struct based on a date and a time.
+
+  ## Examples
+
+      iex> from_date_and_time({2016, 1, 8}, {14, 10, 55})
+      {:ok, %Calendar.NaiveDateTime{day: 8, usec: nil, hour: 14, min: 10, month: 1, sec: 55, year: 2016}}
+      iex> from_date_and_time(Calendar.Date.Parse.iso8601!("2016-01-08"), {14, 10, 55})
+      {:ok, %Calendar.NaiveDateTime{day: 8, usec: nil, hour: 14, min: 10, month: 1, sec: 55, year: 2016}}
+  """
+  def from_date_and_time(date_container, time_container) do
+    contained_time = Calendar.ContainsTime.time_struct(time_container)
+    from_erl({Calendar.Date.to_erl(date_container), Calendar.Time.to_erl(contained_time)}, contained_time.usec)
+  end
+
+  @doc """
   If you have a naive datetime and you know the offset, promote it to a
   UTC DateTime.
 
