@@ -699,6 +699,33 @@ defmodule Calendar.DateTime do
     {gregorian_seconds(date_time), usec}
   end
 
+  @doc """
+  Create new DateTime struct based on a date and a time and a timezone string.
+
+  ## Examples
+
+      iex> from_date_and_time_and_zone({2016, 1, 8}, {14, 10, 55}, "Etc/UTC")
+      {:ok, %Calendar.DateTime{day: 8, usec: nil, hour: 14, min: 10, month: 1, sec: 55, year: 2016, abbr: "UTC", timezone: "Etc/UTC", usec: nil, utc_off: 0, std_off: 0}}
+  """
+  def from_date_and_time_and_zone(date_container, time_container, timezone) do
+    contained_time = Calendar.ContainsTime.time_struct(time_container)
+    from_erl({Calendar.Date.to_erl(date_container), Calendar.Time.to_erl(contained_time)}, timezone, contained_time.usec)
+  end
+
+  @doc """
+  Like `from_date_and_time_and_zone`, but returns result untagged and
+  raises in case of an error or ambiguous datetime.
+
+  ## Examples
+
+      iex> from_date_and_time_and_zone!({2016, 1, 8}, {14, 10, 55}, "Etc/UTC")
+      %Calendar.DateTime{day: 8, usec: nil, hour: 14, min: 10, month: 1, sec: 55, year: 2016, abbr: "UTC", timezone: "Etc/UTC", usec: nil, utc_off: 0, std_off: 0}
+  """
+  def from_date_and_time_and_zone!(date_container, time_container, timezone) do
+    {:ok, result} = from_date_and_time_and_zone(date_container, time_container, timezone)
+    result
+  end
+
   defp contained_date_time(dt_container) do
     ContainsDateTime.dt_struct(dt_container)
   end
