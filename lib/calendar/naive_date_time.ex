@@ -175,6 +175,20 @@ defmodule Calendar.NaiveDateTime do
   end
 
   @doc """
+  Like `from_date_and_time/2` but returns the result untagged.
+  Raises in case of an error.
+
+  ## Example
+
+      iex> from_date_and_time!({2016, 1, 8}, {14, 10, 55})
+      %Calendar.NaiveDateTime{day: 8, usec: nil, hour: 14, min: 10, month: 1, sec: 55, year: 2016}
+  """
+  def from_date_and_time!(date_container, time_container) do
+    {:ok, result} = from_date_and_time(date_container, time_container)
+    result
+  end
+
+  @doc """
   If you have a naive datetime and you know the offset, promote it to a
   UTC DateTime.
 
