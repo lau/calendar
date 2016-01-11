@@ -65,12 +65,6 @@ defmodule Calendar.Strftime do
       iex> {{2014,9,6},{17,10,20}} |> strftime("%A %Y-%m-%e %H:%M:%S")
       {:ok, "Saturday 2014-09- 6 17:10:20"}
 
-      iex> {{2014,9,6},{17,10,20}} |> strftime("%A %d/%m/%Y", :da)
-      {:ok, "lørdag 06/09/2014"}
-
-      iex> {{2014,9,6},{17,10,20}} |> strftime("%A %d/%m/%Y", :es)
-      {:ok, "sábado 06/09/2014"}
-
   | conversion spec. | Description                                                     | Example            | req. date | req. time | req. TZ |
   | -----------------|:---------------------------------------------------------------:| ------------------:| ---------:| ---------:| -------:|
   | %a               | Abbreviated name of day                                         | _Mon_              |         ✓ |           |         |
