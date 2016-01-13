@@ -65,51 +65,53 @@ defmodule Calendar.Strftime do
       iex> {{2014,9,6},{17,10,20}} |> strftime("%A %Y-%m-%e %H:%M:%S")
       {:ok, "Saturday 2014-09- 6 17:10:20"}
 
-  | conversion spec. | Description                                                     | Example            | req. date | req. time | req. TZ |
-  | -----------------|:---------------------------------------------------------------:| ------------------:| ---------:| ---------:| -------:|
-  | %a               | Abbreviated name of day                                         | _Mon_              |         ✓ |           |         |
-  | %A               | Full name of day                                                | _Monday_           |         ✓ |           |         |
-  | %b               | Abbreviated month name                                          | _Jan_              |         ✓ |           |         |
-  | %h               | (Equivalent to %b)                                              |                    |         ✓ |           |         |
-  | %B               | Full month name                                                 | _January_          |         ✓ |           |         |
-  | %j               | Day of the year as a decimal number (001 to 366).               | _002_              |         ✓ |           |         |
-  | %u               | Day of the week as a decimal number (1 through 7). Also see %w  | _1_ for Monday     |         ✓ |           |         |
-  | %w               | Day of the week as a decimal number (0 through 6). Also see %u  | _0_ for Sunday     |         ✓ |           |         |
-  | %V               | Week number (ISO 8601). (01 through 53)                         | _02_ for week 2    |         ✓ |           |         |
-  | %G               | Year for ISO 8601 week number (see %V). Not the same as %Y!     | _2015_             |         ✓ |           |         |
-  | %g               | 2 digit version of %G. Iso week-year. (00 through 99)           | _15_ for 2015      |         ✓ |           |         |
-  | %y               | 2 digit version of %Y. (00 through 99)                          | _15_ for 2015      |         ✓ |           |         |
-  | %Y               | The year in four digits. (0001 through 9999)                    | _2015_             |         ✓ |           |         |
-  | %C               | Century number as two digits. 21st century will be 20.          | _20_ for year 2015 |         ✓ |           |         |
-  | %I               | Hour as decimal number using 12 hour clock. (01-12)             | _07_ for 19:00     |           |         ✓ |         |
-  | %l               | Like %I but with single digits preceded by a space.             | _7_ for 19:00      |           |         ✓ |         |
-  | %P               | am or pm for 12 hour clock. In lower case.                      | _pm_ for 19:00     |           |         ✓ |         |
-  | %p               | AM or PM for 12 hour clock. In upper case.                      | _PM_ for 19:00     |           |         ✓ |         |
-  | %r               | Time in 12 hour notation. Equivalent to %I:%M:%S %p.            | _07:25:41 PM_      |           |         ✓ |         |
-  | %R               | Time in 24 hour notation excluding seconds. Equivalent of %H:%M.| _19:25_            |           |         ✓ |         |
-  | %T               | Time in 24 hour notation. Equivalent of %H:%M:%S.               | _19:25:41_         |           |         ✓ |         |
-  | %F               | Date in ISO 8601 format. Equivalent of %Y-%m-%d.                | _2015-02-05_       |         ✓ |         ✓ |         |
-  | %v               | VMS date. Equivalent of %e-%b-%Y.                               | _ 5-Feb-2015_      |         ✓ |         ✓ |         |
-  | %m               | Month as decimal number (01-12).                                | _01_ for January   |         ✓ |           |         |
-  | %e               | Day of the month as decimal number. Leading space if 1-digit.   | _5_ for 2015-02-05 |         ✓ |           |         |
-  | %d               | Day of the month as decimal number. Leading zero. (01-31).      | _05_ for 2015-02-05|         ✓ |           |         |
-  | %H               | Hour as decimal number using 24 hour clock (00-23).             | _08_ for 08:25     |           |         ✓ |         |
-  | %k               | Like %H, but with leading space instead of leading zero.        | _8_ for 08:25      |           |         ✓ |         |
-  | %M               | Minute as decimal number (00-59).                               | _04_ for 19:04     |           |         ✓ |         |
-  | %S               | Seconds as decimal number (00-60).                              | _02_ for 19:04:02  |           |         ✓ |         |
-  | %z               | Hour and minute timezone offset from UTC.                       | _-0200_            |         ✓ |         ✓ |       ✓ |
-  | %Z               | Time zone abbreviation. Sometimes depends on DST.               | _UYST_             |         ✓ |         ✓ |       ✓ |
+  | conversion spec. | Description                                                     | Example                        | req. date | req. time | req. TZ |
+  | -----------------|:----------------------------------------------------------------| :------------------------------| ---------:| ---------:| -------:|
+  | %a               | Abbreviated name of day                                         | _Mon_                          |         ✓ |           |         |
+  | %A               | Full name of day                                                | _Monday_                       |         ✓ |           |         |
+  | %b               | Abbreviated month name                                          | _Jan_                          |         ✓ |           |         |
+  | %h               | (Equivalent to %b)                                              |                                |         ✓ |           |         |
+  | %B               | Full month name                                                 | _January_                      |         ✓ |           |         |
+  | %j               | Day of the year as a decimal number (001 to 366).               | _002_                          |         ✓ |           |         |
+  | %u               | Day of the week as a decimal number (1 through 7). Also see %w  | _1_ for Monday                 |         ✓ |           |         |
+  | %w               | Day of the week as a decimal number (0 through 6). Also see %u  | _0_ for Sunday                 |         ✓ |           |         |
+  | %V               | Week number (ISO 8601). (01 through 53)                         | _02_ for week 2                |         ✓ |           |         |
+  | %G               | Year for ISO 8601 week number (see %V). Not the same as %Y!     | _2015_                         |         ✓ |           |         |
+  | %g               | 2 digit version of %G. Iso week-year. (00 through 99)           | _15_ for 2015                  |         ✓ |           |         |
+  | %y               | 2 digit version of %Y. (00 through 99)                          | _15_ for 2015                  |         ✓ |           |         |
+  | %Y               | The year in four digits. (0001 through 9999)                    | _2015_                         |         ✓ |           |         |
+  | %C               | Century number as two digits. 21st century will be 20.          | _20_ for year 2015             |         ✓ |           |         |
+  | %I               | Hour as decimal number using 12 hour clock. (01-12)             | _07_ for 19:00                 |           |         ✓ |         |
+  | %l               | Like %I but with single digits preceded by a space.             | _7_ for 19:00                  |           |         ✓ |         |
+  | %P               | am or pm for 12 hour clock. In lower case.                      | _pm_ for 19:00                 |           |         ✓ |         |
+  | %p               | AM or PM for 12 hour clock. In upper case.                      | _PM_ for 19:00                 |           |         ✓ |         |
+  | %r               | Time in 12 hour notation. Equivalent to %I:%M:%S %p.            | _07:25:41 PM_                  |           |         ✓ |         |
+  | %R               | Time in 24 hour notation excluding seconds. Equivalent of %H:%M.| _19:25_                        |           |         ✓ |         |
+  | %T               | Time in 24 hour notation. Equivalent of %H:%M:%S.               | _19:25:41_                     |           |         ✓ |         |
+  | %F               | Date in ISO 8601 format. Equivalent of %Y-%m-%d.                | _2015-02-05_                   |         ✓ |           |         |
+  | %x               | Date in in format _for provided language_                       | _05/02/2015_                   |         ✓ |           |         |
+  | %c               | Date and time in format _for provided language_                 | _Wed Jan 13 11:34:10 2016_     |         ✓ |         ✓ |         |
+  | %v               | VMS date. Equivalent of %e-%b-%Y.                               | _5-Feb-2015_                   |         ✓ |           |         |
+  | %m               | Month as decimal number (01-12).                                | _01_ for January               |         ✓ |           |         |
+  | %e               | Day of the month as decimal number. Leading space if 1-digit.   | _5_ for 2015-02-05             |         ✓ |           |         |
+  | %d               | Day of the month as decimal number. Leading zero. (01-31).      | _05_ for 2015-02-05            |         ✓ |           |         |
+  | %H               | Hour as decimal number using 24 hour clock (00-23).             | _08_ for 08:25                 |           |         ✓ |         |
+  | %k               | Like %H, but with leading space instead of leading zero.        | _8_ for 08:25                  |           |         ✓ |         |
+  | %M               | Minute as decimal number (00-59).                               | _04_ for 19:04                 |           |         ✓ |         |
+  | %S               | Seconds as decimal number (00-60).                              | _02_ for 19:04:02              |           |         ✓ |         |
+  | %z               | Hour and minute timezone offset from UTC.                       | _-0200_                        |         ✓ |         ✓ |       ✓ |
+  | %Z               | Time zone abbreviation. Sometimes depends on DST.               | _UYST_                         |         ✓ |         ✓ |       ✓ |
 
   The ticks in the table above tells you what input is needed for the conversion spec.
   The table below shows which kinds of input you can use depending on which boxes
   are ticked:
 
-  | Which boxes are ticked | Compatible input for conversion spec.         |
-  | -----------------------| ---------------------------------------------:|
-  | date                   | Date, DateTime, NaiveDateTime, datetime tuple |
-  | time                   | Time, DateTime, NaiveDateTime, datetime tuple |
-  | date and time          | DateTime, NaiveDateTime, datetime tuple       |
-  | date and time and TZ   | DateTime                                      |
+  | Which boxes are ticked | Compatible input for conversion spec.                           |
+  | -----------------------| :---------------------------------------------------------------|
+  | date                   | `Date`, `DateTime`, `NaiveDateTime`, datetime tuple, date tuple |
+  | time                   | `Time`, `DateTime`, `NaiveDateTime`, datetime tuple, time tuple |
+  | date and time          | `DateTime`, `NaiveDateTime`, datetime tuple                     |
+  | date and time and TZ   | `DateTime`                                                      |
   """
   def strftime(dt, string, lang\\:en) do
     try do
@@ -151,7 +153,6 @@ defmodule Calendar.Strftime do
   defp string_for_conv_spec(dt, :R, _) do strftime! dt, "%H:%M" end
   defp string_for_conv_spec(dt, :T, _) do strftime! dt, "%H:%M:%S" end
   defp string_for_conv_spec(dt, :F, _) do strftime! dt, "%Y-%m-%d" end
-  defp string_for_conv_spec(dt, :c, lang) do strftime! dt, "%a %b %e %T %Y", lang end
   defp string_for_conv_spec(dt, :v, _) do strftime! dt, "%e-%b-%Y" end
   defp string_for_conv_spec(dt, :m, _) do dt=to_date(dt);"#{dt.month}"|>pad end
   defp string_for_conv_spec(dt, :e, _) do dt=to_date(dt);"#{dt.day}"|>pad(2, hd ' ') end
