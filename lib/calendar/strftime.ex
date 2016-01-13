@@ -165,6 +165,7 @@ defmodule Calendar.Strftime do
 
   defp string_for_conv_spec(dt, :x, lang), do: strftime! dt, date_format_for_lang(lang)
   defp string_for_conv_spec(dt, :X, lang), do: strftime! dt, time_format_for_lang(lang)
+  defp string_for_conv_spec(dt, :c, lang), do: strftime! dt, date_time_format_for_lang(lang)
 
   defp micro_seconds(dt) do
     "#{dt.usec}"
@@ -257,6 +258,10 @@ defmodule Calendar.Strftime do
   end
   defp time_format_for_lang(lang) do
     {:ok, data} = translation_module.time_format(lang)
+    data
+  end
+  defp date_time_format_for_lang(lang) do
+    {:ok, data} = translation_module.date_time_format(lang)
     data
   end
   defp translation_module do
@@ -359,4 +364,5 @@ defmodule Calendar.DefaultTranslations do
   end
   def date_format(:en), do: {:ok, "%Y-%m-%d"}
   def time_format(:en), do: {:ok, "%H:%M:%S"}
+  def date_time_format(:en), do: {:ok, "%a %b %e %T %Y"}
 end

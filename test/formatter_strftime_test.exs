@@ -45,6 +45,9 @@ defmodule FormatterStrfTimeTest do
     assert Strftime.strftime!(dt, "%T") == "01:41:02"
     assert Strftime.strftime!(dt, "%F") == "2014-11-03"
     assert Strftime.strftime!(dt, "%Z") == "UTC"
+    assert Strftime.strftime!(dt, "%X") == "01:41:02"
+    assert Strftime.strftime!(dt, "%x") == "2014-11-03"
+    assert Strftime.strftime!(dt, "%c") == "Mon Nov  3 01:41:02 2014"
   end
 
   test "strftime am pm" do
