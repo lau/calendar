@@ -164,9 +164,9 @@ defmodule Calendar.Strftime do
   defp string_for_conv_spec(dt, :z, _) do z_offset_part(dt) end
   defp string_for_conv_spec(dt, :Z, _) do "#{dt.abbr}" end
 
-  defp string_for_conv_spec(dt, :x, lang), do: strftime! dt, date_format_for_lang(lang)
-  defp string_for_conv_spec(dt, :X, lang), do: strftime! dt, time_format_for_lang(lang)
-  defp string_for_conv_spec(dt, :c, lang), do: strftime! dt, date_time_format_for_lang(lang)
+  defp string_for_conv_spec(dt, :x, lang), do: strftime! dt, date_format_for_lang(lang), lang
+  defp string_for_conv_spec(dt, :X, lang), do: strftime! dt, time_format_for_lang(lang), lang
+  defp string_for_conv_spec(dt, :c, lang), do: strftime! dt, date_time_format_for_lang(lang), lang
 
   defp micro_seconds(dt) do
     "#{dt.usec}"
