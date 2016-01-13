@@ -104,8 +104,8 @@ false
 # What day of the week is it?
 > jan_first |> Calendar.Date.day_of_week_name
 "Thursday"
-# In Spanish by passing :es as language code
-jan_first |> Calendar.Date.day_of_week_name :es
+# In Spanish by passing :es as language code (requires translation module)
+jan_first |> Calendar.Date.day_of_week_name(:es)
 "jueves"
 
 # Compare dates
