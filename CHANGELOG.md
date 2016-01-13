@@ -1,4 +1,22 @@
 # Changelog
+
+## [0.12.2] - 2016-01-13
+### Added
+
+- %x and %c conversion specs to Strftime
+- DateTime.from_date_and_time_and_zone function
+- NaiveDateTime.from_date_and_time
+- Date.Parse module
+- Date.Format module
+
+### Changed
+
+- Make 3 element tuples only valid as dates for years after 23 AD. In order to avoid confusing them with time tuples.
+
+### Fixed
+
+- Date.dates_for_week_number would in some cases not include all dates for weeks around end of year
+
 ## [0.12.1] - 2015-12-18
 ### Fixed
 
@@ -242,7 +260,7 @@ internally for more accuracy and less overhead.
 ## [0.5.0] - 2015-03-05
 ### Changed
 
-The microseconds part of the DateTime, NaiveTime and Time structs have been
+The microseconds part of the DateTime, NaiveDateTime and Time structs have been
 renamed from microsec to usec.
 
 ## [0.4.1] - 2015-03-02
