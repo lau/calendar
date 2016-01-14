@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12.3] - 2016-01-14
+### Fixed
+
+- Translations for strftime specs `%c`, `%X`, and `%x` would not use specified language.
+
 ## [0.12.2] - 2016-01-13
 ### Added
 
