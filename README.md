@@ -335,7 +335,7 @@ end
 
 ## Video presentation with some Calendar examples
 
-In the following talk Calendar is featured. Specifically from around 27:07 into the video the are some
+In [a talk from ElixirConf 2015](http://img.youtube.com/vi/keUbVvMJeKY/0.jpg) Calendar is featured. Specifically from around 27:07 into the video there are some
 Calendar examples.
 
 [![Talk from ElixirConf 2015](http://img.youtube.com/vi/keUbVvMJeKY/0.jpg)](http://www.youtube.com/watch?v=keUbVvMJeKY)
