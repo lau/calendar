@@ -333,6 +333,13 @@ defmodule NewYearsHttpLib do
 end
 ```
 
+## Video presentation with some Calendar examples
+
+In the following talk Calendar is featured. Specifically from around 27:07 into the video the are some
+Calendar examples.
+
+[![Talk from ElixirConf 2015](http://img.youtube.com/vi/keUbVvMJeKY/0.jpg)](http://www.youtube.com/watch?v=keUbVvMJeKY)
+
 ## Upgrading from versions earlier than 0.10.0
 
 Calendar 0.10.0 supports Tzdata ~> 0.5.1 as well as ~> 0.1.7
