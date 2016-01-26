@@ -79,6 +79,7 @@ defmodule Calendar.DateTime do
                         timezone: "Europe/Copenhagen", utc_off: 3600, std_off: 3600, year: 2014}
 
   """
+  def shift_zone!(%Calendar.DateTime{timezone: timezone} = date_time, timezone), do: date_time # when shifting to same zone, just return the same datetime unchanged
   # In case we are shifting a leap second, shift the second before and then
   # correct the second back to 60. This is to avoid problems with the erlang
   # gregorian second system (lack of) handling of leap seconds.
