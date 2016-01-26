@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12.4] - 2016-01-26
+### Improved
+
+- Performance improvements for various formatting functions
+
 ## [0.12.3] - 2016-01-14
 ### Fixed
 
