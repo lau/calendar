@@ -188,11 +188,14 @@ defmodule Calendar.DateTime.Format do
       iex> DateTime.from_erl!({{2014, 9, 6}, {6, 9, 8}}, "America/Montevideo") |> DateTime.Format.httpdate
       "Sat, 06 Sep 2014 09:09:08 GMT"
   """
+  def httpdate(%Calendar.DateTime{timezone: "Etc/UTC"} = dt) do
+    dt |> Strftime.strftime!("%a, %d %b %Y %H:%M:%S GMT")
+  end
   def httpdate(dt) do
-    dt = dt |> contained_date_time
     dt
-    |> DateTime.shift_zone!("UTC")
-    |> Strftime.strftime!("%a, %d %b %Y %H:%M:%S GMT")
+    |> contained_date_time
+    |> DateTime.shift_zone!("Etc/UTC")
+    |> httpdate
   end
 
   @doc """
@@ -203,12 +206,16 @@ defmodule Calendar.DateTime.Format do
       iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 55) |> DateTime.Format.unix
       1_000_000_000
   """
-  def unix(date_time) do
-    date_time = date_time |> contained_date_time
-    date_time
-    |> DateTime.shift_zone!("UTC")
+  def unix(%Calendar.DateTime{timezone: "Etc/UTC"} = dt) do
+    dt
     |> DateTime.gregorian_seconds
     |> - @secs_between_year_0_and_unix_epoch
+  end
+  def unix(dt) do
+    dt
+    |> contained_date_time
+    |> DateTime.shift_zone!("Etc/UTC")
+    |> unix
   end
 
   @doc """
