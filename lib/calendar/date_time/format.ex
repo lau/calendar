@@ -97,7 +97,7 @@ defmodule Calendar.DateTime.Format do
       "2014-09-26T17:10:20.000005-03:00"
   """
   def rfc3339(%Calendar.DateTime{} = dt) do
-    Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
+    "#{dt.year|>pad(4)}-#{dt.month|>pad}-#{dt.day|>pad}T#{dt.hour|>pad}:#{dt.min|>pad}:#{dt.sec|>pad}"<>
     rfc3330_usec_part(dt.usec, 6)<>
     rfc3339_offset_part(dt, dt.timezone)
   end
@@ -128,7 +128,7 @@ defmodule Calendar.DateTime.Format do
   defp rfc3330_usec_part(usec, precision) when precision >= 1 and precision <=6 do
     ".#{usec |> pad(6)}" |> String.slice(0..precision)
   end
-  defp pad(subject, len, char\\?0) do
+  defp pad(subject, len\\2, char\\?0) do
     String.rjust("#{subject}", len, char)
   end
 
