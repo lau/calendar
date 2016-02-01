@@ -19,10 +19,10 @@ defmodule Calendar.NaiveDateTime.Format do
   Format a naive datetime as ISO 8601
 
   ## Examples
-      iex> {{2015, 4, 3}, {7, 5, 3}} |> iso8601
+      iex> {{2015, 4, 3}, {7, 5, 3}} |> iso_8601
       "2015-04-03T07:05:03"
   """
-  def iso8601(ndt) do
+  def iso_8601(ndt) do
     ndt
     |> to_utc_dt
     |> Strftime.strftime!("%FT%T")
