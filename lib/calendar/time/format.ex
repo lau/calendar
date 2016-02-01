@@ -3,6 +3,20 @@ defmodule Calendar.Time.Format do
   alias Calendar.ContainsTime
 
   @doc """
+  Format a time as ISO 8601 extended format
+
+  ## Examples
+
+      iex> Calendar.Time.from_erl!({20, 5, 18}) |> Calendar.Time.Format.iso_8601
+      "20:05:18"
+  """
+  def iso_8601(time) do
+    time
+    |> contained_time
+    |> Strftime.strftime!("%H:%M:%S")
+  end
+
+  @doc """
   Format as ISO 8601 Basic
 
   # Examples
