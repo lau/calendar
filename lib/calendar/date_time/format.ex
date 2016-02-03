@@ -64,21 +64,9 @@ defmodule Calendar.DateTime.Format do
   end
 
   @doc """
-  Format as ISO 8601 extended
-
-  # Examples
-
-      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {20, 10, 20}}, "Etc/UTC",5) |> Calendar.DateTime.Format.iso_8601
-      "2014-09-26T20:10:20Z"
-      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.iso_8601
-      "2014-09-26T17:10:20-0300"
+  Format as ISO 8601 extended (alias for rfc3339/1)
   """
-  def iso_8601(dt) do
-    dt = dt |> contained_date_time
-    offset_part = rfc3339_offset_part(dt, dt.timezone)
-    |> String.replace(":", "")
-    Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>offset_part
-  end
+  def iso_8601(dt), do: rfc3339(dt)
 
   @doc """
   Format as ISO 8601 Basic
