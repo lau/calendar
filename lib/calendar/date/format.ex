@@ -6,10 +6,10 @@ defmodule Calendar.Date.Format do
 
   ## Examples
 
-      iex> {2015, 4, 3} |> iso_8601
+      iex> {2015, 4, 3} |> iso8601
       "2015-04-03"
   """
-  def iso_8601(date) do
+  def iso8601(date) do
     date
     |> contained_date
     |> Strftime.strftime!("%Y-%m-%d")
