@@ -64,6 +64,11 @@ defmodule Calendar.DateTime.Format do
   end
 
   @doc """
+  Format as ISO 8601 extended (alias for rfc3339/1)
+  """
+  def iso_8601(dt), do: rfc3339(dt)
+
+  @doc """
   Format as ISO 8601 Basic
 
   # Examples
