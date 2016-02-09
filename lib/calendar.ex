@@ -5,6 +5,7 @@ defmodule Calendar do
   defmacro __using__(_opts) do
     quote do
       alias Calendar.DateTime
+      alias Calendar.DateTime.Interval
       alias Calendar.AmbiguousDateTime
       alias Calendar.NaiveDateTime
       alias Calendar.Date
@@ -12,7 +13,6 @@ defmodule Calendar do
       alias Calendar.TimeZoneData
       alias Calendar.TzPeriod
       alias Calendar.Strftime
-      alias Calendar.Interval
     end
   end
 end
