@@ -35,10 +35,9 @@ defmodule Calendar.Date do
       {:error, :invalid_date}
   """
   def from_erl({year, month, day}) do
-    if :calendar.valid_date({year, month, day}) do
-      {:ok, %Calendar.Date{year: year, month: month, day: day}}
-    else
-      {:error, :invalid_date}
+    case :calendar.valid_date({year, month, day}) do
+      true -> {:ok, %Calendar.Date{year: year, month: month, day: day}}
+      false -> {:error, :invalid_date}
     end
   end
 
@@ -79,14 +78,18 @@ defmodule Calendar.Date do
   Note that the year returned is not always the same as the year provided
   as an argument.
 
-      iex> from_erl!({2014,12,31}) |> week_number
+      iex> from_erl!({2014, 12, 31}) |> week_number
       {2015, 1}
-      iex> from_erl!({2014,12,27}) |> week_number
+      iex> from_erl!({2014, 12, 27}) |> week_number
       {2014, 52}
+      iex> from_erl!({2016, 1, 3})   |> week_number
+      {2015, 53}
   """
   def week_number(date) do
-    date = date |> contained_date
-    :calendar.iso_week_number(date|>to_erl)
+    date
+    |> contained_date
+    |> to_erl
+    |> :calendar.iso_week_number
   end
 
   @doc """
@@ -102,10 +105,27 @@ defmodule Calendar.Date do
             %Calendar.Date{day: 7, month: 1, year: 2015}, %Calendar.Date{day: 8, month: 1, year: 2015},
             %Calendar.Date{day: 9, month: 1, year: 2015}, %Calendar.Date{day: 10, month: 1, year: 2015},
             %Calendar.Date{day: 11, month: 1, year: 2015}]
+      iex> dates_for_week_number(2015, 53)
+      [%Calendar.Date{day: 28, month: 12, year: 2015}, %Calendar.Date{day: 29, month: 12, year: 2015},
+            %Calendar.Date{day: 30, month: 12, year: 2015}, %Calendar.Date{day: 31, month: 12, year: 2015},
+            %Calendar.Date{day: 1, month: 1, year: 2016}, %Calendar.Date{day: 2, month: 1, year: 2016},
+            %Calendar.Date{day: 3, month: 1, year: 2016}]
   """
   def dates_for_week_number(year, week_num) do
-    days_after_until(from_erl!({year-1, 12, 23}), from_erl!({year, 12, 31}))
-    |> Enum.filter fn(x) -> in_week?(x, year, week_num) end
+    days = days_after_until(from_erl!({year-1, 12, 23}), from_erl!({year, 12, 31})) |> Enum.to_list
+    days = days ++ first_seven_dates_of_year(year)
+    days
+    |> Enum.filter(fn(x) -> in_week?(x, year, week_num) end)
+  end
+  defp first_seven_dates_of_year(year) do
+    [ from_erl!({year+1, 1, 1}),
+      from_erl!({year+1, 1, 2}),
+      from_erl!({year+1, 1, 3}),
+      from_erl!({year+1, 1, 4}),
+      from_erl!({year+1, 1, 5}),
+      from_erl!({year+1, 1, 6}),
+      from_erl!({year+1, 1, 7}),
+      ]
   end
   @doc "Like dates_for_week_number/2 but takes a tuple of {year, week_num} instead"
   def dates_for_week_number({year, week_num}), do: dates_for_week_number(year, week_num)
@@ -114,9 +134,9 @@ defmodule Calendar.Date do
   Takes a date, a year and an ISO week number and returns true if the date is in
   the week.
 
-      iex> {2015, 1, 1} |> in_week? 2015, 1
+      iex> {2015, 1, 1} |> in_week?(2015, 1)
       true
-      iex> {2015, 5, 5} |> in_week? 2015, 1
+      iex> {2015, 5, 5} |> in_week?(2015, 1)
       false
   """
   def in_week?(date, year, week_num) do
@@ -166,15 +186,55 @@ defmodule Calendar.Date do
   Takes two Date structs: `first_date` and `second_date`.
   Subtracts `second_date` from `first_date`.
 
-      iex> from_erl!({2014,12,27}) |> diff from_erl!({2014,12,20})
+      iex> from_erl!({2014,12,27}) |> diff(from_erl!({2014,12,20}))
       7
-      iex> from_erl!({2014,12,27}) |> diff from_erl!({2014,12,29})
+      iex> from_erl!({2014,12,27}) |> diff(from_erl!({2014,12,29}))
       -2
   """
   def diff(first_date_cont, second_date_cont) do
     first_date = contained_date(first_date_cont)
     second_date = contained_date(second_date_cont)
     to_gregorian_days(first_date) - to_gregorian_days(second_date)
+  end
+
+  @doc """
+  Returns true if the first date is before the second date
+
+      iex> from_erl!({2014,12,27}) |> before?(from_erl!({2014,12,20}))
+      false
+      iex> from_erl!({2014,12,27}) |> before?(from_erl!({2014,12,29}))
+      true
+  """
+  def before?(first_date_cont, second_date_cont) do
+    diff(first_date_cont, second_date_cont) < 0
+  end
+
+  @doc """
+  Returns true if the first date is after the second date
+
+      iex> from_erl!({2014,12,27}) |> after?(from_erl!({2014,12,20}))
+      true
+      iex> from_erl!({2014,12,27}) |> after?(from_erl!({2014,12,29}))
+      false
+  """
+  def after?(first_date_cont, second_date_cont) do
+    diff(first_date_cont, second_date_cont) > 0
+  end
+
+  @doc """
+  Takes two variables that contain a date.
+
+  Returns true if the dates are the same.
+
+      iex> from_erl!({2014,12,27}) |> same_date?(from_erl!({2014,12,27}))
+      true
+      iex> from_erl!({2014,12,27}) |> same_date?({2014,12,27})
+      true
+      iex> from_erl!({2014,12,27}) |> same_date?(from_erl!({2014,12,29}))
+      false
+  """
+  def same_date?(first_date_cont, second_date_cont) do
+    diff(first_date_cont, second_date_cont) == 0
   end
 
   @doc """
@@ -233,7 +293,7 @@ defmodule Calendar.Date do
     date_erl = date |> to_erl
     {date_erl, {0, 0, 0}}
     |> NaiveDateTime.from_erl!
-    |> Calendar.Strftime.strftime! string, lang
+    |> Calendar.Strftime.strftime!(string, lang)
   end
 
   @doc """
@@ -303,8 +363,10 @@ defmodule Calendar.Date do
     Stream.unfold(prev_day!(from_date), fn n -> if n == prev_day!(until_date) do nil else {n, n |> prev_day!} end end)
   end
   def days_before_until(from_date, until_date,  _include_from_date = true) do
-    after_from_date = from_date |> contained_date |> next_day!
-    days_before_until(after_from_date, until_date)
+    from_date
+    |> contained_date
+    |> next_day!
+    |> days_before_until(until_date)
   end
 
   @doc """
@@ -324,8 +386,10 @@ defmodule Calendar.Date do
       7
   """
   def day_of_week(date) do
-    date = date |> contained_date
-    date |> to_erl |> :calendar.day_of_the_week
+    date
+    |> contained_date
+    |> to_erl
+    |> :calendar.day_of_the_week
   end
 
   @doc """
@@ -342,8 +406,9 @@ defmodule Calendar.Date do
       "Sunday"
   """
   def day_of_week_name(date, lang\\:en) do
-    date = date |> contained_date
-    date |> Calendar.Strftime.strftime!("%A", lang)
+    date
+    |> contained_date
+    |> Calendar.Strftime.strftime!("%A", lang)
   end
 
   @doc """
@@ -483,6 +548,22 @@ defmodule Calendar.Date do
   """
   def sunday?(date), do: day_of_week(date) == 7
 
+  @doc """
+  Returns a string with the date in ISO format.
+
+  ## Examples
+
+      iex> {2015, 7, 12} |> to_s
+      "2015-07-12"
+      iex> {2015, 7, 7} |> to_s
+      "2015-07-07"
+  """
+  def to_s(date) do
+    date
+    |> contained_date
+    |> Calendar.Strftime.strftime!("%Y-%m-%d")
+  end
+
   defp contained_date(date_container), do: ContainsDate.date_struct(date_container)
 end
 
@@ -500,7 +581,8 @@ defimpl Calendar.ContainsDate, for: Calendar.NaiveDateTime do
   end
 end
 defimpl Calendar.ContainsDate, for: Tuple do
-  def date_struct({y, m, d}), do: Calendar.Date.from_erl!({y, m, d})
+  def date_struct({y, m, d}) when y > 23, do: Calendar.Date.from_erl!({y, m, d})
+  def date_struct({y, _m, _d}) when y <= 23, do: raise "date_struct/1 was called. ContainsDate protocol is not supported for 3-element-tuples where the year is 23 or less. This is to avoid accidently trying to use a time tuple as a date. If you want to work with a date from the year 23 or earlier, consider using a Calendar.Date struct instead."
   def date_struct({{y, m, d}, {_hour, _min, _sec}}), do: Calendar.Date.from_erl!({y, m, d})
   def date_struct({{y, m, d}, {_hour, _min, _sec, _usec}}), do: Calendar.Date.from_erl!({y, m, d})
 end

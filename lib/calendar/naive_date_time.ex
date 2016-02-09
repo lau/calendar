@@ -141,7 +141,7 @@ defmodule Calendar.NaiveDateTime do
   """
   def to_date_time(ndt, timezone) do
     ndt = ndt |> contained_ndt
-    DateTime.from_erl(to_erl(ndt), timezone)
+    DateTime.from_erl(to_erl(ndt), timezone, ndt.usec)
   end
 
   @doc """
@@ -157,6 +157,35 @@ defmodule Calendar.NaiveDateTime do
     ndt = ndt |> contained_ndt
     {:ok, dt} = to_date_time(ndt, "Etc/UTC")
     dt
+  end
+
+  @doc """
+  Create new NaiveDateTime struct based on a date and a time.
+
+  ## Examples
+
+      iex> from_date_and_time({2016, 1, 8}, {14, 10, 55})
+      {:ok, %Calendar.NaiveDateTime{day: 8, usec: nil, hour: 14, min: 10, month: 1, sec: 55, year: 2016}}
+      iex> from_date_and_time(Calendar.Date.Parse.iso8601!("2016-01-08"), {14, 10, 55})
+      {:ok, %Calendar.NaiveDateTime{day: 8, usec: nil, hour: 14, min: 10, month: 1, sec: 55, year: 2016}}
+  """
+  def from_date_and_time(date_container, time_container) do
+    contained_time = Calendar.ContainsTime.time_struct(time_container)
+    from_erl({Calendar.Date.to_erl(date_container), Calendar.Time.to_erl(contained_time)}, contained_time.usec)
+  end
+
+  @doc """
+  Like `from_date_and_time/2` but returns the result untagged.
+  Raises in case of an error.
+
+  ## Example
+
+      iex> from_date_and_time!({2016, 1, 8}, {14, 10, 55})
+      %Calendar.NaiveDateTime{day: 8, usec: nil, hour: 14, min: 10, month: 1, sec: 55, year: 2016}
+  """
+  def from_date_and_time!(date_container, time_container) do
+    {:ok, result} = from_date_and_time(date_container, time_container)
+    result
   end
 
   @doc """
@@ -245,6 +274,100 @@ defmodule Calendar.NaiveDateTime do
     |> :calendar.datetime_to_gregorian_seconds
   end
 
+  @doc """
+  The difference between two naive datetimes. In seconds and microseconds.
+
+  Returns tuple with {:ok, seconds, microseconds, :before or :after or :same_time}
+
+  If the first argument is later (e.g. greater) the second, the result will be positive.
+
+  In case of a negative result the second element (seconds) will be negative. This is always
+  the case if both of the arguments have the microseconds as nil or 0. But if the difference
+  is less than a second and the result is negative, then the microseconds will be negative.
+
+  ## Examples
+
+      # The first NaiveDateTime is 40 seconds after the second NaiveDateTime
+      iex> diff({{2014,10,2},{0,29,50}}, {{2014,10,2},{0,29,10}})
+      {:ok, 40, 0, :after}
+      # The first NaiveDateTime is 40 seconds before the second NaiveDateTime
+      iex> diff({{2014,10,2},{0,29,10}}, {{2014,10,2},{0,29,50}})
+      {:ok, -40, 0, :before}
+      iex> diff(from_erl!({{2014,10,2},{0,29,10}},999999), from_erl!({{2014,10,2},{0,29,50}}))
+      {:ok, -39, 1, :before}
+      iex> diff(from_erl!({{2014,10,2},{0,29,10}},999999), from_erl!({{2014,10,2},{0,29,11}}))
+      {:ok, 0, -1, :before}
+      iex> diff(from_erl!({{2014,10,2},{0,29,11}}), from_erl!({{2014,10,2},{0,29,10}},999999))
+      {:ok, 0, 1, :after}
+      iex> diff(from_erl!({{2014,10,2},{0,29,11}}), from_erl!({{2014,10,2},{0,29,11}}))
+      {:ok, 0, 0, :same_time}
+  """
+  def diff(%Calendar.NaiveDateTime{} = first_dt, %Calendar.NaiveDateTime{} = second_dt) do
+    first_dt_utc  = first_dt  |> to_date_time_utc
+    second_dt_utc = second_dt |> to_date_time_utc
+    DateTime.diff(first_dt_utc, second_dt_utc)
+  end
+  def diff(ndt1, ndt2) do
+    diff(contained_ndt(ndt1), contained_ndt(ndt2))
+  end
+
+  @doc """
+  Takes a two `NaiveDateTime`s and returns true if the first
+  one is greater than the second. Otherwise false. Greater than
+  means that it is later then the second datetime.
+
+  ## Examples
+
+      iex> {{2014,1,1}, {10,10,10}} |> after?({{1999, 1, 1}, {11, 11, 11}})
+      true
+      iex> {{2014,1,1}, {10,10,10}} |> after?({{2020, 1, 1}, {11, 11, 11}})
+      false
+      iex> {{2014,1,1}, {10,10,10}} |> after?({{2014, 1, 1}, {10, 10, 10}})
+      false
+  """
+  def after?(ndt1, ndt2) do
+    {_, _, _, comparison} = diff(ndt1, ndt2)
+    comparison == :after
+  end
+
+  @doc """
+  Takes a two `NaiveDateTime`s and returns true if the first
+  one is less than the second. Otherwise false. Less than
+  means that it is earlier then the second datetime.
+
+  ## Examples
+
+      iex> {{2014,1,1}, {10,10,10}} |> before?({{1999, 1, 1}, {11, 11, 11}})
+      false
+      iex> {{2014,1,1}, {10,10,10}} |> before?({{2020, 1, 1}, {11, 11, 11}})
+      true
+      iex> {{2014,1,1}, {10,10,10}} |> before?({{2014, 1, 1}, {10, 10, 10}})
+      false
+  """
+  def before?(ndt1, ndt2) do
+    {_, _, _, comparison} = diff(ndt1, ndt2)
+    comparison == :before
+  end
+  @doc """
+  Takes a two `NaiveDateTime`s and returns true if the first
+  is equal to the second one.
+
+  In this context equal means that they happen at the same time.
+
+  ## Examples
+
+      iex> {{2014,1,1}, {10,10,10}} |> same_time?({{1999, 1, 1}, {11, 11, 11}})
+      false
+      iex> {{2014,1,1}, {10,10,10}} |> same_time?({{2020, 1, 1}, {11, 11, 11}})
+      false
+      iex> {{2014,1,1}, {10,10,10}} |> same_time?({{2014, 1, 1}, {10, 10, 10}})
+      true
+  """
+  def same_time?(ndt1, ndt2) do
+    {_, _, _, comparison} = diff(ndt1, ndt2)
+    comparison == :same_time
+  end
+
   defp from_gregorian_seconds!(gregorian_seconds, usec) do
     gregorian_seconds
     |>:calendar.gregorian_seconds_to_datetime
@@ -261,7 +384,7 @@ defmodule Calendar.NaiveDateTime do
     ndt
     |> contained_ndt
     |> to_date_time_utc
-    |> Calendar.DateTime.Format.strftime! string, lang
+    |> Calendar.DateTime.Format.strftime!(string, lang)
   end
 
   defp contained_ndt(ndt_container) do

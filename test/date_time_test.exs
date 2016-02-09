@@ -137,4 +137,8 @@ defmodule DateTimeTest do
     second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
     assert after?(first, second) == false
   end
+
+  test "diff works for anything that contains a date time" do
+    assert diff(%SomethingThatContainsDateTime{}, from_erl!({{2015, 6, 30}, {23, 59, 60}}, "Etc/UTC")) == {:ok, -15634739, 0, :before}
+  end
 end

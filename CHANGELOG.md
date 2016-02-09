@@ -1,5 +1,61 @@
 # Changelog
 
+## [0.12.4] - 2016-01-26
+### Improved
+
+- Performance improvements for various formatting functions
+
+## [0.12.3] - 2016-01-14
+### Fixed
+
+- Translations for strftime specs `%c`, `%X`, and `%x` would not use specified language.
+
+## [0.12.2] - 2016-01-13
+### Added
+
+- %x and %c conversion specs to Strftime
+- DateTime.from_date_and_time_and_zone function
+- NaiveDateTime.from_date_and_time
+- Date.Parse module
+- Date.Format module
+
+### Changed
+
+- Make 3 element tuples only valid as dates for years after 23 AD. In order to avoid confusing them with time tuples.
+
+### Fixed
+
+- Date.dates_for_week_number would in some cases not include all dates for weeks around end of year
+
+## [0.12.1] - 2015-12-18
+### Fixed
+
+- `DateTime.diff/2` only accepted Calendar.DateTime structs as parameters. Now
+   it also accepts structs implementing the `Calendar.ContainsDateTime` protocol.
+   This also affected related functions `before?`, `after?`, `same_time?`
+
+## [0.12.0] - 2015-12-10
+### Changed
+
+- `DateTime.diff/2` and `NaiveDateTime.diff/2` functions now returns a 4 tuple instead of 3 tuple. The first 3 elements work the same way as before. The fourth element
+  can be `:before`, `:after` or `:same_time`.
+
+### Added
+
+- Added functions `Date.before?`, `Date.after?`, `Date.same_date?`
+- Added functions `DateTime.before?`, `DateTime.after?`, `DateTime.same_time?`
+- Added functions `NaiveDateTime.before?`, `NaiveDateTime.after?`, `NaiveDateTime.same_time?`
+
+## [0.11.2] - 2015-12-08
+### Added
+
+- Addded `NaiveDateTime.diff/2` function. It works similarly to `DateTime.diff/2`
+
+### Fixed
+
+- In `DateTime.diff/2` sometimes a difference of less than a second would be returned
+  with positive microseconds, when they should have been negative.
+
 ## [0.11.1] - 2015-11-04
 ### Fixed
 
@@ -214,7 +270,7 @@ internally for more accuracy and less overhead.
 ## [0.5.0] - 2015-03-05
 ### Changed
 
-The microseconds part of the DateTime, NaiveTime and Time structs have been
+The microseconds part of the DateTime, NaiveDateTime and Time structs have been
 renamed from microsec to usec.
 
 ## [0.4.1] - 2015-03-02

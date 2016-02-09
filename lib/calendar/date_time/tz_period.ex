@@ -54,14 +54,13 @@ defmodule Calendar.DateTime.TzPeriod do
   """
   def next_from(date_time) do
     period = date_time |> timezone_period
-    if is_integer(period.until.utc) do
-      until = period.until.utc
-      |> :calendar.gregorian_seconds_to_datetime
-      |> DateTime.from_erl!("Etc/UTC")
-      |> DateTime.shift_zone!(date_time.timezone)
-      {:ok, until}
-    else
-      {:unlimited, period.until.wall}
+    case is_integer(period.until.utc) do
+      true -> until = period.until.utc
+        |> :calendar.gregorian_seconds_to_datetime
+        |> DateTime.from_erl!("Etc/UTC")
+        |> DateTime.shift_zone!(date_time.timezone)
+        {:ok, until}
+      false -> {:unlimited, period.until.wall}
     end
   end
 
@@ -87,13 +86,12 @@ defmodule Calendar.DateTime.TzPeriod do
   """
   def from(date_time) do
     period = date_time |> timezone_period
-    if is_integer(period.from.utc) do
-      from = period.from.utc |> :calendar.gregorian_seconds_to_datetime
-      |> DateTime.from_erl!("Etc/UTC")
-      |> DateTime.shift_zone!(date_time.timezone)
-      {:ok, from}
-    else
-      {:unlimited, period.from.wall}
+    case is_integer(period.from.utc) do
+      true -> from = period.from.utc |> :calendar.gregorian_seconds_to_datetime
+        |> DateTime.from_erl!("Etc/UTC")
+        |> DateTime.shift_zone!(date_time.timezone)
+        {:ok, from}
+      false -> {:unlimited, period.from.wall}
     end
   end
 
@@ -110,17 +108,16 @@ defmodule Calendar.DateTime.TzPeriod do
   """
   def prev_from(date_time) do
     {tag, val} = from(date_time)
-    if tag == :unlimited do
-      {:error, :already_at_first}
-    else
-      val
-      |> DateTime.shift_zone!("Etc/UTC")
-      |> DateTime.gregorian_seconds
-      |> -1
-      |> :calendar.gregorian_seconds_to_datetime
-      |> DateTime.from_erl!("Etc/UTC")
-      |> DateTime.shift_zone!(val.timezone)
-      |> from
+    case tag do
+      :unlimited -> {:error, :already_at_first}
+      _ ->  val
+        |> DateTime.shift_zone!("Etc/UTC")
+        |> DateTime.gregorian_seconds
+        |> -1
+        |> :calendar.gregorian_seconds_to_datetime
+        |> DateTime.from_erl!("Etc/UTC")
+        |> DateTime.shift_zone!(val.timezone)
+        |> from
     end
   end
 

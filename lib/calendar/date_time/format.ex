@@ -8,11 +8,12 @@ defmodule Calendar.DateTime.Format do
   Deprecated in this module: The function has instead been moved to the `Calendar.Strftime` module.
   """
   def strftime!(dt, string, lang\\:en) do
-    dt = dt |> contained_date_time
     IO.puts :stderr, "Warning: strftime!/1 in Calendar.DateTime.Format is deprecated." <>
                      "The function has been moved so use Calendar.Strftime.strftime! instead. " <>
                      Exception.format_stacktrace()
-    Strftime.strftime!(dt, string, lang)
+    dt
+    |> contained_date_time
+    |> Strftime.strftime!(string, lang)
   end
 
   @doc """
@@ -25,8 +26,9 @@ defmodule Calendar.DateTime.Format do
       "Sat, 13 Mar 2010 11:23:03 +0000"
   """
   def rfc2822(dt) do
-    dt = dt |> contained_date_time
-    Strftime.strftime! dt, "%a, %d %b %Y %T %z"
+    dt
+    |> contained_date_time
+    |> Strftime.strftime!("%a, %d %b %Y %T %z")
   end
 
   @doc """
@@ -41,8 +43,9 @@ defmodule Calendar.DateTime.Format do
       "Sat, 13 Mar 10 11:23:03 +0000"
   """
   def rfc822(dt) do
-    dt = dt |> contained_date_time
-    Strftime.strftime! dt, "%a, %d %b %y %T %z"
+    dt
+    |> contained_date_time
+    |> Strftime.strftime!("%a, %d %b %y %T %z")
   end
 
   @doc """
@@ -55,9 +58,15 @@ defmodule Calendar.DateTime.Format do
       "Sat, 13-Mar-10 11:23:03 PST"
   """
   def rfc850(dt) do
-    dt = dt |> contained_date_time
-    Strftime.strftime! dt, "%a, %d-%b-%y %T %Z"
+    dt
+    |> contained_date_time
+    |> Strftime.strftime!("%a, %d-%b-%y %T %Z")
   end
+
+  @doc """
+  Format as ISO 8601 extended (alias for rfc3339/1)
+  """
+  def iso_8601(dt), do: rfc3339(dt)
 
   @doc """
   Format as ISO 8601 Basic
@@ -93,7 +102,7 @@ defmodule Calendar.DateTime.Format do
       "2014-09-26T17:10:20.000005-03:00"
   """
   def rfc3339(%Calendar.DateTime{} = dt) do
-    Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
+    "#{dt.year|>pad(4)}-#{dt.month|>pad}-#{dt.day|>pad}T#{dt.hour|>pad}:#{dt.min|>pad}:#{dt.sec|>pad}"<>
     rfc3330_usec_part(dt.usec, 6)<>
     rfc3339_offset_part(dt, dt.timezone)
   end
@@ -122,9 +131,9 @@ defmodule Calendar.DateTime.Format do
     ".#{usec |> pad(6)}"
   end
   defp rfc3330_usec_part(usec, precision) when precision >= 1 and precision <=6 do
-    ".#{usec |> pad(6)}" |> String.slice 0..precision
+    ".#{usec |> pad(6)}" |> String.slice(0..precision)
   end
-  defp pad(subject, len, char\\?0) do
+  defp pad(subject, len\\2, char\\?0) do
     String.rjust("#{subject}", len, char)
   end
 
@@ -184,11 +193,14 @@ defmodule Calendar.DateTime.Format do
       iex> DateTime.from_erl!({{2014, 9, 6}, {6, 9, 8}}, "America/Montevideo") |> DateTime.Format.httpdate
       "Sat, 06 Sep 2014 09:09:08 GMT"
   """
+  def httpdate(%Calendar.DateTime{timezone: "Etc/UTC"} = dt) do
+    dt |> Strftime.strftime!("%a, %d %b %Y %H:%M:%S GMT")
+  end
   def httpdate(dt) do
-    dt = dt |> contained_date_time
     dt
-    |> DateTime.shift_zone!("UTC")
-    |> Strftime.strftime!("%a, %d %b %Y %H:%M:%S GMT")
+    |> contained_date_time
+    |> DateTime.shift_zone!("Etc/UTC")
+    |> httpdate
   end
 
   @doc """
@@ -199,12 +211,16 @@ defmodule Calendar.DateTime.Format do
       iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 55) |> DateTime.Format.unix
       1_000_000_000
   """
-  def unix(date_time) do
-    date_time = date_time |> contained_date_time
-    date_time
-    |> DateTime.shift_zone!("UTC")
+  def unix(%Calendar.DateTime{timezone: "Etc/UTC"} = dt) do
+    dt
     |> DateTime.gregorian_seconds
     |> - @secs_between_year_0_and_unix_epoch
+  end
+  def unix(dt) do
+    dt
+    |> contained_date_time
+    |> DateTime.shift_zone!("Etc/UTC")
+    |> unix
   end
 
   @doc """
@@ -246,7 +262,7 @@ defmodule Calendar.DateTime.Format do
     date_time = date_time |> contained_date_time
     whole_secs = date_time
     |> unix
-    |> Kernel.* 1000
+    |> Kernel.*(1000)
     whole_secs + micro_to_mil(date_time.usec)
   end
 

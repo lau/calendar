@@ -48,12 +48,12 @@ defmodule Calendar.DateTime.Parse do
   end
   defp capture_rfc822_string(string) do
     ~r/(?<day>[\d]{1,2})[\s]+(?<month>[^\d]{3})[\s]+(?<year>[\d]{2,4})[\s]+(?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})[^\d]?(((?<offset_sign>[+-])(?<offset_hours>[\d]{2})(?<offset_mins>[\d]{2})|(?<offset_letters>[A-Z]{1,3})))?/
-    |> Regex.named_captures string
+    |> Regex.named_captures(string)
   end
   defp change_captured_year_to_four_digit(cap, year_guessing_base) do
     changed_year = to_int(cap["year"])
     |> two_to_four_digit_year(year_guessing_base)
-    |> Integer.to_string
+    |> to_string
     %{cap | "year" => changed_year}
   end
   defp two_to_four_digit_year(year, year_guessing_base) when year < 100 do
@@ -306,7 +306,7 @@ defmodule Calendar.DateTime.Parse do
     {utc_tag, nil}
   end
   defp do_parse_rfc3339_with_time_zone({_utc_tag, utc_dt}, time_zone) do
-    utc_dt |> DateTime.shift_zone time_zone
+    utc_dt |> DateTime.shift_zone(time_zone)
   end
 
   defp parse_rfc3339_as_utc_parsed_string(mapped, z, _offset_hours, _offset_mins) when z == "Z" or z=="z" do
@@ -344,6 +344,6 @@ defmodule Calendar.DateTime.Parse do
 
   defp parse_rfc3339_string(rfc3339_string) do
     ~r/(?<year>[\d]{4})[^\d]?(?<month>[\d]{2})[^\d]?(?<day>[\d]{2})[^\d](?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})(\.(?<fraction>[\d]+))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):?(?<offset_mins>[\d]{2}))?/
-    |> Regex.named_captures rfc3339_string
+    |> Regex.named_captures(rfc3339_string)
   end
 end

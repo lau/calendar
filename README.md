@@ -1,16 +1,21 @@
 Calendar
 =======
-### (formerly known as Kalends)
 
 [![Build
 Status](https://travis-ci.org/lau/calendar.svg?branch=master)](https://travis-ci.org/lau/calendar)
 [![Inline docs](http://inch-ci.org/github/lau/calendar.svg)](http://hexdocs.pm/calendar/)
 [![Hex Version](http://img.shields.io/hexpm/v/calendar.svg?style=flat)](https://hex.pm/packages/calendar)
 
-Calendar is a date and time library for Elixir.
+Calendar is a datetime library for Elixir.
 
-The Olson/Eggert "Time Zone Database" is used. Years 1 through 9999
-are supported.
+Providing explicit types for datetimes, dates and times.
+Full timezone support via its sister package [tzdata](https://github.com/lau/tzdata).
+
+Safe parsing and formatting of standard formats (ISO, RFC, Unix, JS etc.)
+plus strftime formatting. Easy and safe interoperability with erlang style
+date, time, datetime tuples. Extendable through protocols.
+
+Related packages are available for [i18n](https://github.com/padde/calendar_translations), [Ecto](https://github.com/lau/calecto) and [Phoenix](https://github.com/lau/phoenix_calendar) interoperability.
 
 ## Getting started
 
@@ -18,7 +23,7 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.11.1"},  ]
+  [  {:calendar, "~> 0.12.4"},  ]
 end
 ```
 
@@ -31,13 +36,6 @@ Also add `calendar` to the list of applications in the mix.exs file:
 ```
 
 Then run `mix deps.get` which will fetch Calendar via the hex package manager.
-
-## Upgrading from versions earlier than 0.10.0
-
-Calendar 0.10.0 supports Tzdata ~> 0.5.1 as well as ~> 0.1.7
-
-With Tzdata 0.5.1 it is now necessary to have calendar in the application list
-as described above in the "Getting started" secion.
 
 ## Types
 
@@ -66,6 +64,29 @@ Calendar.NaiveDateTime.from_erl!({{2015, 12, 24}, {13, 45, 55}}) |> Calendar.Dat
 
 In the same fashion other tuples with at least the same amount of information can be used with other modules. E.g.` NaiveDateTime`, `DateTime`, `Time` structs can be used in the `Time` module because they all contain an hour, minute and second. `DateTime` structs and erlang style datetime tuples can be used in the `NaiveDateTime` module because they contain a date and a time.
 
+`File.lstat!/2` is an example of a function that returns datetime tuples.
+A datetime tuple can be used in place of a NaiveDateTime, Date or Time.
+```elixir
+# Returns the mtime of the file mix.exs
+> File.lstat!("mix.exs").mtime
+{{2015, 12, 31}, {14, 30, 26}}
+# Format this datetime using one of the NaiveDateTime fun
+File.lstat!("mix.exs").mtime |> NaiveDateTime.Format.asctime
+"Thu Dec 31 14:30:26 2015"
+# Using the tuple with the Date class, the date information is used
+> File.lstat!("mix.exs").mtime |> Date.day_of_week_name
+"Thursday"
+# We know from the erlang documentation that lstat! by default returns UTC.
+# But the tuple does not contain this information.
+# So we can explicitly cast the tuple to be a DateTime in UTC.
+# And then pipe that to the DateTime.Format.unix function in order to get a UNIX timestamp
+> File.lstat!("mix.exs").mtime |> NaiveDateTime.to_date_time_utc |> DateTime.Format.unix
+1451572226
+# String formatting
+> File.lstat!("mix.exs").mtime |> Strftime.strftime!("%H:%M:%S")
+"14:30:26"
+```
+
 ## Date examples
 
 The Date module is used for handling dates.
@@ -83,9 +104,19 @@ false
 # What day of the week is it?
 > jan_first |> Calendar.Date.day_of_week_name
 "Thursday"
-# In Spanish by passing :es as language code
-jan_first |> Calendar.Date.day_of_week_name :es
+# In Spanish by passing :es as language code (requires translation module)
+jan_first |> Calendar.Date.day_of_week_name(:es)
 "jueves"
+
+# Compare dates
+> jan_first |> Calendar.Date.before?({2015, 12, 24})
+true
+> jan_first |> Calendar.Date.diff({2015, 12, 24})
+-357
+# Because of protocols, datetimes can also be provided as arguments,
+# but only the date will be used
+> jan_first |> Calendar.Date.diff({{2015, 12, 24}, {9, 10, 10}})
+-357
 
 # Use the DateTime module to get the time right now and
 # pipe it to the Date module to get the week number
@@ -101,6 +132,7 @@ jan_first |> Calendar.Date.day_of_week_name :es
  %Calendar.Date{day: 10, month: 7, year: 2015},
  %Calendar.Date{day: 11, month: 7, year: 2015},
  %Calendar.Date{day: 12, month: 7, year: 2015}]
+
 ```
 
 ## NaiveDateTime
@@ -123,6 +155,15 @@ timezone.
 # parsing and get the same result as the original input:
 > ndt |> Calendar.NaiveDateTime.Format.asctime
 "Wed Apr  9 07:53:03 2003"
+# Compare with another naive datetime in the form of an erlang style datetime tuple
+# Returns the difference in seconds, microseconds and if it is before after or at the
+# same time
+> ndt |> Calendar.NaiveDateTime.diff({{2003, 4, 8}, {10, 0, 0}})
+{:ok, 78783, 0, :after}
+# There are also boolean functions to just find out if a naive datetime is before or
+# after another one
+> ndt |> Calendar.NaiveDateTime.after? {{2003, 4, 8}, {10, 0, 0}}
+true
 ```
 
 ## DateTime usage examples
@@ -291,6 +332,20 @@ defmodule NewYearsHttpLib do
   # "Thu, 01 Jan 2015 00:00:00 GMT"
 end
 ```
+
+## Video presentation with some Calendar examples
+
+In [a talk from ElixirConf 2015](http://img.youtube.com/vi/keUbVvMJeKY/0.jpg) Calendar is featured. Specifically from around 27:07 into the video there are some
+Calendar examples.
+
+[![Talk from ElixirConf 2015](http://img.youtube.com/vi/keUbVvMJeKY/0.jpg)](http://www.youtube.com/watch?v=keUbVvMJeKY)
+
+## Upgrading from versions earlier than 0.10.0
+
+Calendar 0.10.0 supports Tzdata ~> 0.5.1 as well as ~> 0.1.7
+
+With Tzdata 0.5.1 it is now necessary to have calendar in the application list
+as described above in the "Getting started" secion.
 
 ## Name change from Kalends, upgrade instructions.
 
