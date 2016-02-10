@@ -7,10 +7,10 @@ defmodule Calendar.Time.Format do
 
   ## Examples
 
-      iex> Calendar.Time.from_erl!({20, 5, 18}) |> Calendar.Time.Format.iso_8601
+      iex> Calendar.Time.from_erl!({20, 5, 18}) |> Calendar.Time.Format.iso8601
       "20:05:18"
   """
-  def iso_8601(time) do
+  def iso8601(time) do
     time
     |> contained_time
     |> Strftime.strftime!("%H:%M:%S")
