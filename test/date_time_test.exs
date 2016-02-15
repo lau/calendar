@@ -86,6 +86,58 @@ defmodule DateTimeTest do
     assert to_erl(%SomethingThatContainsDateTime{}) == {{2015, 1, 1}, {1, 1, 1}}
   end
 
+  test "before? returns true when the first is before the second" do
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 1)
+    assert before?(first, second) == true
+
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", 0)
+    assert before?(first, second) == true
+  end
+
+  test "before? returns false when the first is after the second" do
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 1)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    assert before?(first, second) == false
+
+    first = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", 0)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    assert before?(first, second) == false
+  end
+
+  test "before? returns false when first and second are equal" do
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    assert before?(first, second) == false
+  end
+
+  test "after? returns false when the first is before the second" do
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 1)
+    assert after?(first, second) == false
+
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", 0)
+    assert after?(first, second) == false
+  end
+
+  test "after? returns true when the first is after the second" do
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 1)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    assert after?(first, second) == true
+
+    first = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", 0)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    assert after?(first, second) == true
+  end
+
+  test "after? returns false when first and second are equal" do
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    assert after?(first, second) == false
+  end
+
   test "diff works for anything that contains a date time" do
     assert diff(%SomethingThatContainsDateTime{}, from_erl!({{2015, 6, 30}, {23, 59, 60}}, "Etc/UTC")) == {:ok, -15634739, 0, :before}
   end
