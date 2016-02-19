@@ -265,6 +265,31 @@ defmodule Calendar.Date do
     {:ok, result}
   end
 
+  def add(date, days),  do: advance(date, days)
+  def add!(date, days), do: advance!(date, days)
+
+
+  @doc """
+  Subtract `days` number of days from date.
+
+  ## Examples
+
+      # Date struct turned back 2 days
+      iex> from_erl!({2014,12,27}) |> subtract(2)
+      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      # Date tuple turned back 2 days
+      iex> {2014,12,27} |> subtract(2)
+      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      # When passing a DateTime, NaiveDateTime or datetime tuple
+      # the time part is ignored. A Date struct is returned.
+      iex> {{2014,12,27}, {21,30,59}} |> NaiveDateTime.from_erl! |> subtract(2)
+      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      iex> {{2014,12,27}, {21,30,59}} |> subtract(2)
+      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+  """
+  def subtract(date, days),  do: advance(date, -1 * days)
+  def subtract!(date, days), do: advance!(date, -1 * days)
+
   @doc """
   Like `advance/2`, but returns the result directly - not tagged with :ok.
   This function might raise an error.
@@ -547,6 +572,46 @@ defmodule Calendar.Date do
       false
   """
   def sunday?(date), do: day_of_week(date) == 7
+
+  @doc """
+
+  ## Examples
+
+      iex> from_ordinal(2015, 1)
+      {:ok, %Calendar.Date{day: 1, month: 1, year: 2015}}
+      iex> from_ordinal(2015, 270)
+      {:ok, %Calendar.Date{day: 27, month: 9, year: 2015}}
+      iex> from_ordinal(2015, 999)
+      {:error, :invalid_ordinal_date}
+  """
+  def from_ordinal(year, ordinal_day) do
+    list = days_after_until({year-1, 12, 31}, {year, 12, 31})
+    |> Enum.to_list
+    do_from_ordinal(year, ordinal_day, list)
+  end
+  defp do_from_ordinal(year, ordinal_day, [head|tail]) do
+    if day_number_in_year(head) == ordinal_day do
+      {:ok, head}
+    else
+      do_from_ordinal(year, ordinal_day, tail)
+    end
+  end
+  defp do_from_ordinal(_, _, []), do: {:error, :invalid_ordinal_date}
+
+  @doc """
+  ## Examples
+
+      iex> from_ordinal!(2015, 1)
+      %Calendar.Date{day: 1, month: 1, year: 2015}
+      iex> from_ordinal!(2015, 270)
+      %Calendar.Date{day: 27, month: 9, year: 2015}
+      iex> from_ordinal!(2015, 365)
+      %Calendar.Date{day: 31, month: 12, year: 2015}
+  """
+  def from_ordinal!(year, ordinal_day) do
+    {:ok, result} = from_ordinal(year, ordinal_day)
+    result
+  end
 
   @doc """
   Returns a string with the date in ISO format.
