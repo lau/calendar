@@ -16,7 +16,7 @@ defmodule Calendar.NaiveDateTime.Format do
   end
 
   @doc """
-  Format a naive datetime as ISO 8601
+  Format a naive datetime as ISO 8601 in extended format.
 
   ## Examples
       iex> {{2015, 4, 3}, {7, 5, 3}} |> iso8601
@@ -30,5 +30,20 @@ defmodule Calendar.NaiveDateTime.Format do
 
   defp to_utc_dt(ndt) do
     ndt |> NaiveDateTime.to_date_time_utc
+  end
+
+  @doc """
+  Format a naive datetime as ISO 8601 in basic format.
+
+  ## Examples
+      iex> {{2015, 4, 3}, {7, 5, 3}} |> iso8601_basic
+      "20150403T070503"
+  """
+  def iso8601_basic(ndt) do
+    ndt
+    |> to_utc_dt
+    |> Strftime.strftime!("%FT%T")
+    |> String.replace(":", "")
+    |> String.replace("-", "")
   end
 end
