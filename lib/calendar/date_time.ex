@@ -91,8 +91,8 @@ defmodule Calendar.DateTime do
   def shift_zone!(date_time, timezone) do
     date_time
     |> contained_date_time
-    |>shift_to_utc
-    |>shift_from_utc(timezone)
+    |> shift_to_utc
+    |> shift_from_utc(timezone)
   end
 
   @doc """
@@ -408,6 +408,23 @@ defmodule Calendar.DateTime do
     gregorian_seconds
     |>:calendar.gregorian_seconds_to_datetime
     |>from_erl!(timezone, abbr, utc_off, std_off, usec)
+  end
+
+  @doc """
+  Takes an erlang style 3 touple timestamp with the form:
+  {megasecs, secs, microsecs}
+
+  This is the form returned by the Erlang function `:erlang.timestamp()`
+
+  ## Examples
+
+      iex> from_erlang_timestamp({1453, 854322, 799236})
+      %Calendar.DateTime{abbr: "UTC", day: 27, hour: 0, min: 25, month: 1, sec: 22, std_off: 0,
+            timezone: "Etc/UTC", usec: 799236, utc_off: 0, year: 2016}
+  """
+  def from_erlang_timestamp({_, _, usec} = erlang_timestamp) do
+    dt = erlang_timestamp |> :calendar.now_to_universal_time
+    from_erl!(dt, "Etc/UTC" ,usec)
   end
 
   @doc """
