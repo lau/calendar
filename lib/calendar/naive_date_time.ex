@@ -220,10 +220,34 @@ defmodule Calendar.NaiveDateTime do
   ## Examples
 
       # Advance 2 seconds
-      iex> from_erl!({{2014,10,2},{0,29,10}}, 123456) |> advance(2)
+      iex> from_erl!({{2014,10,2},{0,29,10}}, 123456) |> add(2)
       {:ok, %Calendar.NaiveDateTime{day: 2, hour: 0, min: 29, month: 10,
             sec: 12, usec: 123456,
             year: 2014}}
+  """
+  def add(ndt, seconds),  do: advance(ndt, seconds)
+
+  @doc """
+  Like `add` without exclamation points.
+  Instead of returning a tuple with :ok and the result,
+  the result is returned untagged. Will raise an error in case
+  no correct result can be found based on the arguments.
+
+  ## Examples
+
+      # Advance 2 seconds
+      iex> from_erl!({{2014,10,2},{0,29,10}}, 123456) |> add!(2)
+      %Calendar.NaiveDateTime{day: 2, hour: 0, min: 29, month: 10,
+            sec: 12, usec: 123456,
+            year: 2014}
+  """
+  def add!(ndt, seconds), do: advance!(ndt, seconds)
+
+  def subtract(ndt, seconds),  do: add(ndt, -1 * seconds)
+  def subtract!(ndt, seconds), do: add!(ndt, -1 * seconds)
+
+  @doc """
+  Deprecated version of `add/2`
   """
   def advance(ndt, seconds) do
     try do
@@ -239,18 +263,7 @@ defmodule Calendar.NaiveDateTime do
   end
 
   @doc """
-  Like `advance` without exclamation points.
-  Instead of returning a tuple with :ok and the result,
-  the result is returned untagged. Will raise an error in case
-  no correct result can be found based on the arguments.
-
-  ## Examples
-
-      # Advance 2 seconds
-      iex> from_erl!({{2014,10,2},{0,29,10}}, 123456) |> advance!(2)
-      %Calendar.NaiveDateTime{day: 2, hour: 0, min: 29, month: 10,
-            sec: 12, usec: 123456,
-            year: 2014}
+  Deprecated version of `add!/2`
   """
   def advance!(ndt, seconds) do
     ndt = ndt |> contained_ndt
