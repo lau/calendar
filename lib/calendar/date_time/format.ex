@@ -250,13 +250,16 @@ defmodule Calendar.DateTime.Format do
   @doc """
   Takes datetime and returns UTC timestamp in JavaScript format. That is milliseconds since 1970 unix epoch.
 
+  These millisecond numbers can be used to create new Javascript Dates in JavaScript like so: new Date(1000000000985)
+  The UTC value of the javascript date will be the same as that of the Elixir Calendar.DateTime.
+
   ## Examples
 
       iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 985085) |> DateTime.Format.js_ms
-      1_000_000_000_985
+      1000000000985
 
       iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 98508) |> DateTime.Format.js_ms
-      1_000_000_000_098
+      1000000000098
   """
   def js_ms(date_time) do
     date_time = date_time |> contained_date_time
