@@ -213,7 +213,7 @@ Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
 > mvd |> DateTime.Format.rfc3339
 "2014-10-04T23:44:32-03:00"
 # or ISO 8601 basic
-> mvd |> DateTime.Format.iso_8601_basic
+> mvd |> DateTime.Format.iso8601_basic
 "20141004T234432-0300"
 ```
 
@@ -224,6 +224,14 @@ mvd |> DateTime.Format.unix
 1412477072
 ```
 
+Format as milliseconds that can be used by JavaScript:
+
+```elixir
+mvd |> DateTime.Format.js_ms
+1412477072000
+# Can be used like this in Javascript: new Date(1412477072000)
+```
+
 Parsing an RFC 3339 timestamp as UTC:
 
 ```elixir
@@ -232,7 +240,7 @@ Parsing an RFC 3339 timestamp as UTC:
         min: 44, month: 10, sec: 32, std_off: 0, timezone: "Etc/UTC",
         utc_off: 0, year: 2014}}
 # Format the parsed DateTime as ISO 8601 Basic
-parsed |> DateTime.Format.iso_8601_basic
+parsed |> DateTime.Format.iso8601_basic
 "20141004T234432Z"
 ```
 
