@@ -6,7 +6,9 @@ defprotocol Calendar.ContainsDate do
 end
 
 defmodule Calendar.Date do
-  alias Calendar.{NaiveDateTime, ContainsDate, DateTime}
+  alias Calendar.NaiveDateTime
+  alias Calendar.ContainsDate
+  alias Calendar.DateTime
 
   @moduledoc """
   The Date module provides a struct to represent a simple date: year, month and day.
