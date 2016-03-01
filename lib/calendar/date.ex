@@ -6,8 +6,7 @@ defprotocol Calendar.ContainsDate do
 end
 
 defmodule Calendar.Date do
-  alias Calendar.NaiveDateTime
-  alias Calendar.ContainsDate
+  alias Calendar.{NaiveDateTime, ContainsDate, DateTime}
 
   @moduledoc """
   The Date module provides a struct to represent a simple date: year, month and day.
@@ -627,6 +626,35 @@ defmodule Calendar.Date do
     date
     |> contained_date
     |> Calendar.Strftime.strftime!("%Y-%m-%d")
+  end
+
+  @doc """
+  Returns the date for the time right now in UTC.
+
+  ## Examples
+
+      > today_utc
+      %Calendar.Date{day: 1, month: 3, year: 2016}
+  """
+  def today_utc do
+    DateTime.now_utc
+    |> DateTime.to_date
+  end
+
+  @doc """
+  Returns the date for the time right now in the provided timezone.
+
+  ## Examples
+
+      > today!("America/Montevideo")
+      %Calendar.Date{day: 1, month: 3, year: 2016}
+      > today!("Australia/Sydney")
+      %Calendar.Date{day: 2, month: 3, year: 2016}
+  """
+  def today!(timezone) do
+    timezone
+    |> DateTime.now!
+    |> DateTime.to_date
   end
 
   defp contained_date(date_container), do: ContainsDate.date_struct(date_container)
