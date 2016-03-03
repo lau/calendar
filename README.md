@@ -3,6 +3,7 @@ Calendar
 
 [![Build
 Status](https://travis-ci.org/lau/calendar.svg?branch=master)](https://travis-ci.org/lau/calendar)
+[![Deps Status](https://beta.hexfaktor.org/badge/all/github/lau/calendar.svg)](https://beta.hexfaktor.org/github/lau/calendar)
 [![Inline docs](http://inch-ci.org/github/lau/calendar.svg)](http://hexdocs.pm/calendar/)
 [![Hex Version](http://img.shields.io/hexpm/v/calendar.svg?style=flat)](https://hex.pm/packages/calendar)
 
