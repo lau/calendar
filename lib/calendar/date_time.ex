@@ -96,6 +96,134 @@ defmodule Calendar.DateTime do
   end
 
   @doc """
+  Takes a `DateTime` struct and an integer. Returns a `DateTime` struct in the future which is greater
+  by the number of seconds found in the `seconds` argument. *NOTE:* `add/2` ignores leap seconds. The
+  calculation is based on the (wrong) assumption that there are no leap seconds.
+
+  ## Examples
+
+      # Add 2 seconds
+      iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add(2)
+      {:ok, %Calendar.DateTime{abbr: "EDT", day: 2, hour: 0, min: 29, month: 10,
+            sec: 12, std_off: 3600, timezone: "America/New_York", usec: 123456,
+            utc_off: -18000, year: 2014}}
+
+
+      # Add 86400 seconds (one day)
+      iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add(86400)
+      {:ok, %Calendar.DateTime{abbr: "EDT", day: 3, hour: 0, min: 29, month: 10,
+            sec: 10, std_off: 3600, timezone: "America/New_York", usec: 123456,
+            utc_off: -18000, year: 2014}}
+
+      # Add 10 seconds just before DST "spring forward" so we go from 1:59:59 to 3:00:09
+      iex> from_erl!({{2015,3,8},{1,59,59}}, "America/New_York", 123456) |> add(10)
+      {:ok, %Calendar.DateTime{abbr: "EDT", day: 8, hour: 3, min: 0, month: 3,
+            sec: 9, std_off: 3600, timezone: "America/New_York", usec: 123456,
+            utc_off: -18000, year: 2015}}
+
+      # Trying to subtract with the add/2 function fails
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> add(-200)
+      ** (FunctionClauseError) no function clause matching in Calendar.DateTime.add/2
+      (calendar) lib/calendar/date_time.ex:126: Calendar.DateTime.add(%Calendar.DateTime{abbr: "EDT",
+      day: 2, hour: 0, min: 0, month: 10, sec: 0, std_off: 3600, timezone: "America/New_York",
+      usec: 123456, utc_off: -18000, year: 2014}, -200)
+  """
+  def add(dt, seconds) when seconds >= 0, do: advance(dt, seconds)
+
+  @doc """
+  Takes a `DateTime` struct and an integer. Returns a `DateTime` struct in the future which is greater
+  by the number of seconds found in the `seconds` argument. *NOTE:* `add!/2` ignores leap seconds. The
+  calculation is based on the (wrong) assumption that there are no leap seconds.
+
+  ## Examples
+
+      # Add 2 seconds
+      iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add!(2)
+      %Calendar.DateTime{abbr: "EDT", day: 2, hour: 0, min: 29, month: 10, sec: 12,
+      std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000,
+      year: 2014}
+
+      # Add 86400 seconds (one day)
+      iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add!(86400)
+      %Calendar.DateTime{abbr: "EDT", day: 3, hour: 0, min: 29, month: 10, sec: 10,
+      std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000,
+      year: 2014}
+
+      # Add 10 seconds just before DST "spring forward" so we go from 1:59:59 to 3:00:09
+      iex> from_erl!({{2015,3,8},{1,59,59}}, "America/New_York", 123456) |> add!(10)
+      %Calendar.DateTime{abbr: "EDT", day: 8, hour: 3, min: 0, month: 3, sec: 9,
+      std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000,
+      year: 2015}
+
+      # Trying to subtract with the add/2 function fails
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> add!(-200)
+      ** (FunctionClauseError) no function clause matching in Calendar.DateTime.add!/2
+      (calendar) lib/calendar/date_time.ex:154: Calendar.DateTime.add!(%Calendar.DateTime{abbr: "EDT",
+      day: 2, hour: 0, min: 0, month: 10, sec: 0, std_off: 3600, timezone: "America/New_York", usec: 123456,
+      utc_off: -18000, year: 2014}, -200)
+  """
+  def add!(dt, seconds) when seconds >= 0, do: advance!(dt, seconds)
+
+
+  @doc """
+  Takes a `DateTime` struct and an integer. Returns a `DateTime` struct in the past which is less
+  by the number of seconds found in the `seconds` argument. *NOTE:* `subtract/2` ignores leap seconds. The
+  calculation is based on the (wrong) assumption that there are no leap seconds.
+
+  See `TimeZoneData.leap_seconds/0` function for a list of past leap seconds.
+
+  ## Examples
+
+      # Go back 62 seconds
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract(62)
+      {:ok, %Calendar.DateTime{abbr: "EDT", day: 1, hour: 23, min: 58, month: 10,
+            sec: 58, std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000,
+            year: 2014}}
+
+      # Go back too far so that year would be before 0
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract(999999999999)
+      {:error, :function_clause_error}
+
+      # Trying to add with the subtract/2 function fails
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(-200)
+      ** (FunctionClauseError) no function clause matching in Calendar.DateTime.subtract!/2
+      (calendar) lib/calendar/date_time.ex:206: Calendar.DateTime.subtract!(%Calendar.DateTime{abbr: "EDT",
+      day: 2, hour: 0, min: 0, month: 10, sec: 0, std_off: 3600, timezone: "America/New_York", usec: 123456,
+      utc_off: -18000, year: 2014}, -200)
+  """
+  def subtract(dt, seconds) when seconds >= 0, do: advance(dt, -1 * seconds)
+
+
+  @doc """
+  Takes a `DateTime` struct and an integer. Returns a `DateTime` struct in the past which is less
+  by the number of seconds found in the `seconds` argument. *NOTE:* `subtract!/2` ignores leap seconds. The
+  calculation is based on the (wrong) assumption that there are no leap seconds.
+
+  See `Calendar.TimeZoneData.leap_seconds/0` function for a list of past leap seconds.
+
+  ## Examples
+
+      # Go back 62 seconds
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(62)
+      %Calendar.DateTime{abbr: "EDT", day: 1, hour: 23, min: 58, month: 10, sec: 58,
+      std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000,
+      year: 2014}
+
+      # Go back too far so that year would be before 0
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(999999999999)
+      ** (MatchError) no match of right hand side value: {:error, :function_clause_error}
+         (calendar) lib/calendar/date_time.ex:268: Calendar.DateTime.advance!/2
+
+      # Trying to add with the subtract/2 function fails
+      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(-200)
+      ** (FunctionClauseError) no function clause matching in Calendar.DateTime.subtract!/2
+      (calendar) lib/calendar/date_time.ex:206: Calendar.DateTime.subtract!(%Calendar.DateTime{abbr: "EDT",
+      day: 2, hour: 0, min: 0, month: 10, sec: 0, std_off: 3600, timezone: "America/New_York", usec: 123456,
+      utc_off: -18000, year: 2014}, -200)
+  """
+  def subtract!(dt, seconds) when seconds >= 0, do: advance!(dt, -1 * seconds)
+
+  @doc """
   Takes a DateTime and an integer. Returns the `date_time` advanced by the number
   of seconds found in the `seconds` argument.
 
