@@ -121,19 +121,21 @@ defmodule Calendar.DateTime do
             sec: 9, std_off: 3600, timezone: "America/New_York", usec: 123456,
             utc_off: -18000, year: 2015}}
 
-      # Trying to subtract with the add/2 function fails
+      # If you add a negative number of seconds, the resulting datetime will effectively
+      # be subtracted.
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> add(-200)
-      ** (FunctionClauseError) no function clause matching in Calendar.DateTime.add/2
-      (calendar) lib/calendar/date_time.ex:126: Calendar.DateTime.add(%Calendar.DateTime{abbr: "EDT",
-      day: 2, hour: 0, min: 0, month: 10, sec: 0, std_off: 3600, timezone: "America/New_York",
-      usec: 123456, utc_off: -18000, year: 2014}, -200)
+      {:ok, %Calendar.DateTime{abbr: "EDT", day: 1, hour: 23, min: 56, month: 10, sec: 40, std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000, year: 2014}}
   """
-  def add(dt, seconds) when seconds >= 0, do: advance(dt, seconds)
+  def add(dt, seconds), do: advance(dt, seconds)
 
   @doc """
-  Takes a `DateTime` struct and an integer. Returns a `DateTime` struct in the future which is greater
-  by the number of seconds found in the `seconds` argument. *NOTE:* `add!/2` ignores leap seconds. The
-  calculation is based on the (wrong) assumption that there are no leap seconds.
+  Takes a DateTime and an integer. Returns the `date_time` advanced by the number
+  of seconds found in the `seconds` argument.
+
+  If `seconds` is negative, the time is moved back.
+
+  NOTE: this ignores leap seconds. The calculation is based on the (wrong) assumption that
+  there are no leap seconds.
 
   ## Examples
 
@@ -155,19 +157,18 @@ defmodule Calendar.DateTime do
       std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000,
       year: 2015}
 
-      # Trying to subtract with the add/2 function fails
+      # When add a negative integer, the seconds will effectively be subtracted and
+      # the result will be a datetime earlier than the the first argument
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> add!(-200)
-      ** (FunctionClauseError) no function clause matching in Calendar.DateTime.add!/2
-      (calendar) lib/calendar/date_time.ex:154: Calendar.DateTime.add!(%Calendar.DateTime{abbr: "EDT",
-      day: 2, hour: 0, min: 0, month: 10, sec: 0, std_off: 3600, timezone: "America/New_York", usec: 123456,
-      utc_off: -18000, year: 2014}, -200)
+      %Calendar.DateTime{abbr: "EDT", day: 1, hour: 23, min: 56, month: 10, sec: 40, std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000, year: 2014}
   """
-  def add!(dt, seconds) when seconds >= 0, do: advance!(dt, seconds)
+  def add!(dt, seconds), do: advance!(dt, seconds)
 
 
   @doc """
-  Takes a `DateTime` struct and an integer. Returns a `DateTime` struct in the past which is less
-  by the number of seconds found in the `seconds` argument. *NOTE:* `subtract/2` ignores leap seconds. The
+  Takes a `DateTime` struct and an integer. Subtracts the number of seconds found in the
+  `seconds` argument.
+  *NOTE:* `subtract/2` ignores leap seconds. The
   calculation is based on the (wrong) assumption that there are no leap seconds.
 
   See `TimeZoneData.leap_seconds/0` function for a list of past leap seconds.
@@ -184,14 +185,11 @@ defmodule Calendar.DateTime do
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract(999999999999)
       {:error, :function_clause_error}
 
-      # Trying to add with the subtract/2 function fails
+      # Using a negative amount of seconds with the subtract/2 means effectively adding the absolute amount of seconds
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(-200)
-      ** (FunctionClauseError) no function clause matching in Calendar.DateTime.subtract!/2
-      (calendar) lib/calendar/date_time.ex:206: Calendar.DateTime.subtract!(%Calendar.DateTime{abbr: "EDT",
-      day: 2, hour: 0, min: 0, month: 10, sec: 0, std_off: 3600, timezone: "America/New_York", usec: 123456,
-      utc_off: -18000, year: 2014}, -200)
+      %Calendar.DateTime{abbr: "EDT", day: 2, hour: 0, min: 3, month: 10, sec: 20, std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000, year: 2014}
   """
-  def subtract(dt, seconds) when seconds >= 0, do: advance(dt, -1 * seconds)
+  def subtract(dt, seconds), do: advance(dt, -1 * seconds)
 
 
   @doc """
@@ -214,14 +212,11 @@ defmodule Calendar.DateTime do
       ** (MatchError) no match of right hand side value: {:error, :function_clause_error}
          (calendar) lib/calendar/date_time.ex:268: Calendar.DateTime.advance!/2
 
-      # Trying to add with the subtract/2 function fails
+      # Using a negative amount of seconds with the subtract/2 means effectively adding the absolute amount of seconds
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(-200)
-      ** (FunctionClauseError) no function clause matching in Calendar.DateTime.subtract!/2
-      (calendar) lib/calendar/date_time.ex:206: Calendar.DateTime.subtract!(%Calendar.DateTime{abbr: "EDT",
-      day: 2, hour: 0, min: 0, month: 10, sec: 0, std_off: 3600, timezone: "America/New_York", usec: 123456,
-      utc_off: -18000, year: 2014}, -200)
+      %Calendar.DateTime{abbr: "EDT", day: 2, hour: 0, min: 3, month: 10, sec: 20, std_off: 3600, timezone: "America/New_York", usec: 123456, utc_off: -18000, year: 2014}
   """
-  def subtract!(dt, seconds) when seconds >= 0, do: advance!(dt, -1 * seconds)
+  def subtract!(dt, seconds) , do: advance!(dt, -1 * seconds)
 
   @doc """
   Takes a DateTime and an integer. Returns the `date_time` advanced by the number
@@ -282,10 +277,7 @@ defmodule Calendar.DateTime do
   end
 
   @doc """
-  Like `advance` without exclamation points.
-  Instead of returning a tuple with :ok and the result,
-  the result is returned untagged. Will raise an error in case
-  no correct result can be found based on the arguments.
+  Deprecated version of `add!/2`
   """
   def advance!(date_time, seconds) do
     {:ok, result} = advance(date_time, seconds)
