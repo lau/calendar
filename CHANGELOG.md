@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.13.1] - 2016-03-01
+### Changed
+
+- Fix Elixir 1.1 incompatability.
+
 ## [0.13.0] - 2016-03-01
 ### Changed
 
