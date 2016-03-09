@@ -252,7 +252,16 @@ cph |> DateTime.to_erl
 {{2014, 10, 5}, {21, 59, 24}}
 ```
 
-Make a new DateTime from a tuple and advance it 1800 seconds.
+Make a new `%Calendar.DateTime{}` struct in the future from a tuple by adding 1800 seconds. 
+*NOTE:* `DateTime.add/2`, `DateTime.subtract/2` and `DateTime.advance/2` functions ignore leap seconds.
+The calculation is based on the (wrong) assumption that there are no leap seconds.
+
+```elixir
+DateTime.from_erl!({{2014,10,4},{23,44,32}}, "Europe/Oslo") |> DateTime.add(1800)
+{:ok,
+ %Calendar.DateTime{abbr: "CEST", day: 5, hour: 0, min: 14, month: 10, sec: 32,
+  std_off: 3600, timezone: "Europe/Oslo", usec: nil, utc_off: 3600, year: 2014}}
+```
 
 ```elixir
 DateTime.from_erl!({{2014,10,4},{23,44,32}}, "Europe/Oslo") |> DateTime.advance(1800)
