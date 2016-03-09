@@ -97,7 +97,7 @@ The Date module is used for handling dates.
 > jan_first = {2015, 1, 1} |> Calendar.Date.from_erl!
 %Calendar.Date{day: 1, month: 1, year: 2015}
 # Get a date that is 10000 days ahead of that one
-> ten_k_days_later = jan_first |> Calendar.Date.advance!(10000)
+> ten_k_days_later = jan_first |> Calendar.Date.add!(10000)
 %Calendar.Date{day: 19, month: 5, year: 2042}
 # Is it friday?
 > jan_first |> Calendar.Date.friday?
@@ -143,7 +143,7 @@ timezone.
 
 ```elixir
 # An erlang style datetime tuple advanced 10 seconds
-{{1999, 12, 31}, {23, 59, 59}} |> Calendar.NaiveDateTime.advance!(10)
+{{1999, 12, 31}, {23, 59, 59}} |> Calendar.NaiveDateTime.add!(10)
 %Calendar.NaiveDateTime{day: 1, hour: 0, min: 0, month: 1, sec: 9, usec: nil,
  year: 2000}
 # Parse a "C Time" string.
@@ -252,19 +252,10 @@ cph |> DateTime.to_erl
 {{2014, 10, 5}, {21, 59, 24}}
 ```
 
-Make a new `%Calendar.DateTime{}` struct in the future from a tuple by adding 1800 seconds. 
-*NOTE:* `DateTime.add/2`, `DateTime.subtract/2` and `DateTime.advance/2` functions ignore leap seconds.
-The calculation is based on the (wrong) assumption that there are no leap seconds.
+Make a new `%Calendar.DateTime{}` struct in the future from a tuple by adding 1800 seconds.
 
 ```elixir
 DateTime.from_erl!({{2014,10,4},{23,44,32}}, "Europe/Oslo") |> DateTime.add(1800)
-{:ok,
- %Calendar.DateTime{abbr: "CEST", day: 5, hour: 0, min: 14, month: 10, sec: 32,
-  std_off: 3600, timezone: "Europe/Oslo", usec: nil, utc_off: 3600, year: 2014}}
-```
-
-```elixir
-DateTime.from_erl!({{2014,10,4},{23,44,32}}, "Europe/Oslo") |> DateTime.advance(1800)
 {:ok,
  %Calendar.DateTime{abbr: "CEST", day: 5, hour: 0, min: 14, month: 10, sec: 32,
   std_off: 3600, timezone: "Europe/Oslo", usec: nil, utc_off: 3600, year: 2014}}
