@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.2] - 2016-03-09
+### Added
+
+- DateTime.add and subtract functions added. These will eventually
+  replace the deprecated `advance` functions like in other modules (e.g. Date, NaiveDateTime).
+
 ## [0.13.1] - 2016-03-01
 ### Changed
 
