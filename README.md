@@ -261,6 +261,14 @@ DateTime.from_erl!({{2014,10,4},{23,44,32}}, "Europe/Oslo") |> DateTime.add(1800
   std_off: 3600, timezone: "Europe/Oslo", usec: nil, utc_off: 3600, year: 2014}}
 ```
 
+Create DateTime struct from :os.timestamp / erlang "now" format:
+
+```
+> {1457, 641101, 48030} |> DateTime.from_erlang_timestamp
+%Calendar.DateTime{abbr: "UTC", day: 10, hour: 20, min: 18, month: 3, sec: 21,
+ std_off: 0, timezone: "Etc/UTC", usec: 48030, utc_off: 0, year: 2016}
+```
+
 ## String formatting
 
 Calendar has polymorphic string formatting that does not get you into
