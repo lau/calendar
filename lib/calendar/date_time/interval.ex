@@ -7,8 +7,6 @@ An `Interval` consists of a start and an end `DateTime`.
 
   defstruct [:from, :to]
 
-  use Calendar
-
   @doc """
   Returns `true` when the interval contains the given datetime.
 
@@ -17,7 +15,7 @@ An `Interval` consists of a start and an end `DateTime`.
   to either, `true` will be returned.
   """
   @spec includes?(t, %Calendar.DateTime{}) :: boolean
-  def includes?(%DateTime.Interval{from: from, to: to}, datetime) do
-    !DateTime.before?(datetime, from) && !DateTime.after?(datetime, to)
+  def includes?(%Calendar.DateTime.Interval{from: from, to: to}, datetime) do
+    !Calendar.DateTime.before?(datetime, from) && !Calendar.DateTime.after?(datetime, to)
   end
 end

@@ -11,10 +11,10 @@ A `NaiveDateTime.Interval` consists of a start and an end `NaiveDateTime`.
   ## Example:
 
       # With a `NaiveDateTime.Interval`
-      iex> %Calendar.NaiveDateTime.Interval{from: {{2016, 2, 27}, {10, 0, 0}} |> NaiveDateTime.from_erl!, to: {{2016, 3, 1}, {11, 0, 0}} |> NaiveDateTime.from_erl!} |> Calendar.NaiveDateTime.Interval.iso8601
+      iex> %Calendar.NaiveDateTime.Interval{from: {{2016, 2, 27}, {10, 0, 0}} |> Calendar.NaiveDateTime.from_erl!, to: {{2016, 3, 1}, {11, 0, 0}} |> Calendar.NaiveDateTime.from_erl!} |> Calendar.NaiveDateTime.Interval.iso8601
       "2016-02-27T10:00:00/2016-03-01T11:00:00"
       # Also works with a `DateTime.Interval`
-      iex> %Calendar.DateTime.Interval{from: {{2016, 2, 27}, {10, 0, 0}} |> DateTime.from_erl!("Etc/UTC"), to: {{2016, 3, 1}, {11, 0, 0}} |> DateTime.from_erl!("Etc/UTC")} |> Calendar.NaiveDateTime.Interval.iso8601
+      iex> %Calendar.DateTime.Interval{from: {{2016, 2, 27}, {10, 0, 0}} |> Calendar.DateTime.from_erl!("Etc/UTC"), to: {{2016, 3, 1}, {11, 0, 0}} |> Calendar.DateTime.from_erl!("Etc/UTC")} |> Calendar.NaiveDateTime.Interval.iso8601
       "2016-02-27T10:00:00/2016-03-01T11:00:00"
   """
   def iso8601(interval) do
@@ -30,8 +30,8 @@ A `NaiveDateTime.Interval` consists of a start and an end `NaiveDateTime`.
 
       iex> %Calendar.NaiveDateTime.Interval{from: {{2016, 2, 27}, {10, 0, 0}}, to: {{2016, 3, 1}, {11, 0, 0}}} |> Calendar.NaiveDateTime.Interval.iso8601_basic
       "20160227T100000/20160301T110000"
-      # Also works with a `DateTime.Interval`
-      iex> %Calendar.DateTime.Interval{from: {{2016, 2, 27}, {10, 0, 0}} |> DateTime.from_erl!("Etc/UTC"), to: {{2016, 3, 1}, {11, 0, 0}} |> DateTime.from_erl!("Etc/UTC")} |> Calendar.NaiveDateTime.Interval.iso8601_basic
+      # Also works with a `Calendar.DateTime.Interval`
+      iex> %Calendar.DateTime.Interval{from: {{2016, 2, 27}, {10, 0, 0}} |> Calendar.DateTime.from_erl!("Etc/UTC"), to: {{2016, 3, 1}, {11, 0, 0}} |> Calendar.DateTime.from_erl!("Etc/UTC")} |> Calendar.NaiveDateTime.Interval.iso8601_basic
       "20160227T100000/20160301T110000"
   """
   def iso8601_basic(interval) do

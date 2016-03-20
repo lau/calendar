@@ -13,16 +13,16 @@ defmodule Calendar.Strftime do
   # Examples
 
       # Passing NaiveDateTime struct
-      iex> {{2014,9,6},{17,10,20}} |> NaiveDateTime.from_erl! |> strftime!("%A %Y-%m-%e %H:%M:%S")
+      iex> {{2014,9,6},{17,10,20}} |> Calendar.NaiveDateTime.from_erl! |> strftime!("%A %Y-%m-%e %H:%M:%S")
       "Saturday 2014-09- 6 17:10:20"
       # Passing naive date time tuple
       iex> {{2014,9,6},{17,10,20}} |> strftime!("%A %Y-%m-%e %H:%M:%S")
       "Saturday 2014-09- 6 17:10:20"
       # Passing Date struct
-      iex> {2014,9,6} |> Date.from_erl! |> strftime!("%A %Y-%m-%e")
+      iex> {2014,9,6} |> Calendar.Date.from_erl! |> strftime!("%A %Y-%m-%e")
       "Saturday 2014-09- 6"
       # Passing Time struct
-      iex> {17,10,20} |> Time.from_erl! |> strftime!("%H:%M:%S")
+      iex> {17,10,20} |> Calendar.Time.from_erl! |> strftime!("%H:%M:%S")
       "17:10:20"
   """
   def strftime!(dt, string, lang\\:en) do
@@ -36,29 +36,29 @@ defmodule Calendar.Strftime do
 
   # Examples
 
-      iex> {{2014,9,6},{17,10,20}} |> NaiveDateTime.from_erl! |> strftime("%A %Y-%m-%e %H:%M:%S")
+      iex> {{2014,9,6},{17,10,20}} |> Calendar.NaiveDateTime.from_erl! |> strftime("%A %Y-%m-%e %H:%M:%S")
       {:ok, "Saturday 2014-09- 6 17:10:20"}
 
       # Passing erlang style naive date time tuple directly
       iex> {{2014,9,6},{17,10,20}} |> strftime("%A %Y-%m-%e %H:%M:%S")
       {:ok, "Saturday 2014-09- 6 17:10:20"}
 
-      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"Etc/UTC") |> strftime("%A %Y-%m-%e %H:%M:%S")
+      iex> Calendar.DateTime.from_erl!({{2014,9,6},{17,10,20}},"Etc/UTC") |> strftime("%A %Y-%m-%e %H:%M:%S")
       {:ok, "Saturday 2014-09- 6 17:10:20"}
 
-      iex> DateTime.from_erl!({{2014,9,6},{17,10,20}},"Etc/UTC") |> strftime("%a %d.%m.%y")
+      iex> Calendar.DateTime.from_erl!({{2014,9,6},{17,10,20}},"Etc/UTC") |> strftime("%a %d.%m.%y")
       {:ok, "Sat 06.09.14"}
 
       # Passing a Date struct
-      iex> Date.from_erl!({2014,9,6}) |> strftime("%a %d.%m.%y")
+      iex> Calendar.Date.from_erl!({2014,9,6}) |> strftime("%a %d.%m.%y")
       {:ok, "Sat 06.09.14"}
 
       # Trying to use date conversion specs and passing a Time struct results in errors
-      iex>  Time.from_erl!({12, 30, 59}) |> strftime("%a %d.%m.%y")
+      iex> Calendar.Time.from_erl!({12, 30, 59}) |> strftime("%a %d.%m.%y")
       {:error, :missing_data_for_conversion_spec}
 
       # Passing a Time and using just conversion specs suitable for time
-      iex>  Time.from_erl!({12, 30, 59}) |> strftime("%r")
+      iex> Calendar.Time.from_erl!({12, 30, 59}) |> strftime("%r")
       {:ok, "12:30:59 PM"}
 
       # Tuples in erlang datetime format will work like NaiveDateTime structs

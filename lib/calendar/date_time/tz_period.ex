@@ -1,5 +1,4 @@
 defmodule Calendar.DateTime.TzPeriod do
-  alias Calendar.DateTime
   alias Calendar.TimeZoneData
 
   @moduledoc """
@@ -14,7 +13,7 @@ defmodule Calendar.DateTime.TzPeriod do
   """
 
   defp timezone_period(date_time) do
-    utc_greg_secs = date_time |> DateTime.shift_zone!("Etc/UTC") |> DateTime.gregorian_seconds
+    utc_greg_secs = date_time |> Calendar.DateTime.shift_zone!("Etc/UTC") |> Calendar.DateTime.gregorian_seconds
     period_list = TimeZoneData.periods_for_time(date_time.timezone, utc_greg_secs, :utc);
     hd period_list
   end
@@ -32,14 +31,14 @@ defmodule Calendar.DateTime.TzPeriod do
       that 2000 January 1st is in goes on "forever" and {:unlimited, :max} is
       returned.
 
-      iex> DateTime.from_erl!({{2000,1,1},{0,0,0}},"Atlantic/Reykjavik") |> next_from
+      iex> Calendar.DateTime.from_erl!({{2000,1,1},{0,0,0}},"Atlantic/Reykjavik") |> next_from
       {:unlimited, :max}
 
       The provided DateTime is in summer of 2000 in New York. The period is in
       DST. The returned DateTime is the first instance of winter time, where
       DST is no longer in place:
 
-      iex> DateTime.from_erl!({{2000,6,1},{0,0,0}},"America/New_York") |> next_from
+      iex> Calendar.DateTime.from_erl!({{2000,6,1},{0,0,0}},"America/New_York") |> next_from
       {:ok,
             %Calendar.DateTime{abbr: "EST", day: 29, hour: 1, usec: nil, min: 0, month: 10, sec: 0, std_off: 0,
              timezone: "America/New_York", utc_off: -18000, year: 2000}}
@@ -47,7 +46,7 @@ defmodule Calendar.DateTime.TzPeriod do
       The provided DateTime is in winter 2000. The returned DateTime is the
       first second of DST/summer time.
 
-      iex> DateTime.from_erl!({{2000,1,1},{0,0,0}},"Europe/Copenhagen") |> next_from
+      iex> Calendar.DateTime.from_erl!({{2000,1,1},{0,0,0}},"Europe/Copenhagen") |> next_from
       {:ok,
             %Calendar.DateTime{abbr: "CEST", day: 26, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600,
              timezone: "Europe/Copenhagen", utc_off: 3600, year: 2000}}
@@ -57,8 +56,8 @@ defmodule Calendar.DateTime.TzPeriod do
     case is_integer(period.until.utc) do
       true -> until = period.until.utc
         |> :calendar.gregorian_seconds_to_datetime
-        |> DateTime.from_erl!("Etc/UTC")
-        |> DateTime.shift_zone!(date_time.timezone)
+        |> Calendar.DateTime.from_erl!("Etc/UTC")
+        |> Calendar.DateTime.shift_zone!(date_time.timezone)
         {:ok, until}
       false -> {:unlimited, period.until.wall}
     end
@@ -76,20 +75,20 @@ defmodule Calendar.DateTime.TzPeriod do
 
   ## Examples
 
-      iex> DateTime.from_erl!({{2000,1,1},{0,0,0}},"Atlantic/Reykjavik") |> from
+      iex> Calendar.DateTime.from_erl!({{2000,1,1},{0,0,0}},"Atlantic/Reykjavik") |> from
       {:ok,
             %Calendar.DateTime{abbr: "GMT", day: 7, hour: 2, usec: nil, min: 0, month: 4, sec: 0, std_off: 0,
              timezone: "Atlantic/Reykjavik", utc_off: 0, year: 1968}}
 
-      iex> DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> from
+      iex> Calendar.DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> from
       {:unlimited, :min}
   """
   def from(date_time) do
     period = date_time |> timezone_period
     case is_integer(period.from.utc) do
       true -> from = period.from.utc |> :calendar.gregorian_seconds_to_datetime
-        |> DateTime.from_erl!("Etc/UTC")
-        |> DateTime.shift_zone!(date_time.timezone)
+        |> Calendar.DateTime.from_erl!("Etc/UTC")
+        |> Calendar.DateTime.shift_zone!(date_time.timezone)
         {:ok, from}
       false -> {:unlimited, period.from.wall}
     end
@@ -99,11 +98,11 @@ defmodule Calendar.DateTime.TzPeriod do
 
   ## Examples
 
-      iex> DateTime.from_erl!({{2000,1,1},{0,0,0}},"Europe/Copenhagen") |> prev_from
+      iex> Calendar.DateTime.from_erl!({{2000,1,1},{0,0,0}},"Europe/Copenhagen") |> prev_from
       {:ok,
             %Calendar.DateTime{abbr: "CEST", day: 28, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "Europe/Copenhagen", utc_off: 3600, year: 1999}}
 
-      iex> DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> prev_from
+      iex> Calendar.DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> prev_from
       {:error, :already_at_first}
   """
   def prev_from(date_time) do
@@ -111,12 +110,12 @@ defmodule Calendar.DateTime.TzPeriod do
     case tag do
       :unlimited -> {:error, :already_at_first}
       _ ->  val
-        |> DateTime.shift_zone!("Etc/UTC")
-        |> DateTime.gregorian_seconds
+        |> Calendar.DateTime.shift_zone!("Etc/UTC")
+        |> Calendar.DateTime.gregorian_seconds
         |> -1
         |> :calendar.gregorian_seconds_to_datetime
-        |> DateTime.from_erl!("Etc/UTC")
-        |> DateTime.shift_zone!(val.timezone)
+        |> Calendar.DateTime.from_erl!("Etc/UTC")
+        |> Calendar.DateTime.shift_zone!(val.timezone)
         |> from
     end
   end
@@ -132,7 +131,7 @@ defmodule Calendar.DateTime.TzPeriod do
       that follows the standard/winter time period the provided DateTime was in.
       The next is standard time. Then Daylight time and Standard time again.
 
-      iex> DateTime.from_erl!({{2015,2,24},{13,0,0}}, "America/New_York") |> stream_next_from |> Enum.take(4)
+      iex> Calendar.DateTime.from_erl!({{2015,2,24},{13,0,0}}, "America/New_York") |> stream_next_from |> Enum.take(4)
       [%Calendar.DateTime{abbr: "EDT", day: 8, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
              utc_off: -18000, year: 2015},
             %Calendar.DateTime{abbr: "EST", day: 1, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
@@ -158,7 +157,7 @@ defmodule Calendar.DateTime.TzPeriod do
       Daylight Time earlier that year. The next one is standard time before that
       which began in the previous year.
 
-      iex> DateTime.from_erl!({{2015,2,24},{13,0,0}}, "America/New_York") |> stream_prev_from |> Enum.take(4)
+      iex> Calendar.DateTime.from_erl!({{2015,2,24},{13,0,0}}, "America/New_York") |> stream_prev_from |> Enum.take(4)
       [%Calendar.DateTime{abbr: "EST", day: 2, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
              utc_off: -18000, year: 2014},
             %Calendar.DateTime{abbr: "EDT", day: 9, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",

@@ -6,7 +6,6 @@ defprotocol Calendar.ContainsNaiveDateTime do
 end
 
 defmodule Calendar.NaiveDateTime do
-  alias Calendar.DateTime
   alias Calendar.ContainsNaiveDateTime
   require Calendar.DateTime.Format
 
@@ -141,7 +140,7 @@ defmodule Calendar.NaiveDateTime do
   """
   def to_date_time(ndt, timezone) do
     ndt = ndt |> contained_ndt
-    DateTime.from_erl(to_erl(ndt), timezone, ndt.usec)
+    Calendar.DateTime.from_erl(to_erl(ndt), timezone, ndt.usec)
   end
 
   @doc """
@@ -318,7 +317,7 @@ defmodule Calendar.NaiveDateTime do
   def diff(%Calendar.NaiveDateTime{} = first_dt, %Calendar.NaiveDateTime{} = second_dt) do
     first_dt_utc  = first_dt  |> to_date_time_utc
     second_dt_utc = second_dt |> to_date_time_utc
-    DateTime.diff(first_dt_utc, second_dt_utc)
+    Calendar.DateTime.diff(first_dt_utc, second_dt_utc)
   end
   def diff(ndt1, ndt2) do
     diff(contained_ndt(ndt1), contained_ndt(ndt2))

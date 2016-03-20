@@ -1,5 +1,4 @@
 defmodule Calendar.DateTime.Format do
-  alias Calendar.DateTime
   alias Calendar.Strftime
   alias Calendar.ContainsDateTime
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
@@ -195,7 +194,7 @@ defmodule Calendar.DateTime.Format do
   ## Example
 
       # The time is 6:09 in the morning in Montevideo, but 9:09 GMT/UTC.
-      iex> DateTime.from_erl!({{2014, 9, 6}, {6, 9, 8}}, "America/Montevideo") |> DateTime.Format.httpdate
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 6}, {6, 9, 8}}, "America/Montevideo") |> Calendar.DateTime.Format.httpdate
       "Sat, 06 Sep 2014 09:09:08 GMT"
   """
   def httpdate(%Calendar.DateTime{timezone: "Etc/UTC"} = dt) do
@@ -204,7 +203,7 @@ defmodule Calendar.DateTime.Format do
   def httpdate(dt) do
     dt
     |> contained_date_time
-    |> DateTime.shift_zone!("Etc/UTC")
+    |> Calendar.DateTime.shift_zone!("Etc/UTC")
     |> httpdate
   end
 
@@ -213,18 +212,18 @@ defmodule Calendar.DateTime.Format do
 
   ## Examples
 
-      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 55) |> DateTime.Format.unix
+      iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 55) |> Calendar.DateTime.Format.unix
       1_000_000_000
   """
   def unix(%Calendar.DateTime{timezone: "Etc/UTC"} = dt) do
     dt
-    |> DateTime.gregorian_seconds
+    |> Calendar.DateTime.gregorian_seconds
     |> - @secs_between_year_0_and_unix_epoch
   end
   def unix(dt) do
     dt
     |> contained_date_time
-    |> DateTime.shift_zone!("Etc/UTC")
+    |> Calendar.DateTime.shift_zone!("Etc/UTC")
     |> unix
   end
 
@@ -234,10 +233,10 @@ defmodule Calendar.DateTime.Format do
 
   ## Examples
 
-      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 985085) |> DateTime.Format.unix_micro
+      iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 985085) |> Calendar.DateTime.Format.unix_micro
       1_000_000_000.985085
 
-      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> DateTime.Format.unix_micro
+      iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> Calendar.DateTime.Format.unix_micro
       1_000_000_000.0
   """
   def unix_micro(%Calendar.DateTime{usec: usec} = date_time) when usec == nil do
@@ -260,10 +259,10 @@ defmodule Calendar.DateTime.Format do
 
   ## Examples
 
-      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 985085) |> DateTime.Format.js_ms
+      iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 985085) |> Calendar.DateTime.Format.js_ms
       1000000000985
 
-      iex> DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 98508) |> DateTime.Format.js_ms
+      iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 98508) |> Calendar.DateTime.Format.js_ms
       1000000000098
   """
   def js_ms(date_time) do

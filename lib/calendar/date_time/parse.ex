@@ -1,5 +1,4 @@
 defmodule Calendar.DateTime.Parse do
-  alias Calendar.DateTime
   import Calendar.ParseUtil
 
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
@@ -114,8 +113,8 @@ defmodule Calendar.DateTime.Parse do
                                                cap["offset_hours"],
                                                cap["offset_mins"],
                                                cap["offset_letters"])
-    {:ok, result} = DateTime.from_erl({{cap["year"]|>to_int, month_num, cap["day"]|>to_int}, {cap["hour"]|>to_int, cap["min"]|>to_int, cap["sec"]|>to_int}}, "Etc/UTC")
-    DateTime.advance(result, offset_in_secs*-1)
+    {:ok, result} = Calendar.DateTime.from_erl({{cap["year"]|>to_int, month_num, cap["day"]|>to_int}, {cap["hour"]|>to_int, cap["min"]|>to_int, cap["sec"]|>to_int}}, "Etc/UTC")
+    Calendar.DateTime.add(result, offset_in_secs*-1)
   end
 
   defp offset_in_seconds_rfc2822(_, _, _, "UTC"), do: {:ok, 0 }
@@ -157,13 +156,13 @@ defmodule Calendar.DateTime.Parse do
   def unix!(unix_time_stamp) when is_integer(unix_time_stamp) do
     unix_time_stamp + @secs_between_year_0_and_unix_epoch
     |>:calendar.gregorian_seconds_to_datetime
-    |> DateTime.from_erl!("Etc/UTC")
+    |> Calendar.DateTime.from_erl!("Etc/UTC")
   end
   def unix!(unix_time_stamp) when is_float(unix_time_stamp) do
     {whole, micro} = int_and_usec_for_float(unix_time_stamp)
     whole + @secs_between_year_0_and_unix_epoch
     |>:calendar.gregorian_seconds_to_datetime
-    |> DateTime.from_erl!("Etc/UTC", micro)
+    |> Calendar.DateTime.from_erl!("Etc/UTC", micro)
   end
   def unix!(unix_time_stamp) when is_binary(unix_time_stamp) do
     unix_time_stamp
@@ -223,7 +222,7 @@ defmodule Calendar.DateTime.Parse do
   end
   defp httpdate_parsed(nil), do: {:bad_format, nil}
   defp httpdate_parsed(mapped) do
-    DateTime.from_erl(
+    Calendar.DateTime.from_erl(
       {
         {mapped["year"]|>to_int,
           mapped["month"]|>month_number_for_month_name,
@@ -306,14 +305,14 @@ defmodule Calendar.DateTime.Parse do
     {utc_tag, nil}
   end
   defp do_parse_rfc3339_with_time_zone({_utc_tag, utc_dt}, time_zone) do
-    utc_dt |> DateTime.shift_zone(time_zone)
+    utc_dt |> Calendar.DateTime.shift_zone(time_zone)
   end
 
   defp parse_rfc3339_as_utc_parsed_string(mapped, z, _offset_hours, _offset_mins) when z == "Z" or z=="z" do
     parse_rfc3339_as_utc_parsed_string(mapped, "", "00", "00")
   end
   defp parse_rfc3339_as_utc_parsed_string(mapped, _z, offset_hours, offset_mins) when offset_hours == "00" and offset_mins == "00" do
-    DateTime.from_erl(erl_date_time_from_regex_map(mapped), "Etc/UTC", parse_fraction(mapped["fraction"]))
+    Calendar.DateTime.from_erl(erl_date_time_from_regex_map(mapped), "Etc/UTC", parse_fraction(mapped["fraction"]))
   end
   defp parse_rfc3339_as_utc_parsed_string(mapped, _z, offset_hours, offset_mins) do
     offset_in_secs = hours_mins_to_secs!(offset_hours, offset_mins)
@@ -330,7 +329,7 @@ defmodule Calendar.DateTime.Parse do
     greg_secs = :calendar.datetime_to_gregorian_seconds(erl_date_time)
     new_time = greg_secs - offset_in_secs
     |> :calendar.gregorian_seconds_to_datetime
-    DateTime.from_erl(new_time, "Etc/UTC")
+    Calendar.DateTime.from_erl(new_time, "Etc/UTC")
   end
 
   defp erl_date_time_from_regex_map(mapped) do

@@ -1,5 +1,4 @@
 defmodule Calendar.Date.Parse do
-  alias Calendar.Date
 
   @doc """
   Parses ISO 8601 date strings.
@@ -73,7 +72,7 @@ defmodule Calendar.Date.Parse do
     {year, ""} = binyear |> Integer.parse
     {week, ""} = binweek |> Integer.parse
     {day, ""}  = bday |> Integer.parse
-    date = Date.dates_for_week_number(year, week)
+    date = Calendar.Date.dates_for_week_number(year, week)
     |> List.to_tuple
     |> elem((day-1))
     {:ok, date}

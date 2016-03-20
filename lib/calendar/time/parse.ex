@@ -1,6 +1,5 @@
 defmodule Calendar.Time.Parse do
   import Calendar.ParseUtil
-  alias Calendar.Time
 
   @doc """
   Parses ISO 8601 time strings.
@@ -21,7 +20,7 @@ defmodule Calendar.Time.Parse do
   def iso8601(string) do
     captured = string |> capture_iso8601_string
     if captured do
-      Time.from_erl(erl_time_from_regex_map(captured))
+      Calendar.Time.from_erl(erl_time_from_regex_map(captured))
     else
       {:bad_format, nil}
     end

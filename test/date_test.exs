@@ -9,7 +9,6 @@ end
 defmodule DateTest do
   use ExUnit.Case, async: true
   import Calendar.Date
-  alias Calendar.NaiveDateTime
   doctest Calendar.Date
 
   test "to_erl works for anything that contains a date" do

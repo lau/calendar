@@ -6,9 +6,7 @@ defprotocol Calendar.ContainsDate do
 end
 
 defmodule Calendar.Date do
-  alias Calendar.NaiveDateTime
   alias Calendar.ContainsDate
-  alias Calendar.DateTime
 
   @moduledoc """
   The Date module provides a struct to represent a simple date: year, month and day.
@@ -254,7 +252,7 @@ defmodule Calendar.Date do
       {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
       # When passing a DateTime, NaiveDateTime or datetime tuple
       # the time part is ignored. A Date struct is returned.
-      iex> {{2014,12,27}, {21,30,59}} |> NaiveDateTime.from_erl! |> advance(-2)
+      iex> {{2014,12,27}, {21,30,59}} |> Calendar.NaiveDateTime.from_erl! |> advance(-2)
       {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
       iex> {{2014,12,27}, {21,30,59}} |> advance(-2)
       {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
@@ -281,9 +279,9 @@ defmodule Calendar.Date do
       # Date tuple turned back 2 days
       iex> {2014,12,27} |> subtract(2)
       {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
-      # When passing a DateTime, NaiveDateTime or datetime tuple
+      # When passing a DateTime, Calendar.NaiveDateTime or datetime tuple
       # the time part is ignored. A Date struct is returned.
-      iex> {{2014,12,27}, {21,30,59}} |> NaiveDateTime.from_erl! |> subtract(2)
+      iex> {{2014,12,27}, {21,30,59}} |> Calendar.NaiveDateTime.from_erl! |> subtract(2)
       {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
       iex> {{2014,12,27}, {21,30,59}} |> subtract(2)
       {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
@@ -318,7 +316,7 @@ defmodule Calendar.Date do
     date = contained_date(date)
     date_erl = date |> to_erl
     {date_erl, {0, 0, 0}}
-    |> NaiveDateTime.from_erl!
+    |> Calendar.NaiveDateTime.from_erl!
     |> Calendar.Strftime.strftime!(string, lang)
   end
 
@@ -639,8 +637,8 @@ defmodule Calendar.Date do
       %Calendar.Date{day: 1, month: 3, year: 2016}
   """
   def today_utc do
-    DateTime.now_utc
-    |> DateTime.to_date
+    Calendar.DateTime.now_utc
+    |> Calendar.DateTime.to_date
   end
 
   @doc """
@@ -655,8 +653,8 @@ defmodule Calendar.Date do
   """
   def today!(timezone) do
     timezone
-    |> DateTime.now!
-    |> DateTime.to_date
+    |> Calendar.DateTime.now!
+    |> Calendar.DateTime.to_date
   end
 
   defp contained_date(date_container), do: ContainsDate.date_struct(date_container)

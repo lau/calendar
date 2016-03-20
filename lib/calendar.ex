@@ -3,6 +3,8 @@ defmodule Calendar do
 
   @doc false
   defmacro __using__(_opts) do
+     %{file: file, line: line} = __CALLER__
+     :elixir_errors.warn(line, file, "use Calendar is deprecated")
     quote do
       alias Calendar.DateTime
       alias Calendar.DateTime.Interval

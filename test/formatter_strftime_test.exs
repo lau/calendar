@@ -1,15 +1,11 @@
 defmodule FormatterStrfTimeTest do
   use ExUnit.Case, async: true
   alias Calendar.Strftime
-  alias Calendar.DateTime
-  alias Calendar.NaiveDateTime
-  alias Calendar.Date
-  alias Calendar.Time
   import Strftime
   doctest Strftime
 
   test "polymorphism, naivedatetimes" do
-    date = Date.from_erl!({2011, 11, 1})
+    date = Calendar.Date.from_erl!({2011, 11, 1})
     assert Strftime.strftime!({{2011, 11, 1}, {9, 7, 6}}, "%b") == "Nov"
     assert Strftime.strftime!({{2011, 11, 1}, {9, 7, 6}}, "%Y") == "2011"
     assert Strftime.strftime!(date, "%b") == "Nov"
