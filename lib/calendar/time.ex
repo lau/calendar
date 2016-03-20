@@ -292,3 +292,14 @@ defimpl Calendar.ContainsTime, for: Tuple do
   # datetime tuple with microseconds
   def time_struct({{_,_,_},{h, m, s, usec}}), do: Calendar.Time.from_erl!({h, m, s}, usec)
 end
+
+defimpl Calendar.ContainsTime, for: Time do
+  def time_struct(data), do: %Calendar.Time{hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
+end
+defimpl Calendar.ContainsTime, for: DateTime do
+  def time_struct(data), do: %Calendar.Time{hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
+end
+defimpl Calendar.ContainsTime, for: NaiveDateTime do
+  def time_struct(data), do: %Calendar.Time{hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
+end
+

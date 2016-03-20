@@ -679,3 +679,12 @@ defimpl Calendar.ContainsDate, for: Tuple do
   def date_struct({{y, m, d}, {_hour, _min, _sec}}), do: Calendar.Date.from_erl!({y, m, d})
   def date_struct({{y, m, d}, {_hour, _min, _sec, _usec}}), do: Calendar.Date.from_erl!({y, m, d})
 end
+defimpl Calendar.ContainsDate, for: Date do
+  def date_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.Date{day: data.day, month: data.month, year: data.year}
+end
+defimpl Calendar.ContainsDate, for: DateTime do
+  def date_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.Date{day: data.day, month: data.month, year: data.year}
+end
+defimpl Calendar.ContainsDate, for: NaiveDateTime do
+  def date_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.Date{day: data.day, month: data.month, year: data.year}
+end

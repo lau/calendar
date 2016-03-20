@@ -855,3 +855,6 @@ end
 defimpl Calendar.ContainsDateTime, for: Calendar.DateTime do
   def dt_struct(data), do: data
 end
+defimpl Calendar.ContainsDateTime, for: DateTime do
+  def dt_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.DateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond, abbr: data.zone_abbr, timezone: data.time_zone, utc_off: data.utc_offset, std_off: data.std_offset}
+end

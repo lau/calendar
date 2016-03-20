@@ -420,3 +420,10 @@ defimpl Calendar.ContainsNaiveDateTime, for: Tuple do
     Calendar.NaiveDateTime.from_erl!({{year, month, day}, {hour, min, sec}}, usec)
   end
 end
+
+defimpl Calendar.ContainsNaiveDateTime, for: DateTime do
+  def ndt_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.NaiveDateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
+end
+defimpl Calendar.ContainsNaiveDateTime, for: NaiveDateTime do
+  def ndt_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.NaiveDateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
+end
