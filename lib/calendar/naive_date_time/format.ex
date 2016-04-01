@@ -1,6 +1,5 @@
 defmodule Calendar.NaiveDateTime.Format do
   alias Calendar.Strftime
-  alias Calendar.NaiveDateTime
 
   @doc """
   Format a naive datetime as "c time"
@@ -29,7 +28,7 @@ defmodule Calendar.NaiveDateTime.Format do
   end
 
   defp to_utc_dt(ndt) do
-    ndt |> NaiveDateTime.to_date_time_utc
+    ndt |> Calendar.NaiveDateTime.to_date_time_utc
   end
 
   @doc """

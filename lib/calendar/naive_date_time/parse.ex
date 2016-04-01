@@ -1,5 +1,4 @@
 defmodule Calendar.NaiveDateTime.Parse do
-  alias Calendar.NaiveDateTime
   import Calendar.ParseUtil
 
   @doc """
@@ -41,7 +40,7 @@ defmodule Calendar.NaiveDateTime.Parse do
   def asctime(string) do
     cap = string |> capture_asctime_string
     month_num = month_number_for_month_name(cap["month"])
-    NaiveDateTime.from_erl({{cap["year"]|>to_int, month_num, cap["day"]|>to_int}, {cap["hour"]|>to_int, cap["min"]|>to_int, cap["sec"]|>to_int}})
+    Calendar.NaiveDateTime.from_erl({{cap["year"]|>to_int, month_num, cap["day"]|>to_int}, {cap["hour"]|>to_int, cap["min"]|>to_int, cap["sec"]|>to_int}})
   end
 
   @doc """
@@ -102,11 +101,11 @@ defmodule Calendar.NaiveDateTime.Parse do
     parse_captured_iso8601(captured, "", "00", "00")
   end
   defp parse_captured_iso8601(captured, _z, "", "") do
-    {tag, ndt} = NaiveDateTime.from_erl(erl_date_time_from_regex_map(captured), parse_fraction(captured["fraction"]))
+    {tag, ndt} = Calendar.NaiveDateTime.from_erl(erl_date_time_from_regex_map(captured), parse_fraction(captured["fraction"]))
     {tag, ndt, nil}
   end
   defp parse_captured_iso8601(captured, _z, offset_hours, offset_mins) do
-    {tag, ndt} = NaiveDateTime.from_erl(erl_date_time_from_regex_map(captured), parse_fraction(captured["fraction"]))
+    {tag, ndt} = Calendar.NaiveDateTime.from_erl(erl_date_time_from_regex_map(captured), parse_fraction(captured["fraction"]))
     if tag == :ok do
       {:ok, offset_in_seconds} = offset_from_captured(captured, offset_hours, offset_mins)
       {tag, ndt, offset_in_seconds}
@@ -117,7 +116,10 @@ defmodule Calendar.NaiveDateTime.Parse do
 
   defp offset_from_captured(captured, offset_hours, offset_mins) do
     offset_in_secs = hours_mins_to_secs!(offset_hours, offset_mins)
-    if captured["offset_sign"] == "-", do: offset_in_secs = offset_in_secs*-1
+    offset_in_secs = case captured["offset_sign"] do
+      "-" -> offset_in_secs*-1
+      _   -> offset_in_secs
+    end
     {:ok, offset_in_secs}
   end
 

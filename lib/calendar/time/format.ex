@@ -1,6 +1,5 @@
 defmodule Calendar.Time.Format do
   alias Calendar.Strftime
-  alias Calendar.ContainsTime
 
   @doc """
   Format a time as ISO 8601 extended format
@@ -31,6 +30,6 @@ defmodule Calendar.Time.Format do
   end
 
   defp contained_time(time_container) do
-    ContainsTime.time_struct(time_container)
+    Calendar.ContainsTime.time_struct(time_container)
   end
 end

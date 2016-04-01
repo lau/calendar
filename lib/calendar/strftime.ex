@@ -1,7 +1,4 @@
 defmodule Calendar.Strftime do
-  alias Calendar.ContainsDate
-  alias Calendar.ContainsTime
-
   @moduledoc """
   Format different types of time representations as strings.
   """
@@ -228,8 +225,8 @@ defmodule Calendar.Strftime do
     dt |> Calendar.Date.day_of_week
   end
 
-  defp to_date(data), do: ContainsDate.date_struct(data)
-  defp to_time(data), do: ContainsTime.time_struct(data)
+  defp to_date(data), do: Calendar.ContainsDate.date_struct(data)
+  defp to_time(data), do: Calendar.ContainsTime.time_struct(data)
 
   defp weekday_names(lang) do
     {:ok, data} = translation_module.weekday_names(lang)

@@ -6,8 +6,6 @@ defprotocol Calendar.ContainsDate do
 end
 
 defmodule Calendar.Date do
-  alias Calendar.ContainsDate
-
   @moduledoc """
   The Date module provides a struct to represent a simple date: year, month and day.
   """
@@ -67,7 +65,7 @@ defmodule Calendar.Date do
   """
   def number_of_days_in_month(date) do
     date = date |> contained_date
-    {year, month, _} = ContainsDate.date_struct(date) |> to_erl
+    {year, month, _} = Calendar.ContainsDate.date_struct(date) |> to_erl
     :calendar.last_day_of_the_month(year, month)
   end
 
@@ -657,7 +655,7 @@ defmodule Calendar.Date do
     |> Calendar.DateTime.to_date
   end
 
-  defp contained_date(date_container), do: ContainsDate.date_struct(date_container)
+  defp contained_date(date_container), do: Calendar.ContainsDate.date_struct(date_container)
 end
 
 defimpl Calendar.ContainsDate, for: Calendar.Date do

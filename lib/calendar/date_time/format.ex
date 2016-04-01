@@ -1,6 +1,5 @@
 defmodule Calendar.DateTime.Format do
   alias Calendar.Strftime
-  alias Calendar.ContainsDateTime
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
 
   @doc """
@@ -282,6 +281,6 @@ defmodule Calendar.DateTime.Format do
   end
 
   defp contained_date_time(dt_container) do
-    ContainsDateTime.dt_struct(dt_container)
+    Calendar.ContainsDateTime.dt_struct(dt_container)
   end
 end

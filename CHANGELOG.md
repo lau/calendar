@@ -1,5 +1,10 @@
 # Changelog
 
+## Removed
+
+- The Calendar module has been removed. This means that you can no longer use `use Calendar`
+- .iex.exs file with aliases for DateTime, Date, Time etc.
+
 ## [0.13.2] - 2016-03-09
 ### Added
 

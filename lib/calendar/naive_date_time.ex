@@ -6,7 +6,6 @@ defprotocol Calendar.ContainsNaiveDateTime do
 end
 
 defmodule Calendar.NaiveDateTime do
-  alias Calendar.ContainsNaiveDateTime
   require Calendar.DateTime.Format
 
   @moduledoc """
@@ -400,7 +399,7 @@ defmodule Calendar.NaiveDateTime do
   end
 
   defp contained_ndt(ndt_container) do
-    ContainsNaiveDateTime.ndt_struct(ndt_container)
+    Calendar.ContainsNaiveDateTime.ndt_struct(ndt_container)
   end
 end
 

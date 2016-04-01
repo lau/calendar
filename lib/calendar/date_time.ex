@@ -14,7 +14,6 @@ defmodule Calendar.DateTime do
   DateTime structs.
   """
   alias Calendar.TimeZoneData
-  alias Calendar.ContainsDateTime
   require Calendar.Date
   require Calendar.Time
 
@@ -826,7 +825,7 @@ defmodule Calendar.DateTime do
   end
 
   defp contained_date_time(dt_container) do
-    ContainsDateTime.dt_struct(dt_container)
+    Calendar.ContainsDateTime.dt_struct(dt_container)
   end
 
   defp validate_erl_datetime({date, time}, timezone) do

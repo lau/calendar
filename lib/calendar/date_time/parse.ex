@@ -132,7 +132,10 @@ defmodule Calendar.DateTime.Parse do
   defp offset_in_seconds_rfc2822(_, _, _, letters) when letters != "", do: {:error, :invalid_letters}
   defp offset_in_seconds_rfc2822(offset_sign, offset_hours, offset_mins, _letters) do
     offset_in_secs = hours_mins_to_secs!(offset_hours, offset_mins)
-    if offset_sign == "-", do: offset_in_secs = offset_in_secs*-1
+    offset_in_secs = case offset_sign do
+      "-" -> offset_in_secs*-1
+      _   -> offset_in_secs
+    end
     {:ok, offset_in_secs}
   end
 
@@ -316,7 +319,10 @@ defmodule Calendar.DateTime.Parse do
   end
   defp parse_rfc3339_as_utc_parsed_string(mapped, _z, offset_hours, offset_mins) do
     offset_in_secs = hours_mins_to_secs!(offset_hours, offset_mins)
-    if mapped["offset_sign"] == "-", do: offset_in_secs = offset_in_secs*-1
+    offset_in_secs = case mapped["offset_sign"] do
+      "-" -> offset_in_secs*-1
+      _   -> offset_in_secs
+    end
     erl_date_time = erl_date_time_from_regex_map(mapped)
     parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time)
   end
