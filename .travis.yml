@@ -11,9 +11,9 @@ before_script:
   - make compile && cd ..
   - export PATH=$PWD/elixir/bin:$PATH
   - mix local.hex --force
+  - mix hex.info
   - mix local.rebar3 --force
   - mix deps.get
-  - mix hex.info
 
 script:
   - mix test
