@@ -7,5 +7,5 @@ sudo: false
 
 script:
   - git clone --depth=1 https://github.com/elixir-lang/elixir.git
-  - cd elixir  && make compile && cd ..
+  - cd elixir && make clean && cd ..
   - elixir/bin/mix test
