@@ -1,10 +1,11 @@
-language: elixir
-elixir:
-  - 1.1.1
-  - 1.2.0
+language: erlang
+
 otp_release:
   - 18.1
-env: MIX_ENV=test
-after_script:
-  - MIX_ENV=docs mix deps.get
-  - MIX_ENV=docs mix inch.report
+
+sudo: false
+
+script:
+  - git clone --depth=1 https://github.com/elixir-lang/elixir.git
+  - cd elixir  && make compile && cd ..
+  - elixir/bin/mix test
