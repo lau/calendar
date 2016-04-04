@@ -12,8 +12,8 @@ before_script:
   - export PATH=$PWD/elixir/bin:$PATH
   - mix local.hex --force
   - mix hex.info
-  - mix local.rebar3 --force
   - mix deps.get
+  - mix local.rebar3 --force
 
 script:
   - mix test
