@@ -11,6 +11,7 @@ before_script:
   - make compile && cd ..
   - export PATH=$PWD/elixir/bin:$PATH
   - mix local.hex --force
+  - mix hex.info
 
 script:
   - mix test
