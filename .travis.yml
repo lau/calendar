@@ -6,11 +6,11 @@ otp_release:
 sudo: false
 
 before_script:
-  - git clone --depth=1 https://github.com/elixir-lang/elixir.git
+  - git clone https://github.com/elixir-lang/elixir.git
   - cd elixir && git checkout 8f8819db08b33936cf4ccf57313faa3e242531fb
   - make compile && cd ..
   - export PATH=$PWD/elixir/bin:$PATH
-  - yes | mix local.hex
+  - mix local.hex --force
 
 script:
   - mix test
