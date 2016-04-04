@@ -166,7 +166,7 @@ defmodule Calendar.Strftime do
   defp string_for_conv_spec(dt, :c, lang), do: strftime! dt, date_time_format_for_lang(lang), lang
 
   defp micro_seconds(dt) do
-    "#{dt.microsecond}"
+    "#{dt.micro_second}"
   end
 
   defp pad(subject, len\\2, char\\?0) do

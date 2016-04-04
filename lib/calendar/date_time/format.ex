@@ -94,19 +94,19 @@ defmodule Calendar.DateTime.Format do
 
   ## Examples
 
-  Without microseconds
+  Without micro_seconds
 
       iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Calendar.DateTime.Format.rfc3339
       "2014-09-26T17:10:20-03:00"
 
-  With microseconds
+  With micro_seconds
 
       iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20, 5}}, "America/Montevideo") |> Calendar.DateTime.Format.rfc3339
       "2014-09-26T17:10:20.000005-03:00"
   """
   def rfc3339(%DateTime{} = dt) do
     "#{dt.year|>pad(4)}-#{dt.month|>pad}-#{dt.day|>pad}T#{dt.hour|>pad}:#{dt.minute|>pad}:#{dt.second|>pad}"<>
-    rfc3330_microsecond_part(dt.microsecond, 6)<>
+    rfc3330_micro_second_part(dt.micro_second, 6)<>
     rfc3339_offset_part(dt, dt.time_zone)
   end
   def rfc3339(dt), do: dt |> contained_date_time |> rfc3339
@@ -128,13 +128,13 @@ defmodule Calendar.DateTime.Format do
     "#{hours|>pad(2)}:#{mins|>pad(2)}"
   end
 
-  defp rfc3330_microsecond_part(nil, _), do: ""
-  defp rfc3330_microsecond_part(_, 0), do: ""
-  defp rfc3330_microsecond_part(microsecond, 6) do
-    ".#{microsecond |> pad(6)}"
+  defp rfc3330_micro_second_part(nil, _), do: ""
+  defp rfc3330_micro_second_part(_, 0), do: ""
+  defp rfc3330_micro_second_part(micro_second, 6) do
+    ".#{micro_second |> pad(6)}"
   end
-  defp rfc3330_microsecond_part(microsecond, precision) when precision >= 1 and precision <=6 do
-    ".#{microsecond |> pad(6)}" |> String.slice(0..precision)
+  defp rfc3330_micro_second_part(micro_second, precision) when precision >= 1 and precision <=6 do
+    ".#{micro_second |> pad(6)}" |> String.slice(0..precision)
   end
   defp pad(subject, len\\2, char\\?0) do
     String.rjust("#{subject}", len, char)
@@ -151,34 +151,34 @@ defmodule Calendar.DateTime.Format do
 
   ## Examples
 
-  DateTime does not have microseconds, but 3 digits of fractional seconds
-  requested. We assume 0 microseconds and display three zeroes.
+  DateTime does not have micro_seconds, but 3 digits of fractional seconds
+  requested. We assume 0 micro_seconds and display three zeroes.
 
       iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo") |> Calendar.DateTime.Format.rfc3339(3)
       "2014-09-26T17:10:20.000-03:00"
 
-  DateTime has microseconds and decimal count set to 6
+  DateTime has micro_seconds and decimal count set to 6
 
       iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339(6)
       "2014-09-26T17:10:20.000005-03:00"
 
-  DateTime has microseconds and decimal count set to 5
+  DateTime has micro_seconds and decimal count set to 5
 
       iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339(5)
       "2014-09-26T17:10:20.00000-03:00"
 
-  DateTime has microseconds and decimal count set to 0
+  DateTime has micro_seconds and decimal count set to 0
 
       iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339(0)
       "2014-09-26T17:10:20-03:00"
   """
-  def rfc3339(%DateTime{microsecond: nil} = dt, decimal_count) do
-    # if the provided DateTime does not have microsecond defined, we set it to 0
-    rfc3339(%{dt | microsecond: 0}, decimal_count)
+  def rfc3339(%DateTime{micro_second: nil} = dt, decimal_count) do
+    # if the provided DateTime does not have micro_second defined, we set it to 0
+    rfc3339(%{dt | micro_second: 0}, decimal_count)
   end
   def rfc3339(%DateTime{} = dt, decimal_count) when decimal_count >= 0 and decimal_count <=6 do
     Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
-    rfc3330_microsecond_part(dt.microsecond, decimal_count)<>
+    rfc3330_micro_second_part(dt.micro_second, decimal_count)<>
     rfc3339_offset_part(dt, dt.time_zone)
   end
   def rfc3339(dt, decimal_count) do
@@ -227,7 +227,7 @@ defmodule Calendar.DateTime.Format do
   end
 
   @doc """
-  Like unix_time but returns a float with fractional seconds. If the microsecond of the DateTime
+  Like unix_time but returns a float with fractional seconds. If the micro_second of the DateTime
   is nil, the fractional seconds will be treated as 0.0 as seen in the second example below:
 
   ## Examples
@@ -238,13 +238,13 @@ defmodule Calendar.DateTime.Format do
       iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> Calendar.DateTime.Format.unix_micro
       1_000_000_000.0
   """
-  def unix_micro(%DateTime{microsecond: microsecond} = date_time) when microsecond == nil do
+  def unix_micro(%DateTime{micro_second: micro_second} = date_time) when micro_second == nil do
     date_time |> unix |> + 0.0
   end
   def unix_micro(%DateTime{} = date_time) do
     date_time
     |> unix
-    |> + (date_time.microsecond/1_000_000)
+    |> + (date_time.micro_second/1_000_000)
   end
   def unix_micro(date_time) do
     date_time |> contained_date_time |> unix_micro
@@ -269,11 +269,11 @@ defmodule Calendar.DateTime.Format do
     whole_secs = date_time
     |> unix
     |> Kernel.*(1000)
-    whole_secs + micro_to_mil(date_time.microsecond)
+    whole_secs + micro_to_mil(date_time.micro_second)
   end
 
-  defp micro_to_mil(microsecond) do
-    "#{microsecond}"
+  defp micro_to_mil(micro_second) do
+    "#{micro_second}"
      |> String.rjust(6, ?0) # pad with zeros if necessary
      |> String.slice(0..2)  # take first 3 numbers to get milliseconds
      |> Integer.parse
