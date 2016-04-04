@@ -156,17 +156,17 @@ defmodule Calendar.Strftime do
   defp string_for_conv_spec(dt, :d, _) do dt=to_date(dt);"#{dt.day}"|>pad end
   defp string_for_conv_spec(dt, :H, _) do dt=to_time(dt);"#{dt.hour}"|>pad end
   defp string_for_conv_spec(dt, :k, _) do dt=to_time(dt);"#{dt.hour}"|>pad(2, hd ' ') end
-  defp string_for_conv_spec(dt, :M, _) do dt=to_time(dt);"#{dt.min}"|>pad end
-  defp string_for_conv_spec(dt, :S, _) do dt=to_time(dt);"#{dt.sec}"|>pad end
+  defp string_for_conv_spec(dt, :M, _) do dt=to_time(dt);"#{dt.minute}"|>pad end
+  defp string_for_conv_spec(dt, :S, _) do dt=to_time(dt);"#{dt.second}"|>pad end
   defp string_for_conv_spec(dt, :z, _) do z_offset_part(dt) end
-  defp string_for_conv_spec(dt, :Z, _) do "#{dt.abbr}" end
+  defp string_for_conv_spec(dt, :Z, _) do "#{dt.zone_abbr}" end
 
   defp string_for_conv_spec(dt, :x, lang), do: strftime! dt, date_format_for_lang(lang), lang
   defp string_for_conv_spec(dt, :X, lang), do: strftime! dt, time_format_for_lang(lang), lang
   defp string_for_conv_spec(dt, :c, lang), do: strftime! dt, date_time_format_for_lang(lang), lang
 
   defp micro_seconds(dt) do
-    "#{dt.usec}"
+    "#{dt.microsecond}"
   end
 
   defp pad(subject, len\\2, char\\?0) do
@@ -174,7 +174,7 @@ defmodule Calendar.Strftime do
   end
 
   defp z_offset_part(dt) do
-    total_off = dt.utc_off + dt.std_off
+    total_off = dt.utc_offset + dt.std_offset
     sign = sign_for_offset(total_off)
     offset_amount_string = total_off |> secs_to_hours_mins_string
     sign<>offset_amount_string

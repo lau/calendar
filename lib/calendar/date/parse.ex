@@ -9,10 +9,10 @@ defmodule Calendar.Date.Parse do
 
       # Extended format
       iex> iso8601("2016-01-05")
-      {:ok, %Calendar.Date{year: 2016, month: 1, day: 5}}
+      {:ok, %Date{year: 2016, month: 1, day: 5}}
       # Basic format (the basic format does not have dashes)
       iex> iso8601("20160105")
-      {:ok, %Calendar.Date{year: 2016, month: 1, day: 5}}
+      {:ok, %Date{year: 2016, month: 1, day: 5}}
       iex> iso8601("2016-99-05")
       {:error, :invalid_date}
   """
@@ -34,7 +34,7 @@ defmodule Calendar.Date.Parse do
 
       # Extended format
       iex> iso8601!("2016-01-05")
-      %Calendar.Date{year: 2016, month: 1, day: 5}
+      %Date{year: 2016, month: 1, day: 5}
   """
   def iso8601!(string) do
     {:ok, result} = iso8601(string)
@@ -47,11 +47,11 @@ defmodule Calendar.Date.Parse do
   ## Examples
 
       iex> iso_week_date("2004-W53-6")
-      {:ok, %Calendar.Date{year: 2005, month: 1, day: 1}}
+      {:ok, %Date{year: 2005, month: 1, day: 1}}
       iex> iso_week_date("2008-W01-2")
-      {:ok, %Calendar.Date{year: 2008, month: 1, day: 1}}
+      {:ok, %Date{year: 2008, month: 1, day: 1}}
       iex> iso_week_date("2004-W53-6D")
-      {:ok, %Calendar.Date{year: 2005, month: 1, day: 1}}
+      {:ok, %Date{year: 2005, month: 1, day: 1}}
       iex> iso_week_date("2004-W53-9")
       :error
       iex> iso_week_date("2004-W54-9")
@@ -85,7 +85,7 @@ defmodule Calendar.Date.Parse do
   ## Examples
 
       iex> iso_week_date!("2004-W53-6")
-      %Calendar.Date{year: 2005, month: 1, day: 1}
+      %Date{year: 2005, month: 1, day: 1}
   """
   def iso_week_date!(string) do
     {:ok, result} = iso_week_date(string)

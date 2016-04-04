@@ -14,7 +14,7 @@ defmodule Calendar.DateTime.TzPeriod do
 
   defp timezone_period(date_time) do
     utc_greg_secs = date_time |> Calendar.DateTime.shift_zone!("Etc/UTC") |> Calendar.DateTime.gregorian_seconds
-    period_list = TimeZoneData.periods_for_time(date_time.timezone, utc_greg_secs, :utc);
+    period_list = TimeZoneData.periods_for_time(date_time.time_zone, utc_greg_secs, :utc);
     hd period_list
   end
 
@@ -40,16 +40,16 @@ defmodule Calendar.DateTime.TzPeriod do
 
       iex> Calendar.DateTime.from_erl!({{2000,6,1},{0,0,0}},"America/New_York") |> next_from
       {:ok,
-            %Calendar.DateTime{abbr: "EST", day: 29, hour: 1, usec: nil, min: 0, month: 10, sec: 0, std_off: 0,
-             timezone: "America/New_York", utc_off: -18000, year: 2000}}
+            %DateTime{zone_abbr: "EST", day: 29, hour: 1, microsecond: nil, minute: 0, month: 10, second: 0, std_offset: 0,
+             time_zone: "America/New_York", utc_offset: -18000, year: 2000}}
 
       The provided DateTime is in winter 2000. The returned DateTime is the
       first second of DST/summer time.
 
       iex> Calendar.DateTime.from_erl!({{2000,1,1},{0,0,0}},"Europe/Copenhagen") |> next_from
       {:ok,
-            %Calendar.DateTime{abbr: "CEST", day: 26, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600,
-             timezone: "Europe/Copenhagen", utc_off: 3600, year: 2000}}
+            %DateTime{zone_abbr: "CEST", day: 26, hour: 3, microsecond: nil, minute: 0, month: 3, second: 0, std_offset: 3600,
+             time_zone: "Europe/Copenhagen", utc_offset: 3600, year: 2000}}
   """
   def next_from(date_time) do
     period = date_time |> timezone_period
@@ -57,7 +57,7 @@ defmodule Calendar.DateTime.TzPeriod do
       true -> until = period.until.utc
         |> :calendar.gregorian_seconds_to_datetime
         |> Calendar.DateTime.from_erl!("Etc/UTC")
-        |> Calendar.DateTime.shift_zone!(date_time.timezone)
+        |> Calendar.DateTime.shift_zone!(date_time.time_zone)
         {:ok, until}
       false -> {:unlimited, period.until.wall}
     end
@@ -77,8 +77,8 @@ defmodule Calendar.DateTime.TzPeriod do
 
       iex> Calendar.DateTime.from_erl!({{2000,1,1},{0,0,0}},"Atlantic/Reykjavik") |> from
       {:ok,
-            %Calendar.DateTime{abbr: "GMT", day: 7, hour: 2, usec: nil, min: 0, month: 4, sec: 0, std_off: 0,
-             timezone: "Atlantic/Reykjavik", utc_off: 0, year: 1968}}
+            %DateTime{zone_abbr: "GMT", day: 7, hour: 2, microsecond: nil, minute: 0, month: 4, second: 0, std_offset: 0,
+             time_zone: "Atlantic/Reykjavik", utc_offset: 0, year: 1968}}
 
       iex> Calendar.DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> from
       {:unlimited, :min}
@@ -88,7 +88,7 @@ defmodule Calendar.DateTime.TzPeriod do
     case is_integer(period.from.utc) do
       true -> from = period.from.utc |> :calendar.gregorian_seconds_to_datetime
         |> Calendar.DateTime.from_erl!("Etc/UTC")
-        |> Calendar.DateTime.shift_zone!(date_time.timezone)
+        |> Calendar.DateTime.shift_zone!(date_time.time_zone)
         {:ok, from}
       false -> {:unlimited, period.from.wall}
     end
@@ -100,7 +100,7 @@ defmodule Calendar.DateTime.TzPeriod do
 
       iex> Calendar.DateTime.from_erl!({{2000,1,1},{0,0,0}},"Europe/Copenhagen") |> prev_from
       {:ok,
-            %Calendar.DateTime{abbr: "CEST", day: 28, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "Europe/Copenhagen", utc_off: 3600, year: 1999}}
+            %DateTime{zone_abbr: "CEST", day: 28, hour: 3, microsecond: nil, minute: 0, month: 3, second: 0, std_offset: 3600, time_zone: "Europe/Copenhagen", utc_offset: 3600, year: 1999}}
 
       iex> Calendar.DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> prev_from
       {:error, :already_at_first}
@@ -115,7 +115,7 @@ defmodule Calendar.DateTime.TzPeriod do
         |> -1
         |> :calendar.gregorian_seconds_to_datetime
         |> Calendar.DateTime.from_erl!("Etc/UTC")
-        |> Calendar.DateTime.shift_zone!(val.timezone)
+        |> Calendar.DateTime.shift_zone!(val.time_zone)
         |> from
     end
   end
@@ -132,14 +132,14 @@ defmodule Calendar.DateTime.TzPeriod do
       The next is standard time. Then Daylight time and Standard time again.
 
       iex> Calendar.DateTime.from_erl!({{2015,2,24},{13,0,0}}, "America/New_York") |> stream_next_from |> Enum.take(4)
-      [%Calendar.DateTime{abbr: "EDT", day: 8, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
-             utc_off: -18000, year: 2015},
-            %Calendar.DateTime{abbr: "EST", day: 1, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
-             utc_off: -18000, year: 2015},
-            %Calendar.DateTime{abbr: "EDT", day: 13, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
-             utc_off: -18000, year: 2016},
-            %Calendar.DateTime{abbr: "EST", day: 6, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
-             utc_off: -18000, year: 2016}]
+      [%DateTime{zone_abbr: "EDT", day: 8, hour: 3, microsecond: nil, minute: 0, month: 3, second: 0, std_offset: 3600, time_zone: "America/New_York",
+             utc_offset: -18000, year: 2015},
+            %DateTime{zone_abbr: "EST", day: 1, hour: 1, microsecond: nil, minute: 0, month: 11, second: 0, std_offset: 0, time_zone: "America/New_York",
+             utc_offset: -18000, year: 2015},
+            %DateTime{zone_abbr: "EDT", day: 13, hour: 3, microsecond: nil, minute: 0, month: 3, second: 0, std_offset: 3600, time_zone: "America/New_York",
+             utc_offset: -18000, year: 2016},
+            %DateTime{zone_abbr: "EST", day: 6, hour: 1, microsecond: nil, minute: 0, month: 11, second: 0, std_offset: 0, time_zone: "America/New_York",
+             utc_offset: -18000, year: 2016}]
   """
   def stream_next_from(date_time) do
     Stream.unfold(next_from(date_time), fn {tag, date_time} -> if tag == :ok do {date_time, date_time |> next_from} else nil end end)
@@ -158,14 +158,14 @@ defmodule Calendar.DateTime.TzPeriod do
       which began in the previous year.
 
       iex> Calendar.DateTime.from_erl!({{2015,2,24},{13,0,0}}, "America/New_York") |> stream_prev_from |> Enum.take(4)
-      [%Calendar.DateTime{abbr: "EST", day: 2, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
-             utc_off: -18000, year: 2014},
-            %Calendar.DateTime{abbr: "EDT", day: 9, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
-             utc_off: -18000, year: 2014},
-            %Calendar.DateTime{abbr: "EST", day: 3, hour: 1, usec: nil, min: 0, month: 11, sec: 0, std_off: 0, timezone: "America/New_York",
-             utc_off: -18000, year: 2013},
-            %Calendar.DateTime{abbr: "EDT", day: 10, hour: 3, usec: nil, min: 0, month: 3, sec: 0, std_off: 3600, timezone: "America/New_York",
-             utc_off: -18000, year: 2013}]
+      [%DateTime{zone_abbr: "EST", day: 2, hour: 1, microsecond: nil, minute: 0, month: 11, second: 0, std_offset: 0, time_zone: "America/New_York",
+             utc_offset: -18000, year: 2014},
+            %DateTime{zone_abbr: "EDT", day: 9, hour: 3, microsecond: nil, minute: 0, month: 3, second: 0, std_offset: 3600, time_zone: "America/New_York",
+             utc_offset: -18000, year: 2014},
+            %DateTime{zone_abbr: "EST", day: 3, hour: 1, microsecond: nil, minute: 0, month: 11, second: 0, std_offset: 0, time_zone: "America/New_York",
+             utc_offset: -18000, year: 2013},
+            %DateTime{zone_abbr: "EDT", day: 10, hour: 3, microsecond: nil, minute: 0, month: 3, second: 0, std_offset: 3600, time_zone: "America/New_York",
+             utc_offset: -18000, year: 2013}]
   """
   def stream_prev_from(date_time) do
     Stream.unfold(from(date_time), fn {tag, date_time} -> if tag == :ok do {date_time, date_time |> prev_from} else nil end end)

@@ -10,8 +10,6 @@ defmodule Calendar.Date do
   The Date module provides a struct to represent a simple date: year, month and day.
   """
 
-  defstruct [:year, :month, :day]
-
   @doc """
   Takes a Date struct and returns an erlang style date tuple.
   """
@@ -26,14 +24,14 @@ defmodule Calendar.Date do
   though as shown below:
 
       iex> from_erl({2014,12,27})
-      {:ok, %Calendar.Date{day: 27, month: 12, year: 2014}}
+      {:ok, %Date{day: 27, month: 12, year: 2014}}
 
       iex> from_erl({2014,99,99})
       {:error, :invalid_date}
   """
   def from_erl({year, month, day}) do
     case :calendar.valid_date({year, month, day}) do
-      true -> {:ok, %Calendar.Date{year: year, month: month, day: day}}
+      true -> {:ok, %Date{year: year, month: month, day: day}}
       false -> {:error, :invalid_date}
     end
   end
@@ -44,7 +42,7 @@ defmodule Calendar.Date do
   the provided date is invalid.
 
       iex> from_erl! {2014,12,27}
-      %Calendar.Date{day: 27, month: 12, year: 2014}
+      %Date{day: 27, month: 12, year: 2014}
   """
   def from_erl!(erl_date) do
     {:ok, date} = from_erl(erl_date)
@@ -93,20 +91,20 @@ defmodule Calendar.Date do
   Takes a year and an ISO week number and returns a list with the dates in that week.
 
       iex> dates_for_week_number(2015, 1)
-      [%Calendar.Date{day: 29, month: 12, year: 2014}, %Calendar.Date{day: 30, month: 12, year: 2014},
-            %Calendar.Date{day: 31, month: 12, year: 2014}, %Calendar.Date{day: 1, month: 1, year: 2015},
-            %Calendar.Date{day: 2, month: 1, year: 2015}, %Calendar.Date{day: 3, month: 1, year: 2015},
-            %Calendar.Date{day: 4, month: 1, year: 2015}]
+      [%Date{day: 29, month: 12, year: 2014}, %Date{day: 30, month: 12, year: 2014},
+            %Date{day: 31, month: 12, year: 2014}, %Date{day: 1, month: 1, year: 2015},
+            %Date{day: 2, month: 1, year: 2015}, %Date{day: 3, month: 1, year: 2015},
+            %Date{day: 4, month: 1, year: 2015}]
       iex> dates_for_week_number(2015, 2)
-      [%Calendar.Date{day: 5, month: 1, year: 2015}, %Calendar.Date{day: 6, month: 1, year: 2015},
-            %Calendar.Date{day: 7, month: 1, year: 2015}, %Calendar.Date{day: 8, month: 1, year: 2015},
-            %Calendar.Date{day: 9, month: 1, year: 2015}, %Calendar.Date{day: 10, month: 1, year: 2015},
-            %Calendar.Date{day: 11, month: 1, year: 2015}]
+      [%Date{day: 5, month: 1, year: 2015}, %Date{day: 6, month: 1, year: 2015},
+            %Date{day: 7, month: 1, year: 2015}, %Date{day: 8, month: 1, year: 2015},
+            %Date{day: 9, month: 1, year: 2015}, %Date{day: 10, month: 1, year: 2015},
+            %Date{day: 11, month: 1, year: 2015}]
       iex> dates_for_week_number(2015, 53)
-      [%Calendar.Date{day: 28, month: 12, year: 2015}, %Calendar.Date{day: 29, month: 12, year: 2015},
-            %Calendar.Date{day: 30, month: 12, year: 2015}, %Calendar.Date{day: 31, month: 12, year: 2015},
-            %Calendar.Date{day: 1, month: 1, year: 2016}, %Calendar.Date{day: 2, month: 1, year: 2016},
-            %Calendar.Date{day: 3, month: 1, year: 2016}]
+      [%Date{day: 28, month: 12, year: 2015}, %Date{day: 29, month: 12, year: 2015},
+            %Date{day: 30, month: 12, year: 2015}, %Date{day: 31, month: 12, year: 2015},
+            %Date{day: 1, month: 1, year: 2016}, %Date{day: 2, month: 1, year: 2016},
+            %Date{day: 3, month: 1, year: 2016}]
   """
   def dates_for_week_number(year, week_num) do
     days = days_after_until(from_erl!({year-1, 12, 23}), from_erl!({year, 12, 31})) |> Enum.to_list
@@ -159,9 +157,9 @@ defmodule Calendar.Date do
   Takes a Date struct and returns another one representing the next day.
 
       iex> from_erl!({2014,12,27}) |> next_day!
-      %Calendar.Date{day: 28, month: 12, year: 2014}
+      %Date{day: 28, month: 12, year: 2014}
       iex> from_erl!({2014,12,31}) |> next_day!
-      %Calendar.Date{day: 1, month: 1, year: 2015}
+      %Date{day: 1, month: 1, year: 2015}
   """
   def next_day!(date) do
     advance!(date, 1)
@@ -171,7 +169,7 @@ defmodule Calendar.Date do
   Takes a Date struct and returns another one representing the previous day.
 
       iex> from_erl!({2014,12,27}) |> prev_day!
-      %Calendar.Date{day: 26, month: 12, year: 2014}
+      %Date{day: 26, month: 12, year: 2014}
   """
   def prev_day!(date) do
     advance!(date, -1)
@@ -241,19 +239,19 @@ defmodule Calendar.Date do
 
       # Date struct advanced by 3 days
       iex> from_erl!({2014,12,27}) |> advance(3)
-      {:ok, %Calendar.Date{day: 30, month: 12, year: 2014} }
+      {:ok, %Date{day: 30, month: 12, year: 2014} }
       # Date struct turned back 2 days
       iex> from_erl!({2014,12,27}) |> advance(-2)
-      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      {:ok, %Date{day: 25, month: 12, year: 2014} }
       # Date tuple turned back 2 days
       iex> {2014,12,27} |> advance(-2)
-      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      {:ok, %Date{day: 25, month: 12, year: 2014} }
       # When passing a DateTime, NaiveDateTime or datetime tuple
       # the time part is ignored. A Date struct is returned.
       iex> {{2014,12,27}, {21,30,59}} |> Calendar.NaiveDateTime.from_erl! |> advance(-2)
-      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      {:ok, %Date{day: 25, month: 12, year: 2014} }
       iex> {{2014,12,27}, {21,30,59}} |> advance(-2)
-      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      {:ok, %Date{day: 25, month: 12, year: 2014} }
   """
   def advance(date, days) when is_integer(days) do
     date = date |> contained_date
@@ -273,16 +271,16 @@ defmodule Calendar.Date do
 
       # Date struct turned back 2 days
       iex> from_erl!({2014,12,27}) |> subtract(2)
-      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      {:ok, %Date{day: 25, month: 12, year: 2014} }
       # Date tuple turned back 2 days
       iex> {2014,12,27} |> subtract(2)
-      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      {:ok, %Date{day: 25, month: 12, year: 2014} }
       # When passing a DateTime, Calendar.NaiveDateTime or datetime tuple
       # the time part is ignored. A Date struct is returned.
       iex> {{2014,12,27}, {21,30,59}} |> Calendar.NaiveDateTime.from_erl! |> subtract(2)
-      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      {:ok, %Date{day: 25, month: 12, year: 2014} }
       iex> {{2014,12,27}, {21,30,59}} |> subtract(2)
-      {:ok, %Calendar.Date{day: 25, month: 12, year: 2014} }
+      {:ok, %Date{day: 25, month: 12, year: 2014} }
   """
   def subtract(date, days),  do: advance(date, -1 * days)
   def subtract!(date, days), do: advance!(date, -1 * days)
@@ -294,9 +292,9 @@ defmodule Calendar.Date do
   ## Examples
 
       iex> from_erl!({2014,12,27}) |> advance!(3)
-      %Calendar.Date{day: 30, month: 12, year: 2014}
+      %Date{day: 30, month: 12, year: 2014}
       iex> {2014,12,27} |> advance!(-2)
-      %Calendar.Date{day: 25, month: 12, year: 2014}
+      %Date{day: 25, month: 12, year: 2014}
   """
   def advance!(date, days) when is_integer(days) do
     date = date |> contained_date
@@ -322,9 +320,9 @@ defmodule Calendar.Date do
   Stream of dates after the date provided as argument.
 
       iex> days_after({2014,12,27}) |> Enum.take(6)
-      [%Calendar.Date{day: 28, month: 12, year: 2014}, %Calendar.Date{day: 29, month: 12, year: 2014},
-            %Calendar.Date{day: 30, month: 12, year: 2014}, %Calendar.Date{day: 31, month: 12, year: 2014}, %Calendar.Date{day: 1, month: 1, year: 2015},
-            %Calendar.Date{day: 2, month: 1, year: 2015}]
+      [%Date{day: 28, month: 12, year: 2014}, %Date{day: 29, month: 12, year: 2014},
+            %Date{day: 30, month: 12, year: 2014}, %Date{day: 31, month: 12, year: 2014}, %Date{day: 1, month: 1, year: 2015},
+            %Date{day: 2, month: 1, year: 2015}]
   """
   def days_after(from_date) do
     from_date = from_date |> contained_date
@@ -335,8 +333,8 @@ defmodule Calendar.Date do
   Stream of dates before the date provided as argument.
 
       iex> days_before(from_erl!({2014,12,27})) |> Enum.take(3)
-      [%Calendar.Date{day: 26, month: 12, year: 2014}, %Calendar.Date{day: 25, month: 12, year: 2014},
-            %Calendar.Date{day: 24, month: 12, year: 2014}]
+      [%Date{day: 26, month: 12, year: 2014}, %Date{day: 25, month: 12, year: 2014},
+            %Date{day: 24, month: 12, year: 2014}]
   """
   def days_before(from_date) do
     from_date = from_date |> contained_date
@@ -349,9 +347,9 @@ defmodule Calendar.Date do
   as the third argument.
 
       iex> days_after_until({2014,12,27}, {2014,12,29}) |> Enum.to_list
-      [%Calendar.Date{day: 28, month: 12, year: 2014}, %Calendar.Date{day: 29, month: 12, year: 2014}]
+      [%Date{day: 28, month: 12, year: 2014}, %Date{day: 29, month: 12, year: 2014}]
       iex> days_after_until({2014,12,27}, {2014,12,29}, true) |> Enum.to_list
-      [%Calendar.Date{day: 27, month: 12, year: 2014}, %Calendar.Date{day: 28, month: 12, year: 2014}, %Calendar.Date{day: 29, month: 12, year: 2014}]
+      [%Date{day: 27, month: 12, year: 2014}, %Date{day: 28, month: 12, year: 2014}, %Date{day: 29, month: 12, year: 2014}]
   """
   def days_after_until(from_date, until_date, include_from_date \\ false)
   def days_after_until(from_date, until_date,  _include_from_date = false) do
@@ -372,11 +370,11 @@ defmodule Calendar.Date do
   as the third argument.
 
       iex> days_before_until({2014,12,27}, {2014,12,24}) |> Enum.to_list
-      [%Calendar.Date{day: 26, month: 12, year: 2014}, %Calendar.Date{day: 25, month: 12, year: 2014}, %Calendar.Date{day: 24, month: 12, year: 2014}]
+      [%Date{day: 26, month: 12, year: 2014}, %Date{day: 25, month: 12, year: 2014}, %Date{day: 24, month: 12, year: 2014}]
       iex> days_before_until({2014,12,27}, {2014,12,24}, false) |> Enum.to_list
-      [%Calendar.Date{day: 26, month: 12, year: 2014}, %Calendar.Date{day: 25, month: 12, year: 2014}, %Calendar.Date{day: 24, month: 12, year: 2014}]
+      [%Date{day: 26, month: 12, year: 2014}, %Date{day: 25, month: 12, year: 2014}, %Date{day: 24, month: 12, year: 2014}]
       iex> days_before_until({2014,12,27}, {2014,12,24}, true) |> Enum.to_list
-      [%Calendar.Date{day: 27, month: 12, year: 2014}, %Calendar.Date{day: 26, month: 12, year: 2014}, %Calendar.Date{day: 25, month: 12, year: 2014}, %Calendar.Date{day: 24, month: 12, year: 2014}]
+      [%Date{day: 27, month: 12, year: 2014}, %Date{day: 26, month: 12, year: 2014}, %Date{day: 25, month: 12, year: 2014}, %Date{day: 24, month: 12, year: 2014}]
   """
   def days_before_until(from_date, until_date, include_from_date \\ false)
   def days_before_until(from_date, until_date, _include_from_date = false) do
@@ -575,9 +573,9 @@ defmodule Calendar.Date do
   ## Examples
 
       iex> from_ordinal(2015, 1)
-      {:ok, %Calendar.Date{day: 1, month: 1, year: 2015}}
+      {:ok, %Date{day: 1, month: 1, year: 2015}}
       iex> from_ordinal(2015, 270)
-      {:ok, %Calendar.Date{day: 27, month: 9, year: 2015}}
+      {:ok, %Date{day: 27, month: 9, year: 2015}}
       iex> from_ordinal(2015, 999)
       {:error, :invalid_ordinal_date}
   """
@@ -599,11 +597,11 @@ defmodule Calendar.Date do
   ## Examples
 
       iex> from_ordinal!(2015, 1)
-      %Calendar.Date{day: 1, month: 1, year: 2015}
+      %Date{day: 1, month: 1, year: 2015}
       iex> from_ordinal!(2015, 270)
-      %Calendar.Date{day: 27, month: 9, year: 2015}
+      %Date{day: 27, month: 9, year: 2015}
       iex> from_ordinal!(2015, 365)
-      %Calendar.Date{day: 31, month: 12, year: 2015}
+      %Date{day: 31, month: 12, year: 2015}
   """
   def from_ordinal!(year, ordinal_day) do
     {:ok, result} = from_ordinal(year, ordinal_day)
@@ -632,7 +630,7 @@ defmodule Calendar.Date do
   ## Examples
 
       > today_utc
-      %Calendar.Date{day: 1, month: 3, year: 2016}
+      %Date{day: 1, month: 3, year: 2016}
   """
   def today_utc do
     Calendar.DateTime.now_utc
@@ -645,9 +643,9 @@ defmodule Calendar.Date do
   ## Examples
 
       > today!("America/Montevideo")
-      %Calendar.Date{day: 1, month: 3, year: 2016}
+      %Date{day: 1, month: 3, year: 2016}
       > today!("Australia/Sydney")
-      %Calendar.Date{day: 2, month: 3, year: 2016}
+      %Date{day: 2, month: 3, year: 2016}
   """
   def today!(timezone) do
     timezone
@@ -678,11 +676,11 @@ defimpl Calendar.ContainsDate, for: Tuple do
   def date_struct({{y, m, d}, {_hour, _min, _sec, _usec}}), do: Calendar.Date.from_erl!({y, m, d})
 end
 defimpl Calendar.ContainsDate, for: Date do
-  def date_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.Date{day: data.day, month: data.month, year: data.year}
+  def date_struct(%{calendar: Calendar.ISO}=data), do: %Date{day: data.day, month: data.month, year: data.year}
 end
 defimpl Calendar.ContainsDate, for: DateTime do
-  def date_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.Date{day: data.day, month: data.month, year: data.year}
+  def date_struct(%{calendar: Calendar.ISO}=data), do: %Date{day: data.day, month: data.month, year: data.year}
 end
 defimpl Calendar.ContainsDate, for: NaiveDateTime do
-  def date_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.Date{day: data.day, month: data.month, year: data.year}
+  def date_struct(%{calendar: Calendar.ISO}=data), do: %Date{day: data.day, month: data.month, year: data.year}
 end

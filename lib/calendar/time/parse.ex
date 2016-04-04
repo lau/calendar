@@ -10,10 +10,10 @@ defmodule Calendar.Time.Parse do
 
       # Extended format
       iex> iso8601("13:07:58")
-      {:ok, %Calendar.Time{hour: 13, min: 7, sec: 58}}
+      {:ok, %Time{hour: 13, minute: 7, second: 58}}
       # Basic format (the basic format does not have colons)
       iex> iso8601("130758")
-      {:ok, %Calendar.Time{hour: 13, min: 7, sec: 58}}
+      {:ok, %Time{hour: 13, minute: 7, second: 58}}
       iex> iso8601("25:65:00")
       {:error, :invalid_time}
   """
@@ -36,7 +36,7 @@ defmodule Calendar.Time.Parse do
 
       # Extended format
       iex> iso8601!("13:07:58")
-      %Calendar.Time{hour: 13, min: 7, sec: 58}
+      %Time{hour: 13, minute: 7, second: 58}
   """
   def iso8601!(string) do
     {:ok, result} = iso8601(string)

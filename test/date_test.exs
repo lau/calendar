@@ -3,7 +3,7 @@ defmodule SomethingThatContainsDate do
 end
 
 defimpl Calendar.ContainsDate, for: SomethingThatContainsDate do
-  def date_struct(_), do: %Calendar.Date{year: 2015, month: 1, day: 1}
+  def date_struct(_), do: %Date{year: 2015, month: 1, day: 1}
 end
 
 defmodule DateTest do

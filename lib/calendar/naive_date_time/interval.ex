@@ -2,7 +2,7 @@ defmodule Calendar.NaiveDateTime.Interval do
 @moduledoc """
 A `NaiveDateTime.Interval` consists of a start and an end `NaiveDateTime`.
 """
-  @type t :: %__MODULE__{from: %Calendar.NaiveDateTime{}, to: %Calendar.NaiveDateTime{}}
+  @type t :: %__MODULE__{from: %NaiveDateTime{}, to: %NaiveDateTime{}}
   defstruct [:from, :to]
 
   @doc """

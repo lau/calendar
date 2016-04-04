@@ -29,13 +29,13 @@ defmodule Calendar.AmbiguousDateTime do
   ## Examples
 
       iex> {:ambiguous, am} = Calendar.DateTime.from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo"); am |> Calendar.AmbiguousDateTime.disamb_total_off(-10800)
-      {:ok, %Calendar.DateTime{abbr: "UYT", day: 9, hour: 1, min: 1, month: 3, sec: 1, std_off: 0, timezone: "America/Montevideo", utc_off: -10800, year: 2014}}
+      {:ok, %DateTime{zone_abbr: "UYT", day: 9, hour: 1, minute: 1, month: 3, second: 1, std_offset: 0, time_zone: "America/Montevideo", utc_offset: -10800, year: 2014}}
 
       iex> {:ambiguous, am} = Calendar.DateTime.from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo"); am |> Calendar.AmbiguousDateTime.disamb_total_off(0)
       {:error, :no_matches}
   """
   def disamb_total_off(ambiguous_date_time, total_off_secs) do
-    func = fn(dt) -> dt.utc_off+dt.std_off == total_off_secs end
+    func = fn(dt) -> dt.utc_offset+dt.std_offset == total_off_secs end
     disamb(ambiguous_date_time, func)
   end
 
@@ -47,8 +47,8 @@ defmodule Calendar.AmbiguousDateTime do
 
   We provide a function that returns true if the abbreviation is "UYT"
 
-      iex> {:ambiguous, am} = Calendar.DateTime.from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo"); am |> Calendar.AmbiguousDateTime.disamb(fn(dt) -> dt.abbr == "UYT" end)
-      {:ok, %Calendar.DateTime{abbr: "UYT", day: 9, hour: 1, min: 1, month: 3, sec: 1, std_off: 0, timezone: "America/Montevideo", utc_off: -10800, year: 2014}}
+      iex> {:ambiguous, am} = Calendar.DateTime.from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo"); am |> Calendar.AmbiguousDateTime.disamb(fn(dt) -> dt.zone_abbr == "UYT" end)
+      {:ok, %DateTime{zone_abbr: "UYT", day: 9, hour: 1, minute: 1, month: 3, second: 1, std_offset: 0, time_zone: "America/Montevideo", utc_offset: -10800, year: 2014}}
 
   A function that always returns false
 

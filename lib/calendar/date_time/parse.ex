@@ -16,27 +16,27 @@ defmodule Calendar.DateTime.Parse do
       # 2 digit year
       iex> "5 Jul 15 20:26:13 PST" |> rfc822_utc
       {:ok,
-            %Calendar.DateTime{abbr: "UTC", day: 6, hour: 4, min: 26, month: 7,
-             sec: 13, std_off: 0, timezone: "Etc/UTC", usec: nil, utc_off: 0,
+            %DateTime{zone_abbr: "UTC", day: 6, hour: 4, minute: 26, month: 7,
+             second: 13, std_offset: 0, time_zone: "Etc/UTC", microsecond: nil, utc_offset: 0,
              year: 2015}}
       # 82 as year
       iex> "5 Jul 82 20:26:13 PST" |> rfc822_utc
       {:ok,
-            %Calendar.DateTime{abbr: "UTC", day: 6, hour: 4, min: 26, month: 7,
-             sec: 13, std_off: 0, timezone: "Etc/UTC", usec: nil, utc_off: 0,
+            %DateTime{zone_abbr: "UTC", day: 6, hour: 4, minute: 26, month: 7,
+             second: 13, std_offset: 0, time_zone: "Etc/UTC", microsecond: nil, utc_offset: 0,
              year: 1982}}
       # 1982 as year
       iex> "5 Jul 82 20:26:13 PST" |> rfc822_utc
       {:ok,
-            %Calendar.DateTime{abbr: "UTC", day: 6, hour: 4, min: 26, month: 7,
-             sec: 13, std_off: 0, timezone: "Etc/UTC", usec: nil, utc_off: 0,
+            %DateTime{zone_abbr: "UTC", day: 6, hour: 4, minute: 26, month: 7,
+             second: 13, std_offset: 0, time_zone: "Etc/UTC", microsecond: nil, utc_offset: 0,
              year: 1982}}
       # 2 digit year and we use 2099 as the base guessing year
       # which means that 15 should be interpreted as 2115 no 2015
       iex> "5 Jul 15 20:26:13 PST" |> rfc822_utc(2099)
       {:ok,
-            %Calendar.DateTime{abbr: "UTC", day: 6, hour: 4, min: 26, month: 7,
-             sec: 13, std_off: 0, timezone: "Etc/UTC", usec: nil, utc_off: 0,
+            %DateTime{zone_abbr: "UTC", day: 6, hour: 4, minute: 26, month: 7,
+             second: 13, std_offset: 0, time_zone: "Etc/UTC", microsecond: nil, utc_offset: 0,
              year: 2115}}
   """
   def rfc822_utc(string, year_guessing_base \\ 2015) do
@@ -86,20 +86,20 @@ defmodule Calendar.DateTime.Parse do
   ## Examples
       iex> rfc2822_utc("Sat, 13 Mar 2010 11:23:03 -0800")
       {:ok,
-            %Calendar.DateTime{abbr: "UTC", day: 13, hour: 19, min: 23, month: 3, sec: 3, std_off: 0,
-             timezone: "Etc/UTC", usec: nil, utc_off: 0, year: 2010}}
+            %DateTime{zone_abbr: "UTC", day: 13, hour: 19, minute: 23, month: 3, second: 3, std_offset: 0,
+             time_zone: "Etc/UTC", microsecond: nil, utc_offset: 0, year: 2010}}
 
       # PST is the equivalent of -0800 in the RFC 2822 standard
       iex> rfc2822_utc("Sat, 13 Mar 2010 11:23:03 PST")
       {:ok,
-            %Calendar.DateTime{abbr: "UTC", day: 13, hour: 19, min: 23, month: 3, sec: 3, std_off: 0,
-             timezone: "Etc/UTC", usec: nil, utc_off: 0, year: 2010}}
+            %DateTime{zone_abbr: "UTC", day: 13, hour: 19, minute: 23, month: 3, second: 3, std_offset: 0,
+             time_zone: "Etc/UTC", microsecond: nil, utc_offset: 0, year: 2010}}
 
       # Z is the equivalent of UTC
       iex> rfc2822_utc("Sat, 13 Mar 2010 11:23:03 Z")
       {:ok,
-            %Calendar.DateTime{abbr: "UTC", day: 13, hour: 11, min: 23, month: 3, sec: 3, std_off: 0,
-             timezone: "Etc/UTC", usec: nil, utc_off: 0, year: 2010}}
+            %DateTime{zone_abbr: "UTC", day: 13, hour: 11, minute: 23, month: 3, second: 3, std_offset: 0,
+             time_zone: "Etc/UTC", microsecond: nil, utc_offset: 0, year: 2010}}
   """
   def rfc2822_utc(string) do
     string
@@ -145,16 +145,16 @@ defmodule Calendar.DateTime.Parse do
   ## Examples
 
       iex> unix!(1_000_000_000)
-      %Calendar.DateTime{abbr: "UTC", day: 9, usec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %DateTime{zone_abbr: "UTC", day: 9, microsecond: nil, hour: 1, minute: 46, month: 9, second: 40, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2001}
 
       iex> unix!("1000000000")
-      %Calendar.DateTime{abbr: "UTC", day: 9, usec: nil, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %DateTime{zone_abbr: "UTC", day: 9, microsecond: nil, hour: 1, minute: 46, month: 9, second: 40, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2001}
 
       iex> unix!(1_000_000_000.9876)
-      %Calendar.DateTime{abbr: "UTC", day: 9, usec: 987600, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %DateTime{zone_abbr: "UTC", day: 9, microsecond: 987600, hour: 1, minute: 46, month: 9, second: 40, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2001}
 
       iex> unix!(1_000_000_000.999999)
-      %Calendar.DateTime{abbr: "UTC", day: 9, usec: 999999, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %DateTime{zone_abbr: "UTC", day: 9, microsecond: 999999, hour: 1, minute: 46, month: 9, second: 40, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2001}
   """
   def unix!(unix_time_stamp) when is_integer(unix_time_stamp) do
     unix_time_stamp + @secs_between_year_0_and_unix_epoch
@@ -162,7 +162,7 @@ defmodule Calendar.DateTime.Parse do
     |> Calendar.DateTime.from_erl!("Etc/UTC")
   end
   def unix!(unix_time_stamp) when is_float(unix_time_stamp) do
-    {whole, micro} = int_and_usec_for_float(unix_time_stamp)
+    {whole, micro} = int_and_microsecond_for_float(unix_time_stamp)
     whole + @secs_between_year_0_and_unix_epoch
     |>:calendar.gregorian_seconds_to_datetime
     |> Calendar.DateTime.from_erl!("Etc/UTC", micro)
@@ -173,12 +173,12 @@ defmodule Calendar.DateTime.Parse do
     |> unix!
   end
 
-  defp int_and_usec_for_float(float) do
+  defp int_and_microsecond_for_float(float) do
     float_as_string = Float.to_string(float, [decimals: 6, compact: false])
     {int, frac} = Integer.parse(float_as_string)
     {int, parse_unix_fraction(frac)}
   end
-  # recieves eg. ".987654321" returns usecs. eg. 987654
+  # recieves eg. ".987654321" returns microseconds. eg. 987654
   defp parse_unix_fraction(string), do: String.slice(string, 1..6) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
 
   @doc """
@@ -187,13 +187,13 @@ defmodule Calendar.DateTime.Parse do
   # Examples
 
       iex> js_ms!("1000000000123")
-      %Calendar.DateTime{abbr: "UTC", day: 9, usec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %DateTime{zone_abbr: "UTC", day: 9, microsecond: 123000, hour: 1, minute: 46, month: 9, second: 40, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2001}
 
       iex> js_ms!(1_000_000_000_123)
-      %Calendar.DateTime{abbr: "UTC", day: 9, usec: 123000, hour: 1, min: 46, month: 9, sec: 40, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2001}
+      %DateTime{zone_abbr: "UTC", day: 9, microsecond: 123000, hour: 1, minute: 46, month: 9, second: 40, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2001}
 
       iex> js_ms!(1424102000000)
-      %Calendar.DateTime{abbr: "UTC", day: 16, hour: 15, usec: 0, min: 53, month: 2, sec: 20, std_off: 0, timezone: "Etc/UTC", utc_off: 0, year: 2015}
+      %DateTime{zone_abbr: "UTC", day: 16, hour: 15, microsecond: 0, minute: 53, month: 2, second: 20, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2015}
   """
   def js_ms!(millisec) when is_integer(millisec) do
     (millisec/1000.0)
@@ -210,7 +210,7 @@ defmodule Calendar.DateTime.Parse do
   Parses a timestamp in RFC 2616 format.
 
       iex> httpdate("Sat, 06 Sep 2014 09:09:08 GMT")
-      {:ok, %Calendar.DateTime{year: 2014, month: 9, day: 6, hour: 9, min: 9, sec: 8, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %DateTime{year: 2014, month: 9, day: 6, hour: 9, minute: 9, second: 8, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
       iex> httpdate("invalid")
       {:bad_format, nil}
@@ -239,7 +239,7 @@ defmodule Calendar.DateTime.Parse do
   in case of success. In case of errors it raises.
 
       iex> httpdate!("Sat, 06 Sep 2014 09:09:08 GMT")
-      %Calendar.DateTime{year: 2014, month: 9, day: 6, hour: 9, min: 9, sec: 8, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}
+      %DateTime{year: 2014, month: 9, day: 6, hour: 9, minute: 9, second: 8, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}
   """
   def httpdate!(rfc2616_string) do
     {:ok, dt} = httpdate(rfc2616_string)
@@ -256,18 +256,18 @@ defmodule Calendar.DateTime.Parse do
       {:bad_format, nil}
 
       iex> rfc3339_utc("1996-12-19T16:39:57Z")
-      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
       iex> rfc3339_utc("1996-12-19T16:39:57-08:00")
-      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %DateTime{year: 1996, month: 12, day: 20, hour: 0, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
       # No seperation chars between numbers. Not RFC3339, but we still parse it.
       iex> rfc3339_utc("19961219T163957-08:00")
-      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %DateTime{year: 1996, month: 12, day: 20, hour: 0, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
       # Offset does not have colon (-0800). That makes it ISO8601, but not RFC3339. We still parse it.
       iex> rfc3339_utc("1996-12-19T16:39:57-0800")
-      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %DateTime{year: 1996, month: 12, day: 20, hour: 0, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
   """
   def rfc3339_utc(rfc3339_string) do
     parsed = rfc3339_string
@@ -284,13 +284,13 @@ defmodule Calendar.DateTime.Parse do
   the specified time zone.
 
       iex> rfc3339("1996-12-19T16:39:57Z", "Etc/UTC")
-      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
+      {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
       iex> rfc3339("1996-12-19T16:39:57.1234Z", "Etc/UTC")
-      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0, usec: 123400}}
+      {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0, microsecond: 123400}}
 
       iex> rfc3339("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
-      {:ok, %Calendar.DateTime{abbr: "PST", day: 19, hour: 16, min: 39, month: 12, sec: 57, std_off: 0, timezone: "America/Los_Angeles", utc_off: -28800, year: 1996}}
+      {:ok, %DateTime{zone_abbr: "PST", day: 19, hour: 16, minute: 39, month: 12, second: 57, std_offset: 0, time_zone: "America/Los_Angeles", utc_offset: -28800, year: 1996}}
 
       iex> rfc3339("invalid", "America/Los_Angeles")
       {:bad_format, nil}
