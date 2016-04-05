@@ -224,7 +224,7 @@ defmodule Calendar.DateTime do
       advanced = date_time
       |> shift_zone!("Etc/UTC")
       |> gregorian_seconds
-      |> + seconds
+      |> Kernel.+(seconds)
       |> from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.microsecond)
       |> shift_zone!(date_time.time_zone)
       {:ok, advanced}
