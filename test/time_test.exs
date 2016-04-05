@@ -3,7 +3,7 @@ defmodule SomethingThatContainsTime do
 end
 
 defimpl Calendar.ContainsTime, for: SomethingThatContainsTime do
-  def time_struct(_), do: %Time{hour: 1, minute: 1, second: 1, micro_second: 1}
+  def time_struct(_), do: %Time{hour: 1, minute: 1, second: 1, microsecond: 1}
 end
 
 defmodule TimeTest do

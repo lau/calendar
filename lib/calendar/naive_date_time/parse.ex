@@ -9,11 +9,11 @@ defmodule Calendar.NaiveDateTime.Parse do
   ## Examples
 
       iex> "19851106210627.3" |> asn1_generalized
-      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, micro_second: 300_000}, nil}
+      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, microsecond: 300_000}, nil}
       iex> "19851106210627.3Z" |> asn1_generalized
-      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, micro_second: 300_000}, 0}
+      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, microsecond: 300_000}, 0}
       iex> "19851106210627.3-5000" |> asn1_generalized
-      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, micro_second: 300_000}, -180000}
+      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, microsecond: 300_000}, -180000}
   """
   def asn1_generalized(string) do
     captured = string |> capture_generalized_time_string
@@ -33,9 +33,9 @@ defmodule Calendar.NaiveDateTime.Parse do
 
   ## Examples
       iex> Calendar.NaiveDateTime.Parse.asctime("Wed Apr  9 07:53:03 2003")
-      {:ok, %NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, minute: 53, second: 3, micro_second: nil}}
+      {:ok, %NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, minute: 53, second: 3, microsecond: nil}}
       iex> asctime("Thu, Apr 10 07:53:03 2003")
-      {:ok, %NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, minute: 53, second: 3, micro_second: nil}}
+      {:ok, %NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, minute: 53, second: 3, microsecond: nil}}
   """
   def asctime(string) do
     cap = string |> capture_asctime_string
@@ -48,9 +48,9 @@ defmodule Calendar.NaiveDateTime.Parse do
 
   ## Examples
       iex> asctime!("Wed Apr  9 07:53:03 2003")
-      %NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, minute: 53, second: 3, micro_second: nil}
+      %NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, minute: 53, second: 3, microsecond: nil}
       iex> asctime!("Thu, Apr 10 07:53:03 2003")
-      %NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, minute: 53, second: 3, micro_second: nil}
+      %NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, minute: 53, second: 3, microsecond: nil}
   """
   def asctime!(string) do
     {:ok, result} = asctime(string)
@@ -70,19 +70,19 @@ defmodule Calendar.NaiveDateTime.Parse do
 
       # With offset
       iex> iso8601("1996-12-19T16:39:57-0200")
-      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, micro_second: nil}, -7200}
+      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: nil}, -7200}
 
       # Without offset
       iex> iso8601("1996-12-19T16:39:57")
-      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, micro_second: nil}, nil}
+      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: nil}, nil}
 
       # With fractional seconds
       iex> iso8601("1996-12-19T16:39:57.123")
-      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, micro_second: 123000}, nil}
+      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: 123000}, nil}
 
       # With Z denoting 0 offset
       iex> iso8601("1996-12-19T16:39:57Z")
-      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, micro_second: nil}, 0}
+      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: nil}, 0}
 
       # Invalid date
       iex> iso8601("1996-13-19T16:39:57Z")
@@ -138,6 +138,6 @@ defmodule Calendar.NaiveDateTime.Parse do
   end
 
   defp parse_fraction(""), do: nil
-  # parse and return micro_seconds
+  # parse and return microseconds
   defp parse_fraction(string), do: String.slice(string, 0..5) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
 end

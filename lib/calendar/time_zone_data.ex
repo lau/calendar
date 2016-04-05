@@ -96,15 +96,15 @@ defmodule Calendar.TimeZoneData do
   ## Example:
 
       iex> TimeZoneData.leap_seconds |> Enum.take(3)
-      [%DateTime{zone_abbr: "UTC", day: 31, hour: 23, minute: 59, month: 12, second: 60, std_offset: 0, time_zone: "Etc/UTC", micro_second: 0, utc_offset: 0, year: 1971},
-       %DateTime{zone_abbr: "UTC", day: 30, hour: 23, minute: 59, month: 6, second: 60, std_offset: 0, time_zone: "Etc/UTC", micro_second: 0, utc_offset: 0, year: 1972},
-       %DateTime{zone_abbr: "UTC", day: 31, hour: 23, minute: 59, month: 12, second: 60, std_offset: 0, time_zone: "Etc/UTC", micro_second: 0, utc_offset: 0, year: 1972}]
+      [%DateTime{zone_abbr: "UTC", day: 31, hour: 23, minute: 59, month: 12, second: 60, std_offset: 0, time_zone: "Etc/UTC", microsecond: 0, utc_offset: 0, year: 1971},
+       %DateTime{zone_abbr: "UTC", day: 30, hour: 23, minute: 59, month: 6, second: 60, std_offset: 0, time_zone: "Etc/UTC", microsecond: 0, utc_offset: 0, year: 1972},
+       %DateTime{zone_abbr: "UTC", day: 31, hour: 23, minute: 59, month: 12, second: 60, std_offset: 0, time_zone: "Etc/UTC", microsecond: 0, utc_offset: 0, year: 1972}]
   """
   def leap_seconds do
     TZSource.leap_seconds
     |> Enum.map(fn(dt) ->
       {{year, month, day}, {hour, minute, second}} = dt
-      %DateTime{zone_abbr: "UTC", micro_second: 0, time_zone: "Etc/UTC", utc_offset: 0,
+      %DateTime{zone_abbr: "UTC", microsecond: 0, time_zone: "Etc/UTC", utc_offset: 0,
         std_offset: 0, year: year, month: month, day: day, hour: hour, minute: minute,
         second: second}
       end)

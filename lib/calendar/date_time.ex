@@ -22,10 +22,10 @@ defmodule Calendar.DateTime do
   """
   def now_utc do
     erl_timestamp = :os.timestamp
-    {_, _, micro_second} = erl_timestamp
+    {_, _, microsecond} = erl_timestamp
     erl_timestamp
     |> :calendar.now_to_datetime
-    |> from_erl!("Etc/UTC", "UTC", 0, 0, micro_second)
+    |> from_erl!("Etc/UTC", "UTC", 0, 0, microsecond)
   end
 
   @doc """
@@ -46,11 +46,11 @@ defmodule Calendar.DateTime do
   """
   def now!("Etc/UTC"), do: now_utc
   def now!(timezone) do
-    {now_utc_secs, micro_second} = now_utc |> gregorian_seconds_and_micro_second
+    {now_utc_secs, microsecond} = now_utc |> gregorian_seconds_and_microsecond
     period_list = TimeZoneData.periods_for_time(timezone, now_utc_secs, :utc)
     period = hd period_list
     now_utc_secs + period.utc_off + period.std_off
-    |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off, micro_second)
+    |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off, microsecond)
   end
 
   @doc """
@@ -102,26 +102,26 @@ defmodule Calendar.DateTime do
       # Add 2 seconds
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add(2)
       {:ok, %DateTime{zone_abbr: "EDT", day: 2, hour: 0, minute: 29, month: 10,
-            second: 12, std_offset: 3600, time_zone: "America/New_York", micro_second: 123456,
+            second: 12, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456,
             utc_offset: -18000, year: 2014}}
 
 
       # Add 86400 seconds (one day)
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add(86400)
       {:ok, %DateTime{zone_abbr: "EDT", day: 3, hour: 0, minute: 29, month: 10,
-            second: 10, std_offset: 3600, time_zone: "America/New_York", micro_second: 123456,
+            second: 10, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456,
             utc_offset: -18000, year: 2014}}
 
       # Add 10 seconds just before DST "spring forward" so we go from 1:59:59 to 3:00:09
       iex> from_erl!({{2015,3,8},{1,59,59}}, "America/New_York", 123456) |> add(10)
       {:ok, %DateTime{zone_abbr: "EDT", day: 8, hour: 3, minute: 0, month: 3,
-            second: 9, std_offset: 3600, time_zone: "America/New_York", micro_second: 123456,
+            second: 9, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456,
             utc_offset: -18000, year: 2015}}
 
       # If you add a negative number of seconds, the resulting datetime will effectively
       # be subtracted.
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> add(-200)
-      {:ok, %DateTime{zone_abbr: "EDT", day: 1, hour: 23, minute: 56, month: 10, second: 40, std_offset: 3600, time_zone: "America/New_York", micro_second: 123456, utc_offset: -18000, year: 2014}}
+      {:ok, %DateTime{zone_abbr: "EDT", day: 1, hour: 23, minute: 56, month: 10, second: 40, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000, year: 2014}}
   """
   def add(dt, seconds), do: advance(dt, seconds)
 
@@ -139,25 +139,25 @@ defmodule Calendar.DateTime do
       # Add 2 seconds
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add!(2)
       %DateTime{zone_abbr: "EDT", day: 2, hour: 0, minute: 29, month: 10, second: 12,
-      std_offset: 3600, time_zone: "America/New_York", micro_second: 123456, utc_offset: -18000,
+      std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000,
       year: 2014}
 
       # Add 86400 seconds (one day)
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add!(86400)
       %DateTime{zone_abbr: "EDT", day: 3, hour: 0, minute: 29, month: 10, second: 10,
-      std_offset: 3600, time_zone: "America/New_York", micro_second: 123456, utc_offset: -18000,
+      std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000,
       year: 2014}
 
       # Add 10 seconds just before DST "spring forward" so we go from 1:59:59 to 3:00:09
       iex> from_erl!({{2015,3,8},{1,59,59}}, "America/New_York", 123456) |> add!(10)
       %DateTime{zone_abbr: "EDT", day: 8, hour: 3, minute: 0, month: 3, second: 9,
-      std_offset: 3600, time_zone: "America/New_York", micro_second: 123456, utc_offset: -18000,
+      std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000,
       year: 2015}
 
       # When add a negative integer, the seconds will effectively be subtracted and
       # the result will be a datetime earlier than the the first argument
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> add!(-200)
-      %DateTime{zone_abbr: "EDT", day: 1, hour: 23, minute: 56, month: 10, second: 40, std_offset: 3600, time_zone: "America/New_York", micro_second: 123456, utc_offset: -18000, year: 2014}
+      %DateTime{zone_abbr: "EDT", day: 1, hour: 23, minute: 56, month: 10, second: 40, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000, year: 2014}
   """
   def add!(dt, seconds), do: advance!(dt, seconds)
 
@@ -175,7 +175,7 @@ defmodule Calendar.DateTime do
       # Go back 62 seconds
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract(62)
       {:ok, %DateTime{zone_abbr: "EDT", day: 1, hour: 23, minute: 58, month: 10,
-            second: 58, std_offset: 3600, time_zone: "America/New_York", micro_second: 123456, utc_offset: -18000,
+            second: 58, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000,
             year: 2014}}
 
       # Go back too far so that year would be before 0
@@ -184,7 +184,7 @@ defmodule Calendar.DateTime do
 
       # Using a negative amount of seconds with the subtract/2 means effectively adding the absolute amount of seconds
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(-200)
-      %DateTime{zone_abbr: "EDT", day: 2, hour: 0, minute: 3, month: 10, second: 20, std_offset: 3600, time_zone: "America/New_York", micro_second: 123456, utc_offset: -18000, year: 2014}
+      %DateTime{zone_abbr: "EDT", day: 2, hour: 0, minute: 3, month: 10, second: 20, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000, year: 2014}
   """
   def subtract(dt, seconds), do: advance(dt, -1 * seconds)
 
@@ -201,7 +201,7 @@ defmodule Calendar.DateTime do
       # Go back 62 seconds
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(62)
       %DateTime{zone_abbr: "EDT", day: 1, hour: 23, minute: 58, month: 10, second: 58,
-      std_offset: 3600, time_zone: "America/New_York", micro_second: 123456, utc_offset: -18000,
+      std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000,
       year: 2014}
 
       # Go back too far so that year would be before 0
@@ -211,7 +211,7 @@ defmodule Calendar.DateTime do
 
       # Using a negative amount of seconds with the subtract/2 means effectively adding the absolute amount of seconds
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(-200)
-      %DateTime{zone_abbr: "EDT", day: 2, hour: 0, minute: 3, month: 10, second: 20, std_offset: 3600, time_zone: "America/New_York", micro_second: 123456, utc_offset: -18000, year: 2014}
+      %DateTime{zone_abbr: "EDT", day: 2, hour: 0, minute: 3, month: 10, second: 20, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000, year: 2014}
   """
   def subtract!(dt, seconds) , do: advance!(dt, -1 * seconds)
 
@@ -225,7 +225,7 @@ defmodule Calendar.DateTime do
       |> shift_zone!("Etc/UTC")
       |> gregorian_seconds
       |> + seconds
-      |> from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.micro_second)
+      |> from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.microsecond)
       |> shift_zone!(date_time.time_zone)
       {:ok, advanced}
     rescue
@@ -243,17 +243,17 @@ defmodule Calendar.DateTime do
   end
 
   @doc """
-  The difference between two DateTime structs. In seconds and micro_seconds.
+  The difference between two DateTime structs. In seconds and microseconds.
 
   Leap seconds are ignored.
 
-  Returns tuple with {:ok, seconds, micro_seconds, :before or :after or :same_time}
+  Returns tuple with {:ok, seconds, microseconds, :before or :after or :same_time}
 
   If the first argument is later (e.g. greater) the second, the result will be positive.
 
   In case of a negative result the second element (seconds) will be negative. This is always
-  the case if both of the arguments have the micro_seconds as nil or 0. But if the difference
-  is less than a second and the result is negative, then the micro_seconds will be negative.
+  the case if both of the arguments have the microseconds as nil or 0. But if the difference
+  is less than a second and the result is negative, then the microseconds will be negative.
 
   ## Examples
 
@@ -272,11 +272,11 @@ defmodule Calendar.DateTime do
       iex> diff(from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC"), from_erl!({{2014,10,2},{0,29,50}}, "Etc/UTC"))
       {:ok, -40, 0, :before}
 
-      # The first DateTime is 30 micro_seconds after the second DateTime
+      # The first DateTime is 30 microseconds after the second DateTime
       iex> diff(from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 31), from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 1))
       {:ok, 0, 30, :after}
 
-      # The first DateTime is 2 micro_seconds after the second DateTime
+      # The first DateTime is 2 microseconds after the second DateTime
       iex> diff(from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 0), from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 2))
       {:ok, 0, -2, :before}
 
@@ -297,34 +297,34 @@ defmodule Calendar.DateTime do
       iex> diff(from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 10), from_erl!({{2014,10,2},{0,29,0}}, "Etc/UTC", 999999))
       {:ok, 0, -999989, :before}
 
-      # 0:29:10.999999 and 0:29:11 should result in -1 micro_seconds
+      # 0:29:10.999999 and 0:29:11 should result in -1 microseconds
       iex> diff(from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC", 999999), from_erl!({{2014,10,2},{0,29,11}}, "Etc/UTC"))
       {:ok, 0, -1, :before}
 
       iex> diff(from_erl!({{2014,10,2},{0,29,11}}, "Etc/UTC"), from_erl!({{2014,10,2},{0,29,10}}, "Etc/UTC", 999999))
       {:ok, 0, 1, :after}
   """
-  # If any datetime micro_second is nil, set it to 0
-  def diff(%DateTime{micro_second: nil} = first_dt, %DateTime{micro_second: nil} = second_dt) do
-    diff(Map.put(first_dt, :micro_second, 0), Map.put(second_dt, :micro_second, 0))
+  # If any datetime microsecond is nil, set it to 0
+  def diff(%DateTime{microsecond: nil} = first_dt, %DateTime{microsecond: nil} = second_dt) do
+    diff(Map.put(first_dt, :microsecond, 0), Map.put(second_dt, :microsecond, 0))
   end
-  def diff(%DateTime{micro_second: nil} = first_dt, %DateTime{} = second_dt) do
-    diff(Map.put(first_dt, :micro_second, 0), second_dt)
+  def diff(%DateTime{microsecond: nil} = first_dt, %DateTime{} = second_dt) do
+    diff(Map.put(first_dt, :microsecond, 0), second_dt)
   end
-  def diff(%DateTime{} = first_dt, %DateTime{micro_second: nil} = second_dt) do
-    diff(first_dt, Map.put(second_dt, :micro_second, 0))
+  def diff(%DateTime{} = first_dt, %DateTime{microsecond: nil} = second_dt) do
+    diff(first_dt, Map.put(second_dt, :microsecond, 0))
   end
 
-  def diff(%DateTime{micro_second: 0} = first_dt, %DateTime{micro_second: 0} = second_dt) do
+  def diff(%DateTime{microsecond: 0} = first_dt, %DateTime{microsecond: 0} = second_dt) do
     first_utc = first_dt |> shift_to_utc |> gregorian_seconds
     second_utc = second_dt |> shift_to_utc |> gregorian_seconds
     sec_diff = first_utc - second_utc
     {:ok, sec_diff, 0, gt_lt_eq(sec_diff, 0)}
   end
-  def diff(%DateTime{micro_second: first_micro_second} = first_dt, %DateTime{micro_second: second_micro_second} = second_dt) do
-    {:ok, sec, 0, _} = diff(Map.put(first_dt, :micro_second, 0), Map.put(second_dt, :micro_second, 0))
-    micro_second = first_micro_second - second_micro_second
-    diff_sort_out_decimal {:ok, sec, micro_second}
+  def diff(%DateTime{microsecond: first_microsecond} = first_dt, %DateTime{microsecond: second_microsecond} = second_dt) do
+    {:ok, sec, 0, _} = diff(Map.put(first_dt, :microsecond, 0), Map.put(second_dt, :microsecond, 0))
+    microsecond = first_microsecond - second_microsecond
+    diff_sort_out_decimal {:ok, sec, microsecond}
   end
   def diff(first_cdt, second_cdt) do
     diff(contained_date_time(first_cdt), contained_date_time(second_cdt))
@@ -333,28 +333,28 @@ defmodule Calendar.DateTime do
   defp gt_lt_eq(0, 0), do: :same_time
   defp gt_lt_eq(sec, _) when sec < 0, do: :before
   defp gt_lt_eq(sec, _) when sec > 0, do: :after
-  defp gt_lt_eq(0, micro_second) when micro_second > 0, do: :after
-  defp gt_lt_eq(0, micro_second) when micro_second < 0, do: :before
-  defp diff_sort_out_decimal({:ok, sec, micro_second}) when sec > 0 and micro_second < 0 do
+  defp gt_lt_eq(0, microsecond) when microsecond > 0, do: :after
+  defp gt_lt_eq(0, microsecond) when microsecond < 0, do: :before
+  defp diff_sort_out_decimal({:ok, sec, microsecond}) when sec > 0 and microsecond < 0 do
     sec = sec - 1
-    micro_second = 1_000_000 + micro_second
-    {:ok, sec, micro_second, gt_lt_eq(sec, micro_second)}
+    microsecond = 1_000_000 + microsecond
+    {:ok, sec, microsecond, gt_lt_eq(sec, microsecond)}
   end
-  defp diff_sort_out_decimal({:ok, sec, micro_second}) when sec == -1 and micro_second > 0 do
+  defp diff_sort_out_decimal({:ok, sec, microsecond}) when sec == -1 and microsecond > 0 do
     sec = sec + 1
-    micro_second = micro_second - 1_000_000
-    {:ok, sec, micro_second, gt_lt_eq(sec, micro_second)}
+    microsecond = microsecond - 1_000_000
+    {:ok, sec, microsecond, gt_lt_eq(sec, microsecond)}
   end
-  defp diff_sort_out_decimal({:ok, sec, micro_second}) when sec < 0 and micro_second > 0 do
+  defp diff_sort_out_decimal({:ok, sec, microsecond}) when sec < 0 and microsecond > 0 do
     sec = sec + 1
-    micro_second = 1_000_000 - micro_second
-    {:ok, sec, micro_second, gt_lt_eq(sec, micro_second)}
+    microsecond = 1_000_000 - microsecond
+    {:ok, sec, microsecond, gt_lt_eq(sec, microsecond)}
   end
-  defp diff_sort_out_decimal({:ok, sec, micro_second}) when sec < 0 and micro_second < 0 do
-    {:ok, sec, abs(micro_second), gt_lt_eq(sec, micro_second)}
+  defp diff_sort_out_decimal({:ok, sec, microsecond}) when sec < 0 and microsecond < 0 do
+    {:ok, sec, abs(microsecond), gt_lt_eq(sec, microsecond)}
   end
-  defp diff_sort_out_decimal({:ok, sec, micro_second}) do
-    {:ok, sec, micro_second, gt_lt_eq(sec, micro_second)}
+  defp diff_sort_out_decimal({:ok, sec, microsecond}) do
+    {:ok, sec, microsecond, gt_lt_eq(sec, microsecond)}
   end
 
   @doc """
@@ -428,7 +428,7 @@ defmodule Calendar.DateTime do
   ## Examples
 
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York",123456) |> shift_zone("Europe/Copenhagen")
-      {:ok, %DateTime{zone_abbr: "CEST", day: 2, hour: 6, minute: 29, month: 10, second: 10, time_zone: "Europe/Copenhagen", utc_offset: 3600, std_offset: 3600, year: 2014, micro_second: 123456}}
+      {:ok, %DateTime{zone_abbr: "CEST", day: 2, hour: 6, minute: 29, month: 10, second: 10, time_zone: "Europe/Copenhagen", utc_offset: 3600, std_offset: 3600, year: 2014, microsecond: 123456}}
 
       iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone(nyc, "Invalid timezone")
       {:invalid_time_zone, nil}
@@ -447,7 +447,7 @@ defmodule Calendar.DateTime do
     period_list = TimeZoneData.periods_for_time(date_time.time_zone, greg_secs, :wall)
     period = period_by_offset(period_list, date_time.utc_offset, date_time.std_offset)
     greg_secs-period.utc_off-period.std_off
-    |>from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.micro_second)
+    |>from_gregorian_seconds!("Etc/UTC", "UTC", 0, 0, date_time.microsecond)
   end
   defp shift_to_utc(date_time) do
     date_time |> contained_date_time |> shift_to_utc
@@ -471,7 +471,7 @@ defmodule Calendar.DateTime do
     period_list = TimeZoneData.periods_for_time(to_timezone, greg_secs, :utc)
     period = period_list|>hd
     greg_secs+period.utc_off+period.std_off
-    |>from_gregorian_seconds!(to_timezone, period.zone_abbr, period.utc_off, period.std_off, utc_date_time.micro_second)
+    |>from_gregorian_seconds!(to_timezone, period.zone_abbr, period.utc_off, period.std_off, utc_date_time.microsecond)
   end
 
   # Takes gregorian seconds and and optional timezone.
@@ -482,10 +482,10 @@ defmodule Calendar.DateTime do
   #   %DateTime{date: 26, hour: 17, minute: 10, month: 9, second: 20, time_zone: nil, year: 2014}
   #   iex> from_gregorian_seconds!(63578970620, "America/Montevideo")
   #   %DateTime{date: 26, hour: 17, minute: 10, month: 9, second: 20, time_zone: "America/Montevideo", year: 2014}
-  defp from_gregorian_seconds!(gregorian_seconds, timezone, abbr, utc_off, std_off, micro_second) do
+  defp from_gregorian_seconds!(gregorian_seconds, timezone, abbr, utc_off, std_off, microsecond) do
     gregorian_seconds
     |>:calendar.gregorian_seconds_to_datetime
-    |>from_erl!(timezone, abbr, utc_off, std_off, micro_second)
+    |>from_erl!(timezone, abbr, utc_off, std_off, microsecond)
   end
 
   @doc """
@@ -498,11 +498,11 @@ defmodule Calendar.DateTime do
 
       iex> from_erlang_timestamp({1453, 854322, 799236})
       %DateTime{zone_abbr: "UTC", day: 27, hour: 0, minute: 25, month: 1, second: 22, std_offset: 0,
-            time_zone: "Etc/UTC", micro_second: 799236, utc_offset: 0, year: 2016}
+            time_zone: "Etc/UTC", microsecond: 799236, utc_offset: 0, year: 2016}
   """
-  def from_erlang_timestamp({_, _, micro_second} = erlang_timestamp) do
+  def from_erlang_timestamp({_, _, microsecond} = erlang_timestamp) do
     dt = erlang_timestamp |> :calendar.now_to_universal_time
-    from_erl!(dt, "Etc/UTC" ,micro_second)
+    from_erl!(dt, "Etc/UTC" ,microsecond)
   end
 
   @doc """
@@ -515,8 +515,8 @@ defmodule Calendar.DateTime do
       iex> from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo")
       %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20, year: 2014, time_zone: "America/Montevideo", zone_abbr: "UYT", utc_offset: -10800, std_offset: 0}
   """
-  def from_erl!(date_time, time_zone, micro_second \\ nil) do
-    {:ok, result} = from_erl(date_time, time_zone, micro_second)
+  def from_erl!(date_time, time_zone, microsecond \\ nil) do
+    {:ok, result} = from_erl(date_time, time_zone, microsecond)
     result
   end
 
@@ -539,7 +539,7 @@ defmodule Calendar.DateTime do
       {:ok, %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20,
                               year: 2014, time_zone: "America/Montevideo",
                               zone_abbr: "UYT",
-                              utc_offset: -10800, std_offset: 0, micro_second: nil} }
+                              utc_offset: -10800, std_offset: 0, microsecond: nil} }
 
     Switching from summer to wintertime in the fall means an ambigous time.
 
@@ -569,24 +569,24 @@ defmodule Calendar.DateTime do
       {:ok, %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20,
                               year: 2014, time_zone: "America/Montevideo",
                               zone_abbr: "UYT",
-                              utc_offset: -10800, std_offset: 0, micro_second: 987654} }
+                              utc_offset: -10800, std_offset: 0, microsecond: 987654} }
 
   """
-  def from_erl(date_time, timezone, micro_second \\ nil)
-  def from_erl({date, {h, m, s, micro_second}}, timezone, _ignored_extra_micro_second) do
+  def from_erl(date_time, timezone, microsecond \\ nil)
+  def from_erl({date, {h, m, s, microsecond}}, timezone, _ignored_extra_microsecond) do
     date_time = {date, {h, m, s}}
     validity = validate_erl_datetime(date_time, timezone)
-    from_erl_validity(date_time, timezone, validity, micro_second)
+    from_erl_validity(date_time, timezone, validity, microsecond)
   end
-  def from_erl(date_time, timezone, micro_second) do
+  def from_erl(date_time, timezone, microsecond) do
     validity = validate_erl_datetime(date_time, timezone)
-    from_erl_validity(date_time, timezone, validity, micro_second)
+    from_erl_validity(date_time, timezone, validity, microsecond)
   end
 
   # Date, time and timezone. Date and time is valid.
-  defp from_erl_validity(datetime, timezone, true, micro_second) do
+  defp from_erl_validity(datetime, timezone, true, microsecond) do
     # validate that timezone exists
-    from_erl_timezone_validity(datetime, timezone, TimeZoneData.zone_exists?(timezone), micro_second)
+    from_erl_timezone_validity(datetime, timezone, TimeZoneData.zone_exists?(timezone), microsecond)
   end
   defp from_erl_validity(_, _, false, _) do
     {:error, :invalid_datetime}
@@ -594,29 +594,29 @@ defmodule Calendar.DateTime do
 
   defp from_erl_timezone_validity(_, _, false, _), do: {:error, :timezone_not_found}
 
-  defp from_erl_timezone_validity({date, time}, timezone, true, micro_second) do
+  defp from_erl_timezone_validity({date, time}, timezone, true, microsecond) do
     # get periods for time
     greg_secs = :calendar.datetime_to_gregorian_seconds({date, time})
     periods = TimeZoneData.periods_for_time(timezone, greg_secs, :wall)
-    from_erl_periods({date, time}, timezone, periods, micro_second)
+    from_erl_periods({date, time}, timezone, periods, microsecond)
   end
 
   defp from_erl_periods(_, _, periods, _) when periods == [] do
     {:error, :invalid_datetime_for_timezone}
   end
-  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, micro_second) when length(periods) == 1 do
+  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, microsecond) when length(periods) == 1 do
     period = periods |> hd
     {:ok, %DateTime{year: year, month: month, day: day, hour: hour,
          minute: min, second: sec, time_zone: timezone, zone_abbr: period.zone_abbr,
-         utc_offset: period.utc_off, std_offset: period.std_off, micro_second: micro_second } }
+         utc_offset: period.utc_off, std_offset: period.std_off, microsecond: microsecond } }
   end
   # When a time is ambigous (for instance switching from summer- to winter-time)
-  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, micro_second) when length(periods) == 2 do
+  defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, microsecond) when length(periods) == 2 do
     possible_date_times =
     Enum.map(periods, fn period ->
            %DateTime{year: year, month: month, day: day, hour: hour,
            minute: min, second: sec, time_zone: timezone, zone_abbr: period.zone_abbr,
-           utc_offset: period.utc_off, std_offset: period.std_off, micro_second: micro_second }
+           utc_offset: period.utc_off, std_offset: period.std_off, microsecond: microsecond }
        end )
     # sort by abbreviation
     |> Enum.sort(fn dt1, dt2 -> dt1.zone_abbr <= dt2.zone_abbr end)
@@ -624,8 +624,8 @@ defmodule Calendar.DateTime do
     {:ambiguous, %Calendar.AmbiguousDateTime{ possible_date_times: possible_date_times} }
   end
 
-  defp from_erl!({{year, month, day}, {hour, min, sec}}, timezone, abbr, utc_off, std_off, micro_second) do
-    %DateTime{year: year, month: month, day: day, hour: hour, minute: min, second: sec, time_zone: timezone, zone_abbr: abbr, utc_offset: utc_off, std_offset: std_off, micro_second: micro_second}
+  defp from_erl!({{year, month, day}, {hour, min, sec}}, timezone, abbr, utc_off, std_off, microsecond) do
+    %DateTime{year: year, month: month, day: day, hour: hour, minute: min, second: sec, time_zone: timezone, zone_abbr: abbr, utc_offset: utc_off, std_offset: std_off, microsecond: microsecond}
   end
 
   @doc """
@@ -644,16 +644,16 @@ defmodule Calendar.DateTime do
       {:ok, %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20,
                               year: 2014, time_zone: "America/Montevideo",
                               zone_abbr: "UYT",
-                              utc_offset: -10800, std_offset: 0, micro_second: 2} }
+                              utc_offset: -10800, std_offset: 0, microsecond: 2} }
 
       iex> from_erl_total_off({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo", -7200, 2)
       {:ok, %DateTime{day: 9, hour: 1, minute: 1, month: 3, second: 1,
-                    year: 2014, time_zone: "America/Montevideo", micro_second: 2,
+                    year: 2014, time_zone: "America/Montevideo", microsecond: 2,
                            zone_abbr: "UYST", utc_offset: -10800, std_offset: 3600}
       }
   """
-  def from_erl_total_off(erl_dt, timezone, total_off, micro_second\\nil) do
-    h_from_erl_total_off(from_erl(erl_dt, timezone, micro_second), total_off)
+  def from_erl_total_off(erl_dt, timezone, total_off, microsecond\\nil) do
+    h_from_erl_total_off(from_erl(erl_dt, timezone, microsecond), total_off)
   end
 
   defp h_from_erl_total_off({:ok, result}, _total_off), do: {:ok, result}
@@ -664,18 +664,18 @@ defmodule Calendar.DateTime do
 
   @doc """
   Like `from_erl_total_off/4` but takes a 7 element datetime tuple with
-  micro_seconds instead of a "normal" erlang style tuple.
+  microseconds instead of a "normal" erlang style tuple.
 
   ## Examples:
 
       iex> from_micro_erl_total_off({{2014, 3, 9}, {1, 1, 1, 2}}, "America/Montevideo", -7200)
       {:ok, %DateTime{day: 9, hour: 1, minute: 1, month: 3, second: 1,
-                    year: 2014, time_zone: "America/Montevideo", micro_second: 2,
+                    year: 2014, time_zone: "America/Montevideo", microsecond: 2,
                            zone_abbr: "UYST", utc_offset: -10800, std_offset: 3600}
       }
   """
-  def from_micro_erl_total_off({{year, mon, day}, {hour, min, sec, micro_second}}, timezone, total_off) do
-    from_erl_total_off({{year, mon, day}, {hour, min, sec}}, timezone, total_off, micro_second)
+  def from_micro_erl_total_off({{year, mon, day}, {hour, min, sec, microsecond}}, timezone, total_off) do
+    from_erl_total_off({{year, mon, day}, {hour, min, sec}}, timezone, total_off, microsecond)
   end
 
   @doc """
@@ -695,10 +695,10 @@ defmodule Calendar.DateTime do
 
   @doc """
   Takes a DateTime struct and returns an Ecto style datetime tuple. This is
-  like an erlang style tuple, but with micro_seconds added as an additional
+  like an erlang style tuple, but with microseconds added as an additional
   element in the time part of the tuple.
 
-  If the datetime has its micro_second field set to nil, 0 will be used for micro_second.
+  If the datetime has its microsecond field set to nil, 0 will be used for microsecond.
 
   ## Examples
 
@@ -708,11 +708,11 @@ defmodule Calendar.DateTime do
       iex> from_erl!({{2014,10,15},{2,37,22}}, "Etc/UTC", nil) |> Calendar.DateTime.to_micro_erl
       {{2014, 10, 15}, {2, 37, 22, 0}}
   """
-  def to_micro_erl(%DateTime{year: year, month: month, day: day, hour: hour, minute: min, second: sec, micro_second: nil}) do
+  def to_micro_erl(%DateTime{year: year, month: month, day: day, hour: hour, minute: min, second: sec, microsecond: nil}) do
     {{year, month, day}, {hour, min, sec, 0}}
   end
-  def to_micro_erl(%DateTime{year: year, month: month, day: day, hour: hour, minute: min, second: sec, micro_second: micro_second}) do
-    {{year, month, day}, {hour, min, sec, micro_second}}
+  def to_micro_erl(%DateTime{year: year, month: month, day: day, hour: hour, minute: min, second: sec, microsecond: microsecond}) do
+    {{year, month, day}, {hour, min, sec, microsecond}}
   end
   def to_micro_erl(date_time) do
     date_time |> contained_date_time |> to_micro_erl
@@ -735,10 +735,10 @@ defmodule Calendar.DateTime do
   of the provided DateTime.
 
       iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Calendar.DateTime.to_time
-      %Time{micro_second: nil, hour: 2, minute: 37, second: 22}
+      %Time{microsecond: nil, hour: 2, minute: 37, second: 22}
   """
   def to_time(%DateTime{} = dt) do
-    %Time{hour: dt.hour, minute: dt.minute, second: dt.second, micro_second: dt.micro_second}
+    %Time{hour: dt.hour, minute: dt.minute, second: dt.second, microsecond: dt.microsecond}
   end
   def to_time(dt), do: dt |> contained_date_time |> to_time
 
@@ -746,7 +746,7 @@ defmodule Calendar.DateTime do
   Returns a tuple with a Date struct and a Time struct.
 
       iex> from_erl!({{2014,10,15},{2,37,22}}, "UTC") |> Calendar.DateTime.to_date_and_time
-      {%Date{day: 15, month: 10, year: 2014}, %Time{micro_second: nil, hour: 2, minute: 37, second: 22}}
+      {%Date{day: 15, month: 10, year: 2014}, %Time{microsecond: nil, hour: 2, minute: 37, second: 22}}
   """
   def to_date_and_time(%DateTime{} = dt) do
     {to_date(dt), to_time(dt)}
@@ -757,7 +757,7 @@ defmodule Calendar.DateTime do
   Takes an NaiveDateTime and a time zone identifier and returns a DateTime
 
       iex> Calendar.NaiveDateTime.from_erl!({{2014,10,15},{2,37,22}}) |> from_naive("Etc/UTC")
-      {:ok, %DateTime{zone_abbr: "UTC", day: 15, micro_second: nil, hour: 2, minute: 37, month: 10, second: 22, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2014}}
+      {:ok, %DateTime{zone_abbr: "UTC", day: 15, microsecond: nil, hour: 2, minute: 37, month: 10, second: 22, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2014}}
   """
   def from_naive(ndt, timezone) do
     ndt |> Calendar.NaiveDateTime.to_erl
@@ -768,11 +768,11 @@ defmodule Calendar.DateTime do
   Takes a DateTime and returns a NaiveDateTime
 
       iex> Calendar.DateTime.from_erl!({{2014,10,15},{2,37,22}}, "UTC", 0.55) |> to_naive
-      %NaiveDateTime{day: 15, micro_second: 0.55, hour: 2, minute: 37, month: 10, second: 22, year: 2014}
+      %NaiveDateTime{day: 15, microsecond: 0.55, hour: 2, minute: 37, month: 10, second: 22, year: 2014}
   """
   def to_naive(dt) do
     dt |> to_erl
-    |> Calendar.NaiveDateTime.from_erl!(dt.micro_second)
+    |> Calendar.NaiveDateTime.from_erl!(dt.microsecond)
   end
 
   @doc """
@@ -789,10 +789,10 @@ defmodule Calendar.DateTime do
     :calendar.datetime_to_gregorian_seconds(date_time|>to_erl)
   end
 
-  def gregorian_seconds_and_micro_second(date_time) do
+  def gregorian_seconds_and_microsecond(date_time) do
     date_time = date_time |> contained_date_time
-    micro_second = date_time.micro_second
-    {gregorian_seconds(date_time), micro_second}
+    microsecond = date_time.microsecond
+    {gregorian_seconds(date_time), microsecond}
   end
 
   @doc """
@@ -801,11 +801,11 @@ defmodule Calendar.DateTime do
   ## Examples
 
       iex> from_date_and_time_and_zone({2016, 1, 8}, {14, 10, 55}, "Etc/UTC")
-      {:ok, %DateTime{day: 8, micro_second: nil, hour: 14, minute: 10, month: 1, second: 55, year: 2016, zone_abbr: "UTC", time_zone: "Etc/UTC", micro_second: nil, utc_offset: 0, std_offset: 0}}
+      {:ok, %DateTime{day: 8, microsecond: nil, hour: 14, minute: 10, month: 1, second: 55, year: 2016, zone_abbr: "UTC", time_zone: "Etc/UTC", microsecond: nil, utc_offset: 0, std_offset: 0}}
   """
   def from_date_and_time_and_zone(date_container, time_container, timezone) do
     contained_time = Calendar.ContainsTime.time_struct(time_container)
-    from_erl({Calendar.Date.to_erl(date_container), Calendar.Time.to_erl(contained_time)}, timezone, contained_time.micro_second)
+    from_erl({Calendar.Date.to_erl(date_container), Calendar.Time.to_erl(contained_time)}, timezone, contained_time.microsecond)
   end
 
   @doc """
@@ -815,7 +815,7 @@ defmodule Calendar.DateTime do
   ## Examples
 
       iex> from_date_and_time_and_zone!({2016, 1, 8}, {14, 10, 55}, "Etc/UTC")
-      %DateTime{day: 8, micro_second: nil, hour: 14, minute: 10, month: 1, second: 55, year: 2016, zone_abbr: "UTC", time_zone: "Etc/UTC", micro_second: nil, utc_offset: 0, std_offset: 0}
+      %DateTime{day: 8, microsecond: nil, hour: 14, minute: 10, month: 1, second: 55, year: 2016, zone_abbr: "UTC", time_zone: "Etc/UTC", microsecond: nil, utc_offset: 0, std_offset: 0}
   """
   def from_date_and_time_and_zone!(date_container, time_container, timezone) do
     {:ok, result} = from_date_and_time_and_zone(date_container, time_container, timezone)
@@ -853,5 +853,5 @@ defimpl Calendar.ContainsDateTime, for: DateTime do
   def dt_struct(data), do: data
 end
 defimpl Calendar.ContainsDateTime, for: Calendar.DateTime do
-  def dt_struct(%{calendar: Calendar.ISO}=data), do: %DateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, minute: data.minute, second: data.second, micro_second: data.micro_second, zone_abbr: data.zone_abbr, time_zone: data.time_zone, utc_offset: data.utc_offset, std_offset: data.std_offset}
+  def dt_struct(%{calendar: Calendar.ISO}=data), do: %DateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, minute: data.minute, second: data.second, microsecond: data.microsecond, zone_abbr: data.zone_abbr, time_zone: data.time_zone, utc_offset: data.utc_offset, std_offset: data.std_offset}
 end
