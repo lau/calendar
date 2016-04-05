@@ -176,7 +176,7 @@ defmodule Calendar.Time do
   defp do_next_second(time) do
     time
     |> second_in_day
-    |> +1
+    |> Kernel.+(1)
     |> from_second_in_day
     |> add_usec_to_time(time.usec)
   end
@@ -209,7 +209,7 @@ defmodule Calendar.Time do
   defp do_prev_second(time) do
     time
     |> second_in_day
-    |> -1
+    |> Kernel.-(1)
     |> from_second_in_day
     |> add_usec_to_time(time.usec)
   end

@@ -112,7 +112,7 @@ defmodule Calendar.DateTime.TzPeriod do
       _ ->  val
         |> Calendar.DateTime.shift_zone!("Etc/UTC")
         |> Calendar.DateTime.gregorian_seconds
-        |> -1
+        |> Kernel.-(1)
         |> :calendar.gregorian_seconds_to_datetime
         |> Calendar.DateTime.from_erl!("Etc/UTC")
         |> Calendar.DateTime.shift_zone!(val.timezone)

@@ -217,7 +217,7 @@ defmodule Calendar.DateTime.Format do
   def unix(%Calendar.DateTime{timezone: "Etc/UTC"} = dt) do
     dt
     |> Calendar.DateTime.gregorian_seconds
-    |> - @secs_between_year_0_and_unix_epoch
+    |> Kernel.-(@secs_between_year_0_and_unix_epoch)
   end
   def unix(dt) do
     dt
@@ -239,12 +239,12 @@ defmodule Calendar.DateTime.Format do
       1_000_000_000.0
   """
   def unix_micro(%Calendar.DateTime{usec: usec} = date_time) when usec == nil do
-    date_time |> unix |> + 0.0
+    date_time |> unix |> Kernel.+(0.0)
   end
   def unix_micro(%Calendar.DateTime{} = date_time) do
     date_time
     |> unix
-    |> + (date_time.usec/1_000_000)
+    |> Kernel.+(date_time.usec/1_000_000)
   end
   def unix_micro(date_time) do
     date_time |> contained_date_time |> unix_micro
