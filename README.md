@@ -332,24 +332,6 @@ Before Calendar, there was no Elixir library with
 correct time zone support. The timezone information was later
 extracted from Calendar into the Tzdata library.
 
-## "use" macro
-
-You can then call Calendar functions like this: `Calendar.DateTime.now_utc`. But in order to avoid typing Calendar all the time you can add `use Calendar` to your modules. This aliases Calendar modules such as `DateTime`, `Time`, `Date` and `NaiveDateTime`. Which means that you can call for instance `DateTime.now_utc` without writing `Calendar.` Example:
-
-```elixir
-defmodule NewYearsHttpLib do
-  use Calendar
-
-  def httpdate_new_years(year) do
-    {:ok, dt} = DateTime.from_erl({{year,1,1},{0,0,0}}, "Etc/UTC")
-    DateTime.Format.httpdate(dt)
-  end
-
-  # Calling httpdate_new_years(2015) will return
-  # "Thu, 01 Jan 2015 00:00:00 GMT"
-end
-```
-
 ## Video presentation with some Calendar examples
 
 In [a talk from ElixirConf 2015](http://img.youtube.com/vi/keUbVvMJeKY/0.jpg) Calendar is featured. Specifically from around 27:07 into the video there are some
