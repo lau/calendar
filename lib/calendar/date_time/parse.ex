@@ -258,6 +258,9 @@ defmodule Calendar.DateTime.Parse do
       iex> rfc3339_utc("1996-12-19T16:39:57Z")
       {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
+      iex> rfc3339_utc("1996-12-19T16:39:57.123Z")
+      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0, usec: 123000}}
+
       iex> rfc3339_utc("1996-12-19T16:39:57-08:00")
       {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
 
@@ -269,6 +272,10 @@ defmodule Calendar.DateTime.Parse do
       iex> rfc3339_utc("1996-12-19T16:39:57-0800")
       {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 20, hour: 0, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0}}
   """
+  def rfc3339_utc(<<year::4-bytes, ?-, month::2-bytes , ?-, day::2-bytes , ?T, hour::2-bytes, ?:, min::2-bytes, ?:, sec::2-bytes, ?Z>>) do
+    # faster version for certain formats of of RFC3339
+    {{year|>to_int, month|>to_int, day|>to_int},{hour|>to_int, min|>to_int, sec|>to_int}} |> Calendar.DateTime.from_erl("Etc/UTC")
+  end
   def rfc3339_utc(rfc3339_string) do
     parsed = rfc3339_string
     |> parse_rfc3339_string
