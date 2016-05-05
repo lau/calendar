@@ -586,6 +586,11 @@ defmodule Calendar.DateTime do
   end
 
   # Date, time and timezone. Date and time is valid.
+  defp from_erl_validity({{year, month, day}, {hour, min, sec}}, "Etc/UTC", true, usec) do
+    # "Fast track" version for UTC
+    # In case of UTC, we already know the timezone exists and will not query any Tzdata
+    {:ok, %Calendar.DateTime{abbr: "UTC", day: day, hour: hour, min: min, month: month, sec: sec, std_off: 0, timezone: "Etc/UTC", usec: usec, utc_off: 0, year: year}}
+  end
   defp from_erl_validity(datetime, timezone, true, usec) do
     # validate that timezone exists
     from_erl_timezone_validity(datetime, timezone, TimeZoneData.zone_exists?(timezone), usec)
@@ -595,7 +600,6 @@ defmodule Calendar.DateTime do
   end
 
   defp from_erl_timezone_validity(_, _, false, _), do: {:error, :timezone_not_found}
-
   defp from_erl_timezone_validity({date, time}, timezone, true, usec) do
     # get periods for time
     greg_secs = :calendar.datetime_to_gregorian_seconds({date, time})
