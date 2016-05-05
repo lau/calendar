@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.14.1] - 2016-05-05
+
+Improves performance of various functions, including `Calendar.DateTime.from_erl`.
+
 ## [0.14.0] - 2016-04-03
 
 This is a "transition" release that will work with both the upcoming

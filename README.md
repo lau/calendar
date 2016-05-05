@@ -7,7 +7,7 @@ Status](https://travis-ci.org/lau/calendar.svg?branch=master)](https://travis-ci
 [![Inline docs](http://inch-ci.org/github/lau/calendar.svg)](http://hexdocs.pm/calendar/)
 [![Hex Version](http://img.shields.io/hexpm/v/calendar.svg?style=flat)](https://hex.pm/packages/calendar)
 
-Calendar is a datetime library for Elixir.
+Calendar is a complete datetime library for Elixir with high performance.
 
 Providing explicit types for datetimes, dates and times.
 Full timezone support via its sister package [tzdata](https://github.com/lau/tzdata).
@@ -24,7 +24,7 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.14.0"},  ]
+  [  {:calendar, "~> 0.14.1"},  ]
 end
 ```
 
