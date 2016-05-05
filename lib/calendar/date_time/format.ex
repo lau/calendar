@@ -104,10 +104,11 @@ defmodule Calendar.DateTime.Format do
       iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20, 5}}, "America/Montevideo") |> Calendar.DateTime.Format.rfc3339
       "2014-09-26T17:10:20.000005-03:00"
   """
-  def rfc3339(%DateTime{} = dt) do
-    "#{dt.year|>pad(4)}-#{dt.month|>pad}-#{dt.day|>pad}T#{dt.hour|>pad}:#{dt.minute|>pad}:#{dt.second|>pad}"<>
-    rfc3330_microsecond_part(dt.microsecond, 6)<>
-    rfc3339_offset_part(dt, dt.time_zone)
+  def rfc3339(%DateTime{time_zone: time_zone, year: year, month: month, day: day, hour: hour, minute: minute, second: second, microsecond: microsecond} = dt) do
+    [pad(year, 4), "-", pad(month), "-", pad(day), "T", pad(hour), ":", pad(minute), ":", pad(second),
+      rfc3330_microsecond_part(microsecond, 6),
+      rfc3339_offset_part(dt, time_zone)]
+    |> IO.iodata_to_binary
   end
   def rfc3339(dt), do: dt |> contained_date_time |> rfc3339
 
@@ -131,13 +132,20 @@ defmodule Calendar.DateTime.Format do
   defp rfc3330_microsecond_part(nil, _), do: ""
   defp rfc3330_microsecond_part(_, 0), do: ""
   defp rfc3330_microsecond_part(microsecond, 6) do
-    ".#{microsecond |> pad(6)}"
+    "." <> pad(microsecond, 6)
   end
   defp rfc3330_microsecond_part(microsecond, precision) when precision >= 1 and precision <=6 do
     ".#{microsecond |> pad(6)}" |> String.slice(0..precision)
   end
-  defp pad(subject, len\\2, char\\?0) do
-    String.rjust("#{subject}", len, char)
+  defp pad(subject, len\\2, char\\?0)
+  defp pad(subject, 2, _char) when is_integer(subject) and subject >= 10 and subject <= 99 do
+    subject |> Integer.to_string
+  end
+  defp pad(subject, len, char) when is_integer(subject) do
+    subject |> Integer.to_string |> pad(len, char)
+  end
+  defp pad(subject, len, char) when is_binary(subject) do
+    String.rjust(subject, len, char)
   end
 
   @doc """
