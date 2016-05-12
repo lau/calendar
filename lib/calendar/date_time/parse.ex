@@ -259,7 +259,7 @@ defmodule Calendar.DateTime.Parse do
       {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
       iex> rfc3339_utc("1996-12-19T16:39:57.123Z")
-      {:ok, %Calendar.DateTime{year: 1996, month: 12, day: 19, hour: 16, min: 39, sec: 57, timezone: "Etc/UTC", abbr: "UTC", std_off: 0, utc_off: 0, usec: 123000}}
+      {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0, microsecond: 123000}}
 
       iex> rfc3339_utc("1996-12-19T16:39:57-08:00")
       {:ok, %DateTime{year: 1996, month: 12, day: 20, hour: 0, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
