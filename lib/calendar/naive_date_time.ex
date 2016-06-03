@@ -424,5 +424,8 @@ defimpl Calendar.ContainsNaiveDateTime, for: DateTime do
   def ndt_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.NaiveDateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
 end
 defimpl Calendar.ContainsNaiveDateTime, for: NaiveDateTime do
-  def ndt_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.NaiveDateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
+  def ndt_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.NaiveDateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, min: data.minute, sec: data.second, usec: usec_from_microsecond(data.microsecond)}
+
+  defp usec_from_microsecond({_, 0}), do: nil
+  defp usec_from_microsecond({usec, _}), do: usec
 end

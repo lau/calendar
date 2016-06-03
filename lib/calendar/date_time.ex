@@ -207,7 +207,7 @@ defmodule Calendar.DateTime do
       year: 2014}
 
       # Go back too far so that year would be before 0
-      iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(999999999999)
+      iex from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(999999999999)
       ** (MatchError) no match of right hand side value: {:error, :function_clause_error}
          (calendar) lib/calendar/date_time.ex:268: Calendar.DateTime.advance!/2
 
@@ -859,5 +859,8 @@ defimpl Calendar.ContainsDateTime, for: Calendar.DateTime do
   def dt_struct(data), do: data
 end
 defimpl Calendar.ContainsDateTime, for: DateTime do
-  def dt_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.DateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond, abbr: data.zone_abbr, timezone: data.time_zone, utc_off: data.utc_offset, std_off: data.std_offset}
+  def dt_struct(%{calendar: Calendar.ISO}=data), do: %Calendar.DateTime{day: data.day, month: data.month, year: data.year, hour: data.hour, min: data.minute, sec: data.second, usec: usec_from_microsecond(data.microsecond), abbr: data.zone_abbr, timezone: data.time_zone, utc_off: data.utc_offset, std_off: data.std_offset}
+
+  defp usec_from_microsecond({_, 0}), do: nil
+  defp usec_from_microsecond({usec, _}), do: usec
 end

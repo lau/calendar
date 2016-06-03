@@ -294,12 +294,18 @@ defimpl Calendar.ContainsTime, for: Tuple do
 end
 
 defimpl Calendar.ContainsTime, for: Time do
-  def time_struct(data), do: %Calendar.Time{hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
+  def time_struct(data), do: %Calendar.Time{hour: data.hour, min: data.minute, sec: data.second, usec: usec_from_microsecond(data.microsecond)}
+  defp usec_from_microsecond({_, 0}), do: nil
+  defp usec_from_microsecond({usec, _}), do: usec
 end
 defimpl Calendar.ContainsTime, for: DateTime do
-  def time_struct(data), do: %Calendar.Time{hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
+  def time_struct(data), do: %Calendar.Time{hour: data.hour, min: data.minute, sec: data.second, usec: usec_from_microsecond(data.microsecond)}
+  defp usec_from_microsecond({_, 0}), do: nil
+  defp usec_from_microsecond({usec, _}), do: usec
 end
 defimpl Calendar.ContainsTime, for: NaiveDateTime do
-  def time_struct(data), do: %Calendar.Time{hour: data.hour, min: data.minute, sec: data.second, usec: data.microsecond}
+  def time_struct(data), do: %Calendar.Time{hour: data.hour, min: data.minute, sec: data.second, usec: usec_from_microsecond(data.microsecond)}
+  defp usec_from_microsecond({_, 0}), do: nil
+  defp usec_from_microsecond({usec, _}), do: usec
 end
 
