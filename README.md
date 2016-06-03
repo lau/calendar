@@ -24,7 +24,7 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.14.1"},  ]
+  [  {:calendar, "~> 0.14.2"},  ]
 end
 ```
 
@@ -47,7 +47,15 @@ Calendar has 4 basic types of structs:
 * `Calendar.NaiveDateTime` - datetimes without timezone information e.g. `2015-12-24 14:30:00`
 * `Calendar.DateTime` - datetimes where the proper timezone name is known e.g. `2015-12-24 14:30:00` in `America/New_York` or `2015-12-24 17:30:00` in `Etc/UTC`
 
-Note: In Elixir 1.3 those types will be included in Elixir without the `Calendar.` part prepended.
+## Elixir 1.3 types
+
+Elixir 1.3 types (`Date`, `Time`, `NaiveDateTime`, `DateTime`) can also be used as arguments with Calendar.
+Here is an example where a built in `Date` from Elixir 1.3 is passed as an argument:
+
+```elixir
+> ~D[2015-12-24] |> Calendar.Date.next_day!
+%Calendar.Date{day: 25, month: 12, year: 2015}
+```
 
 ## Polymorphism and protocols
 

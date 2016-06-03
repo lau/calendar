@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.2] - 2016-06-03
+
+## Fixed
+
+- Make compatible with the new microseconds format used in Elixir 1.3.0-rc.0
+
 ## [0.14.1] - 2016-05-05
 
 Improves performance of various functions, including `Calendar.DateTime.from_erl`.
