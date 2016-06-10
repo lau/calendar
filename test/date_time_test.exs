@@ -3,7 +3,7 @@ defmodule SomethingThatContainsDateTime do
 end
 
 defimpl Calendar.ContainsDateTime, for: SomethingThatContainsDateTime do
-  def dt_struct(_), do: Calendar.DateTime.from_erl!({{2015, 1, 1}, {1, 1, 1}}, "UTC", 0)
+  def dt_struct(_), do: Calendar.DateTime.from_erl!({{2015, 1, 1}, {1, 1, 1}}, "Etc/UTC", {0, 0})
 end
 
 defmodule DateTimeTest do
@@ -87,54 +87,54 @@ defmodule DateTimeTest do
   end
 
   test "before? returns true when the first is before the second" do
-    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 1)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {1, 6})
     assert before?(first, second) == true
 
-    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", 0)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", {0, 0})
     assert before?(first, second) == true
   end
 
   test "before? returns false when the first is after the second" do
-    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 1)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {1, 6})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
     assert before?(first, second) == false
 
-    first = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", 0)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", {0, 0})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
     assert before?(first, second) == false
   end
 
   test "before? returns false when first and second are equal" do
-    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
     assert before?(first, second) == false
   end
 
   test "after? returns false when the first is before the second" do
-    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 1)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {1, 6})
     assert after?(first, second) == false
 
-    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", 0)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", {0, 0})
     assert after?(first, second) == false
   end
 
   test "after? returns true when the first is after the second" do
-    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 1)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {1, 6})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
     assert after?(first, second) == true
 
-    first = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", 0)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 1}}, "Etc/UTC", {0, 0})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
     assert after?(first, second) == true
   end
 
   test "after? returns false when first and second are equal" do
-    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
-    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
     assert after?(first, second) == false
   end
 

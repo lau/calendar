@@ -106,7 +106,7 @@ defmodule Calendar.DateTime.Format do
   """
   def rfc3339(%DateTime{time_zone: time_zone, year: year, month: month, day: day, hour: hour, minute: minute, second: second, microsecond: microsecond} = dt) do
     [pad(year, 4), "-", pad(month), "-", pad(day), "T", pad(hour), ":", pad(minute), ":", pad(second),
-      rfc3330_microsecond_part(microsecond, 6),
+      rfc3330_microsecond_part(microsecond, nil),
       rfc3339_offset_part(dt, time_zone)]
     |> IO.iodata_to_binary
   end
@@ -129,12 +129,12 @@ defmodule Calendar.DateTime.Format do
     "#{hours|>pad(2)}:#{mins|>pad(2)}"
   end
 
-  defp rfc3330_microsecond_part(nil, _), do: ""
   defp rfc3330_microsecond_part(_, 0), do: ""
-  defp rfc3330_microsecond_part(microsecond, 6) do
+  defp rfc3330_microsecond_part({microsecond, precision}, nil), do: rfc3330_microsecond_part({microsecond, precision}, precision)
+  defp rfc3330_microsecond_part({microsecond, _}, 6) do
     "." <> pad(microsecond, 6)
   end
-  defp rfc3330_microsecond_part(microsecond, precision) when precision >= 1 and precision <=6 do
+  defp rfc3330_microsecond_part({microsecond, _inherent_precision}, precision) when precision >= 1 and precision <=6 do
     ".#{microsecond |> pad(6)}" |> String.slice(0..precision)
   end
   defp pad(subject, len\\2, char\\?0)
@@ -167,23 +167,19 @@ defmodule Calendar.DateTime.Format do
 
   DateTime has microseconds and decimal count set to 6
 
-      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339(6)
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",{5, 6}) |> Calendar.DateTime.Format.rfc3339(6)
       "2014-09-26T17:10:20.000005-03:00"
 
   DateTime has microseconds and decimal count set to 5
 
-      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339(5)
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",{5, 6}) |> Calendar.DateTime.Format.rfc3339(5)
       "2014-09-26T17:10:20.00000-03:00"
 
   DateTime has microseconds and decimal count set to 0
 
-      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",5) |> Calendar.DateTime.Format.rfc3339(0)
+      iex> Calendar.DateTime.from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo",{5, 6}) |> Calendar.DateTime.Format.rfc3339(0)
       "2014-09-26T17:10:20-03:00"
   """
-  def rfc3339(%DateTime{microsecond: nil} = dt, decimal_count) do
-    # if the provided DateTime does not have microsecond defined, we set it to 0
-    rfc3339(%{dt | microsecond: 0}, decimal_count)
-  end
   def rfc3339(%DateTime{} = dt, decimal_count) when decimal_count >= 0 and decimal_count <=6 do
     Strftime.strftime!(dt, "%Y-%m-%dT%H:%M:%S")<>
     rfc3330_microsecond_part(dt.microsecond, decimal_count)<>
@@ -219,7 +215,7 @@ defmodule Calendar.DateTime.Format do
 
   ## Examples
 
-      iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 55) |> Calendar.DateTime.Format.unix
+      iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", {55, 2}) |> Calendar.DateTime.Format.unix
       1_000_000_000
   """
   def unix(%DateTime{time_zone: "Etc/UTC"} = dt) do
@@ -240,19 +236,20 @@ defmodule Calendar.DateTime.Format do
 
   ## Examples
 
-      iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", 985085) |> Calendar.DateTime.Format.unix_micro
+      iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen", {985085, 6}) |> Calendar.DateTime.Format.unix_micro
       1_000_000_000.985085
 
       iex> Calendar.DateTime.from_erl!({{2001,09,09},{03,46,40}}, "Europe/Copenhagen") |> Calendar.DateTime.Format.unix_micro
       1_000_000_000.0
   """
-  def unix_micro(%DateTime{microsecond: microsecond} = date_time) when microsecond == nil do
+  def unix_micro(%DateTime{microsecond: {microsecond, _}} = date_time) when microsecond == 0 do
     date_time |> unix |> Kernel.+(0.0)
   end
   def unix_micro(%DateTime{} = date_time) do
+    {microsecond, _} = date_time.microsecond
     date_time
     |> unix
-    |> Kernel.+(date_time.microsecond/1_000_000)
+    |> Kernel.+(microsecond/1_000_000)
   end
   def unix_micro(date_time) do
     date_time |> contained_date_time |> unix_micro

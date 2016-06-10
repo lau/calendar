@@ -33,9 +33,9 @@ defmodule Calendar.NaiveDateTime.Parse do
 
   ## Examples
       iex> Calendar.NaiveDateTime.Parse.asctime("Wed Apr  9 07:53:03 2003")
-      {:ok, %NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, minute: 53, second: 3, microsecond: nil}}
+      {:ok, %NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, minute: 53, second: 3, microsecond: {0, 0}}}
       iex> asctime("Thu, Apr 10 07:53:03 2003")
-      {:ok, %NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, minute: 53, second: 3, microsecond: nil}}
+      {:ok, %NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, minute: 53, second: 3, microsecond: {0, 0}}}
   """
   def asctime(string) do
     cap = string |> capture_asctime_string
@@ -48,9 +48,9 @@ defmodule Calendar.NaiveDateTime.Parse do
 
   ## Examples
       iex> asctime!("Wed Apr  9 07:53:03 2003")
-      %NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, minute: 53, second: 3, microsecond: nil}
+      %NaiveDateTime{year: 2003, month: 4, day: 9, hour: 7, minute: 53, second: 3, microsecond: {0, 0}}
       iex> asctime!("Thu, Apr 10 07:53:03 2003")
-      %NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, minute: 53, second: 3, microsecond: nil}
+      %NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, minute: 53, second: 3, microsecond: {0, 0}}
   """
   def asctime!(string) do
     {:ok, result} = asctime(string)

@@ -16,7 +16,7 @@ defmodule Calendar.Time do
 
   ## Examples
 
-      iex> from_erl!({10, 20, 25}, 123456) |> to_erl
+      iex> from_erl!({10, 20, 25}, {12345, 5}) |> to_erl
       {10, 20, 25}
       iex> {10, 20, 25} |> to_erl
       {10, 20, 25}
@@ -33,7 +33,7 @@ defmodule Calendar.Time do
 
   ## Examples
 
-      iex> from_erl!({10, 20, 25}, 123456) |> to_micro_erl
+      iex> from_erl!({10, 20, 25}, {123456, 6}) |> to_micro_erl
       {10, 20, 25, 123456}
       # If `usec` is nil, 0 is used instead as the last element in the tuple
       iex> {10, 20, 25} |> from_erl! |> to_micro_erl
@@ -41,8 +41,8 @@ defmodule Calendar.Time do
       iex> {10, 20, 25} |> to_micro_erl
       {10, 20, 25, 0}
   """
-  def to_micro_erl(%Time{hour: hour, minute: min, second: sec, microsecond: usec}) do
-    {hour, min, sec, if usec do usec else 0 end}
+  def to_micro_erl(%Time{hour: hour, minute: min, second: sec, microsecond: {usec, _}}) do
+    {hour, min, sec, usec}
   end
   def to_micro_erl(t), do: t |> contained_time |> to_micro_erl
 
@@ -50,10 +50,10 @@ defmodule Calendar.Time do
   Create a Time struct using an erlang style tuple and optionally a fractional second.
 
       iex> from_erl({20,14,15})
-      {:ok, %Time{microsecond: nil, hour: 20, minute: 14, second: 15}}
+      {:ok, %Time{microsecond: {0, 0}, hour: 20, minute: 14, second: 15}}
 
-      iex> from_erl({20,14,15}, 123456)
-      {:ok, %Time{microsecond: 123456, hour: 20, minute: 14, second: 15}}
+      iex> from_erl({20,14,15}, {123456, 6})
+      {:ok, %Time{microsecond: {123456, 6}, hour: 20, minute: 14, second: 15}}
 
       iex> from_erl({24,14,15})
       {:error, :invalid_time}
@@ -61,10 +61,10 @@ defmodule Calendar.Time do
       iex> from_erl({-1,0,0})
       {:error, :invalid_time}
 
-      iex> from_erl({20,14,15}, 1_000_000)
+      iex> from_erl({20,14,15}, {1_000_000, 6})
       {:error, :invalid_time}
   """
-  def from_erl({hour, minute, second}, microsecond\\nil) do
+  def from_erl({hour, minute, second}, microsecond\\{0, 0}) do
     case valid_time({hour, minute, second}, microsecond) do
       true -> {:ok, %Time{hour: hour, minute: minute, second: second, microsecond: microsecond}}
       false -> {:error, :invalid_time}
@@ -75,18 +75,18 @@ defmodule Calendar.Time do
   Like from_erl, but will raise if the time is not valid.
 
       iex> from_erl!({20,14,15})
-      %Time{microsecond: nil, hour: 20, minute: 14, second: 15}
+      %Time{microsecond: {0, 0}, hour: 20, minute: 14, second: 15}
 
-      iex> from_erl!({20,14,15}, 123456)
-      %Time{microsecond: 123456, hour: 20, minute: 14, second: 15}
+      iex> from_erl!({20,14,15}, {123456, 6})
+      %Time{microsecond: {123456, 6}, hour: 20, minute: 14, second: 15}
   """
-  def from_erl!(time, microsecond\\nil) do
+  def from_erl!(time, microsecond \\ {0, 0}) do
     {:ok, time} = from_erl(time, microsecond)
     time
   end
 
-  defp valid_time(time, microsecond) do
-    valid_time(time) && (microsecond==nil || (microsecond >= 0 && microsecond < 1_000_000))
+  defp valid_time(time, {microsecond, precision}) do
+    valid_time(time) && precision >= 0 && precision <= 6 && (microsecond >= 0 && microsecond < 1_000_000)
   end
   defp valid_time({hour, minute, second}) do
     hour >=0 and hour <= 23 and minute >= 0 and minute < 60 and second >=0 and second <= 60
@@ -101,9 +101,9 @@ defmodule Calendar.Time do
   ## Examples
 
       iex> {13, 10, 23} |> twelve_hour_time
-      {1, 10, 23, nil, :pm}
+      {1, 10, 23, {0, 0}, :pm}
       iex> {0, 10, 23, 888888} |> twelve_hour_time
-      {12, 10, 23, 888888, :am}
+      {12, 10, 23, {888888, 6}, :am}
   """
   def twelve_hour_time(time) do
     time = time |> contained_time
@@ -139,16 +139,16 @@ defmodule Calendar.Time do
   ## Examples
 
       iex> 0 |> from_second_in_day
-      %Time{hour: 0, minute: 0, second: 0, microsecond: nil}
+      %Time{hour: 0, minute: 0, second: 0, microsecond: {0, 0}}
       iex> 43200 |> from_second_in_day
-      %Time{hour: 12, minute: 0, second: 0, microsecond: nil}
+      %Time{hour: 12, minute: 0, second: 0, microsecond: {0, 0}}
       iex> 86399 |> from_second_in_day
-      %Time{hour: 23, minute: 59, second: 59, microsecond: nil}
+      %Time{hour: 23, minute: 59, second: 59, microsecond: {0, 0}}
   """
   def from_second_in_day(second) when second >= 0 and second <= 86399 do
     {h, m, s} = second
     |> :calendar.seconds_to_time
-    %Time{hour: h, minute: m, second: s}
+    %Time{hour: h, minute: m, second: s, microsecond: {0, 0}}
   end
 
   @doc """
@@ -158,15 +158,15 @@ defmodule Calendar.Time do
   ## Examples
 
       iex> {12, 0, 0} |> next_second
-      %Time{hour: 12, minute: 0, second: 1, microsecond: nil}
+      %Time{hour: 12, minute: 0, second: 1, microsecond: {0, 0}}
       # Preserves microseconds
       iex> {12, 0, 0, 123456} |> next_second
-      %Time{hour: 12, minute: 0, second: 1, microsecond: 123456}
+      %Time{hour: 12, minute: 0, second: 1, microsecond: {123456, 6}}
       # At the end of the day it goes to 00:00:00
       iex> {23, 59, 59} |> next_second
-      %Time{hour: 0, minute: 0, second: 0, microsecond: nil}
+      %Time{hour: 0, minute: 0, second: 0, microsecond: {0, 0}}
       iex> {23, 59, 59, 300000} |> next_second
-      %Time{hour: 0, minute: 0, second: 0, microsecond: 300000}
+      %Time{hour: 0, minute: 0, second: 0, microsecond: {300000, 6}}
   """
   def next_second(time), do: time |> contained_time |> do_next_second
   defp do_next_second(%Time{hour: 23, minute: 59, second: second, microsecond: microsecond}) when second >= 59 do
@@ -191,15 +191,15 @@ defmodule Calendar.Time do
   ## Examples
 
       iex> {12, 0, 0} |> prev_second
-      %Time{hour: 11, minute: 59, second: 59, microsecond: nil}
+      %Time{hour: 11, minute: 59, second: 59, microsecond: {0, 0}}
       # Preserves microseconds
       iex> {12, 0, 0, 123456} |> prev_second
-      %Time{hour: 11, minute: 59, second: 59, microsecond: 123456}
+      %Time{hour: 11, minute: 59, second: 59, microsecond: {123456, 6}}
       # At the beginning of the day it goes to 23:59:59
       iex> {0, 0, 0} |> prev_second
-      %Time{hour: 23, minute: 59, second: 59, microsecond: nil}
+      %Time{hour: 23, minute: 59, second: 59, microsecond: {0, 0}}
       iex> {0, 0, 0, 200_000} |> prev_second
-      %Time{hour: 23, minute: 59, second: 59, microsecond: 200_000}
+      %Time{hour: 23, minute: 59, second: 59, microsecond: {200_000, 6}}
   """
   def prev_second(time), do: time |> contained_time |> do_prev_second
   defp do_prev_second(%Time{hour: 0, minute: 0, second: 0, microsecond: microsecond}) do
@@ -284,12 +284,12 @@ defimpl Calendar.ContainsTime, for: NaiveDateTime do
   end
 end
 defimpl Calendar.ContainsTime, for: Tuple do
-  def time_struct({h, m, s}), do: Calendar.Time.from_erl!({h, m, s})
-  def time_struct({h, m, s, usec}), do: Calendar.Time.from_erl!({h, m, s}, usec)
+  def time_struct({h, m, s}), do: Time.from_erl!({h, m, s})
+  def time_struct({h, m, s, usec}), do: Time.from_erl!({h, m, s}, {usec, 6})
   # datetime tuple
-  def time_struct({{_,_,_},{h, m, s}}), do: Calendar.Time.from_erl!({h, m, s})
+  def time_struct({{_,_,_},{h, m, s}}), do: Time.from_erl!({h, m, s})
   # datetime tuple with microseconds
-  def time_struct({{_,_,_},{h, m, s, usec}}), do: Calendar.Time.from_erl!({h, m, s}, usec)
+  def time_struct({{_,_,_},{h, m, s, usec}}), do: Time.from_erl!({h, m, s}, {usec, 6})
 end
 defimpl Calendar.ContainsTime, for: Calendar.DateTime do
   def time_struct(data) do
