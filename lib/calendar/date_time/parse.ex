@@ -259,7 +259,7 @@ defmodule Calendar.DateTime.Parse do
       {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
       iex> rfc3339_utc("1996-12-19T16:39:57.123Z")
-      {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0, microsecond: 123000}}
+      {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0, microsecond: {123000, 3}}}
 
       iex> rfc3339_utc("1996-12-19T16:39:57-08:00")
       {:ok, %DateTime{year: 1996, month: 12, day: 20, hour: 0, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
@@ -294,7 +294,7 @@ defmodule Calendar.DateTime.Parse do
       {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
       iex> rfc3339("1996-12-19T16:39:57.1234Z", "Etc/UTC")
-      {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0, microsecond: 123400}}
+      {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0, microsecond: {123400, 4}}}
 
       iex> rfc3339("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
       {:ok, %DateTime{zone_abbr: "PST", day: 19, hour: 16, minute: 39, month: 12, second: 57, std_offset: 0, time_zone: "America/Los_Angeles", utc_offset: -28800, year: 1996}}
@@ -334,9 +334,15 @@ defmodule Calendar.DateTime.Parse do
     parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time)
   end
 
-  defp parse_fraction(""), do: nil
+  defp parse_fraction(""), do: {0, 0}
   # parse and return microseconds
-  defp parse_fraction(string), do: String.slice(string, 0..5) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
+  defp parse_fraction(string) do
+    usec = String.slice(string, 0..5)
+    |> String.ljust(6, ?0)
+    |> Integer.parse
+    |> elem(0)
+    {usec, String.length(string)}
+  end
 
   defp parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time) do
     greg_secs = :calendar.datetime_to_gregorian_seconds(erl_date_time)

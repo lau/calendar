@@ -33,7 +33,7 @@ defmodule Calendar.Time do
 
   ## Examples
 
-      iex> from_erl!({10, 20, 25}, {123456, 6}) |> to_micro_erl
+      iex> from_erl!({10, 20, 25}, 123456) |> to_micro_erl
       {10, 20, 25, 123456}
       # If `usec` is nil, 0 is used instead as the last element in the tuple
       iex> {10, 20, 25} |> from_erl! |> to_micro_erl
@@ -47,10 +47,16 @@ defmodule Calendar.Time do
   def to_micro_erl(t), do: t |> contained_time |> to_micro_erl
 
   @doc """
-  Create a Time struct using an erlang style tuple and optionally a fractional second.
+  Create a Time struct using an erlang style tuple and optionally a microsecond second.
+
+  Microsecond can either be a tuple of microsecond and precision. Or an integer
+  with just the microsecond.
 
       iex> from_erl({20,14,15})
       {:ok, %Time{microsecond: {0, 0}, hour: 20, minute: 14, second: 15}}
+
+      iex> from_erl({20,14,15}, 123456)
+      {:ok, %Time{microsecond: {123456, 6}, hour: 20, minute: 14, second: 15}}
 
       iex> from_erl({20,14,15}, {123456, 6})
       {:ok, %Time{microsecond: {123456, 6}, hour: 20, minute: 14, second: 15}}
@@ -64,7 +70,11 @@ defmodule Calendar.Time do
       iex> from_erl({20,14,15}, {1_000_000, 6})
       {:error, :invalid_time}
   """
-  def from_erl({hour, minute, second}, microsecond\\{0, 0}) do
+  def from_erl(_hour_minute_second_tuple, _microsecond \\ {0, 0})
+  def from_erl({hour, minute, second}, microsecond) when is_integer(microsecond) do
+    from_erl({hour, minute, second}, {microsecond, 6})
+  end
+  def from_erl({hour, minute, second}, microsecond) do
     case valid_time({hour, minute, second}, microsecond) do
       true -> {:ok, %Time{hour: hour, minute: minute, second: second, microsecond: microsecond}}
       false -> {:error, :invalid_time}

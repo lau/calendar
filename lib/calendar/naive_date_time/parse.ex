@@ -9,11 +9,11 @@ defmodule Calendar.NaiveDateTime.Parse do
   ## Examples
 
       iex> "19851106210627.3" |> asn1_generalized
-      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, microsecond: 300_000}, nil}
+      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, microsecond: {300_000, 1}}, nil}
       iex> "19851106210627.3Z" |> asn1_generalized
-      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, microsecond: 300_000}, 0}
+      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, microsecond: {300_000, 1}}, 0}
       iex> "19851106210627.3-5000" |> asn1_generalized
-      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, microsecond: 300_000}, -180000}
+      {:ok, %NaiveDateTime{year: 1985, month: 11, day: 6, hour: 21, minute: 6, second: 27, microsecond: {300_000, 1}}, -180000}
   """
   def asn1_generalized(string) do
     captured = string |> capture_generalized_time_string
@@ -70,19 +70,19 @@ defmodule Calendar.NaiveDateTime.Parse do
 
       # With offset
       iex> iso8601("1996-12-19T16:39:57-0200")
-      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: nil}, -7200}
+      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: {0, 0}}, -7200}
 
       # Without offset
       iex> iso8601("1996-12-19T16:39:57")
-      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: nil}, nil}
+      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: {0, 0}}, nil}
 
       # With fractional seconds
       iex> iso8601("1996-12-19T16:39:57.123")
-      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: 123000}, nil}
+      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: {123000, 3}}, nil}
 
       # With Z denoting 0 offset
       iex> iso8601("1996-12-19T16:39:57Z")
-      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: nil}, 0}
+      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: {0, 0}}, 0}
 
       # Invalid date
       iex> iso8601("1996-13-19T16:39:57Z")
@@ -137,7 +137,13 @@ defmodule Calendar.NaiveDateTime.Parse do
       {hour|>to_int, min|>to_int, sec|>to_int} }
   end
 
-  defp parse_fraction(""), do: nil
+  defp parse_fraction(""), do: {0, 0}
   # parse and return microseconds
-  defp parse_fraction(string), do: String.slice(string, 0..5) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
+  defp parse_fraction(string) do
+    usec = String.slice(string, 0..5)
+    |> String.ljust(6, ?0)
+    |> Integer.parse
+    |> elem(0)
+    {usec, String.length(string)}
+  end
 end

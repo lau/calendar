@@ -270,19 +270,9 @@ defmodule Calendar.DateTime.Format do
       1000000000098
   """
   def js_ms(date_time) do
-    date_time = date_time |> contained_date_time
-    whole_secs = date_time
-    |> unix
-    |> Kernel.*(1000)
-    whole_secs + micro_to_mil(date_time.microsecond)
-  end
-
-  defp micro_to_mil(microsecond) do
-    "#{microsecond}"
-     |> String.rjust(6, ?0) # pad with zeros if necessary
-     |> String.slice(0..2)  # take first 3 numbers to get milliseconds
-     |> Integer.parse
-     |> elem(0) # return the integer part
+    date_time
+    |> contained_date_time
+    |> DateTime.to_unix(:milliseconds)
   end
 
   defp contained_date_time(dt_container) do

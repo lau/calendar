@@ -87,8 +87,8 @@ defmodule DateTimeTest do
   end
 
   test "before? returns true when the first is before the second" do
-    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})
-    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {1, 6})
+    first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 0)
+    second = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", 1)
     assert before?(first, second) == true
 
     first = from_erl!({{2015, 1, 1}, {12, 0, 0}}, "Etc/UTC", {0, 0})

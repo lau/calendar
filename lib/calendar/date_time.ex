@@ -98,26 +98,26 @@ defmodule Calendar.DateTime do
       # Add 2 seconds
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add(2)
       {:ok, %DateTime{zone_abbr: "EDT", day: 2, hour: 0, minute: 29, month: 10,
-            second: 12, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456,
+            second: 12, std_offset: 3600, time_zone: "America/New_York", microsecond: {123456, 6},
             utc_offset: -18000, year: 2014}}
 
 
       # Add 86400 seconds (one day)
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York", 123456) |> add(86400)
       {:ok, %DateTime{zone_abbr: "EDT", day: 3, hour: 0, minute: 29, month: 10,
-            second: 10, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456,
+            second: 10, std_offset: 3600, time_zone: "America/New_York", microsecond: {123456, 6},
             utc_offset: -18000, year: 2014}}
 
       # Add 10 seconds just before DST "spring forward" so we go from 1:59:59 to 3:00:09
       iex> from_erl!({{2015,3,8},{1,59,59}}, "America/New_York", 123456) |> add(10)
       {:ok, %DateTime{zone_abbr: "EDT", day: 8, hour: 3, minute: 0, month: 3,
-            second: 9, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456,
+            second: 9, std_offset: 3600, time_zone: "America/New_York", microsecond: {123456, 6},
             utc_offset: -18000, year: 2015}}
 
       # If you add a negative number of seconds, the resulting datetime will effectively
       # be subtracted.
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> add(-200)
-      {:ok, %DateTime{zone_abbr: "EDT", day: 1, hour: 23, minute: 56, month: 10, second: 40, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000, year: 2014}}
+      {:ok, %DateTime{zone_abbr: "EDT", day: 1, hour: 23, minute: 56, month: 10, second: 40, std_offset: 3600, time_zone: "America/New_York", microsecond: {123456, 6}, utc_offset: -18000, year: 2014}}
   """
   def add(dt, seconds), do: advance(dt, seconds)
 
@@ -171,7 +171,7 @@ defmodule Calendar.DateTime do
       # Go back 62 seconds
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract(62)
       {:ok, %DateTime{zone_abbr: "EDT", day: 1, hour: 23, minute: 58, month: 10,
-            second: 58, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000,
+            second: 58, std_offset: 3600, time_zone: "America/New_York", microsecond: {123456, 6}, utc_offset: -18000,
             year: 2014}}
 
       # Go back too far so that year would be before 0
@@ -180,7 +180,7 @@ defmodule Calendar.DateTime do
 
       # Using a negative amount of seconds with the subtract/2 means effectively adding the absolute amount of seconds
       iex> from_erl!({{2014,10,2},{0,0,0}}, "America/New_York", 123456) |> subtract!(-200)
-      %DateTime{zone_abbr: "EDT", day: 2, hour: 0, minute: 3, month: 10, second: 20, std_offset: 3600, time_zone: "America/New_York", microsecond: 123456, utc_offset: -18000, year: 2014}
+      %DateTime{zone_abbr: "EDT", day: 2, hour: 0, minute: 3, month: 10, second: 20, std_offset: 3600, time_zone: "America/New_York", microsecond: {123456, 6}, utc_offset: -18000, year: 2014}
   """
   def subtract(dt, seconds), do: advance(dt, -1 * seconds)
 
@@ -412,7 +412,7 @@ defmodule Calendar.DateTime do
   ## Examples
 
       iex> from_erl!({{2014,10,2},{0,29,10}}, "America/New_York",123456) |> shift_zone("Europe/Copenhagen")
-      {:ok, %DateTime{zone_abbr: "CEST", day: 2, hour: 6, minute: 29, month: 10, second: 10, time_zone: "Europe/Copenhagen", utc_offset: 3600, std_offset: 3600, year: 2014, microsecond: 123456}}
+      {:ok, %DateTime{zone_abbr: "CEST", day: 2, hour: 6, minute: 29, month: 10, second: 10, time_zone: "Europe/Copenhagen", utc_offset: 3600, std_offset: 3600, year: 2014, microsecond: {123456, 6}}}
 
       iex> {:ok, nyc} = from_erl {{2014,10,2},{0,29,10}},"America/New_York"; shift_zone(nyc, "Invalid timezone")
       {:invalid_time_zone, nil}
@@ -557,6 +557,9 @@ defmodule Calendar.DateTime do
 
   """
   def from_erl(date_time, timezone, microsecond \\ {0, 0})
+  def from_erl(date_time, timezone, microsecond) when is_integer(microsecond) do
+    from_erl(date_time, timezone, {microsecond, 6})
+  end
   def from_erl({date, {h, m, s, microsecond}}, timezone, _ignored_extra_microsecond) do
     date_time = {date, {h, m, s}}
     validity = validate_erl_datetime(date_time, timezone)
@@ -632,11 +635,11 @@ defmodule Calendar.DateTime do
       {:ok, %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20,
                               year: 2014, time_zone: "America/Montevideo",
                               zone_abbr: "UYT",
-                              utc_offset: -10800, std_offset: 0, microsecond: 2} }
+                              utc_offset: -10800, std_offset: 0, microsecond: {2, 6}} }
 
       iex> from_erl_total_off({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo", -7200, 2)
       {:ok, %DateTime{day: 9, hour: 1, minute: 1, month: 3, second: 1,
-                    year: 2014, time_zone: "America/Montevideo", microsecond: 2,
+                    year: 2014, time_zone: "America/Montevideo", microsecond: {2, 6},
                            zone_abbr: "UYST", utc_offset: -10800, std_offset: 3600}
       }
   """
@@ -658,7 +661,7 @@ defmodule Calendar.DateTime do
 
       iex> from_micro_erl_total_off({{2014, 3, 9}, {1, 1, 1, 2}}, "America/Montevideo", -7200)
       {:ok, %DateTime{day: 9, hour: 1, minute: 1, month: 3, second: 1,
-                    year: 2014, time_zone: "America/Montevideo", microsecond: 2,
+                    year: 2014, time_zone: "America/Montevideo", microsecond: {2, 6},
                            zone_abbr: "UYST", utc_offset: -10800, std_offset: 3600}
       }
   """

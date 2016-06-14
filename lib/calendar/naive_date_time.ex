@@ -41,7 +41,7 @@ defmodule Calendar.NaiveDateTime do
       {:ok, %NaiveDateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20, year: 2014} }
 
       iex>from_erl({{2014, 9, 26}, {17, 10, 20}}, 321321)
-      {:ok, %NaiveDateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20, year: 2014, microsecond: 321321} }
+      {:ok, %NaiveDateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20, year: 2014, microsecond: {321321, 6}} }
 
       # Invalid date
       iex>from_erl({{2014, 99, 99}, {17, 10, 20}})
@@ -51,7 +51,11 @@ defmodule Calendar.NaiveDateTime do
       iex>from_erl({{2014, 9, 26}, {17, 70, 20}})
       {:error, :invalid_datetime}
   """
-  def from_erl({{year, month, day}, {hour, min, sec}}, microsecond \\ {0, 0}) do
+  def from_erl(dt, microsecond \\ {0, 0})
+  def from_erl({{year, month, day}, {hour, min, sec}}, microsecond) when is_integer(microsecond) do
+    from_erl({{year, month, day}, {hour, min, sec}}, {microsecond, 6})
+  end
+  def from_erl({{year, month, day}, {hour, min, sec}}, microsecond) do
     if validate_erl_datetime {{year, month, day}, {hour, min, sec}} do
       {:ok, %NaiveDateTime{year: year, month: month, day: day, hour: hour, minute: min, second: sec, microsecond: microsecond}}
     else
@@ -219,7 +223,7 @@ defmodule Calendar.NaiveDateTime do
       # Advance 2 seconds
       iex> from_erl!({{2014,10,2},{0,29,10}}, 123456) |> add(2)
       {:ok, %NaiveDateTime{day: 2, hour: 0, minute: 29, month: 10,
-            second: 12, microsecond: 123456,
+            second: 12, microsecond: {123456, 6},
             year: 2014}}
   """
   def add(ndt, seconds),  do: advance(ndt, seconds)
@@ -235,7 +239,7 @@ defmodule Calendar.NaiveDateTime do
       # Advance 2 seconds
       iex> from_erl!({{2014,10,2},{0,29,10}}, 123456) |> add!(2)
       %NaiveDateTime{day: 2, hour: 0, minute: 29, month: 10,
-            second: 12, microsecond: 123456,
+            second: 12, microsecond: {123456, 6},
             year: 2014}
   """
   def add!(ndt, seconds), do: advance!(ndt, seconds)
