@@ -64,14 +64,14 @@ The functions of each module are appropriate for that type. For instance the `Da
 
 ```elixir
 {2015, 12, 24} |> Calendar.Date.next_day!
-%Calendar.Date{day: 25, month: 12, year: 2015}
+~D[2015-12-25]
 ```
 
 And using a NaiveDateTime containing the date 2015-12-24 would also return a Date struct for 2015-12-25:
 
 ```elixir
 Calendar.NaiveDateTime.from_erl!({{2015, 12, 24}, {13, 45, 55}}) |> Calendar.Date.next_day!
-%Calendar.Date{day: 25, month: 12, year: 2015}
+~D[2015-12-25]
 ```
 
 In the same fashion other tuples with at least the same amount of information can be used with other modules. E.g.` NaiveDateTime`, `DateTime`, `Time` structs can be used in the `Time` module because they all contain an hour, minute and second. `DateTime` structs and erlang style datetime tuples can be used in the `NaiveDateTime` module because they contain a date and a time.
@@ -106,24 +106,22 @@ The Date module is used for handling dates.
 ```elixir
 # You can create a new date with the from_erl! function:
 > jan_first = {2015, 1, 1} |> Calendar.Date.from_erl!
-%Calendar.Date{day: 1, month: 1, year: 2015}
+~D[2015-01-01]
 # Get a date that is 10000 days ahead of that one
 > ten_k_days_later = jan_first |> Calendar.Date.add!(10000)
-%Calendar.Date{day: 19, month: 5, year: 2042}
+~D[2042-05-19]
 # Is it friday?
 > jan_first |> Calendar.Date.friday?
 false
 # What day of the week is it?
 > jan_first |> Calendar.Date.day_of_week_name
 "Thursday"
-# In Spanish by passing :es as language code (requires translation module)
-jan_first |> Calendar.Date.day_of_week_name(:es)
-"jueves"
 
 # Compare dates
 > jan_first |> Calendar.Date.before?({2015, 12, 24})
 true
-> jan_first |> Calendar.Date.diff({2015, 12, 24})
+# Get the difference in days between two dates. Using the Elixir 1.3 Date sigil.
+> jan_first |> Calendar.Date.diff(~D[2015-12-24])
 -357
 # Because of protocols, datetimes can also be provided as arguments,
 # but only the date will be used
@@ -137,14 +135,8 @@ true
 # Pipe the week number tuple into another function to get a list
 # of the dates for that week
 > Calendar.DateTime.now_utc |> Calendar.Date.week_number |> Calendar.Date.dates_for_week_number
-[%Calendar.Date{day: 6, month: 7, year: 2015},
- %Calendar.Date{day: 7, month: 7, year: 2015},
- %Calendar.Date{day: 8, month: 7, year: 2015},
- %Calendar.Date{day: 9, month: 7, year: 2015},
- %Calendar.Date{day: 10, month: 7, year: 2015},
- %Calendar.Date{day: 11, month: 7, year: 2015},
- %Calendar.Date{day: 12, month: 7, year: 2015}]
-
+[~D[2016-06-13], ~D[2016-06-14], ~D[2016-06-15], ~D[2016-06-16],
+ ~D[2016-06-17], ~D[2016-06-18], ~D[2016-06-19]]
 ```
 
 ## NaiveDateTime
@@ -155,13 +147,10 @@ timezone.
 ```elixir
 # An erlang style datetime tuple advanced 10 seconds
 {{1999, 12, 31}, {23, 59, 59}} |> Calendar.NaiveDateTime.add!(10)
-%Calendar.NaiveDateTime{day: 1, hour: 0, min: 0, month: 1, sec: 9, usec: nil,
- year: 2000}
+~N[2000-01-01 00:00:09]
 # Parse a "C Time" string.
 > {:ok, ndt} = "Wed Apr  9 07:53:03 2003" |> Calendar.NaiveDateTime.Parse.asctime
-{:ok,
- %Calendar.NaiveDateTime{day: 9, hour: 7, min: 53, month: 4, sec: 3, usec: nil,
-  year: 2003}}
+{:ok, ~N[2003-04-09 07:53:03]}
 # Calendar.NaiveDateTime.Format.asctime can take a naive datetime and format it
 # as a as a C time string. We format the NaiveDateTime struct we just got from
 # parsing and get the same result as the original input:
@@ -174,7 +163,7 @@ timezone.
 {:ok, 78783, 0, :after}
 # There are also boolean functions to just find out if a naive datetime is before or
 # after another one
-> ndt |> Calendar.NaiveDateTime.after? {{2003, 4, 8}, {10, 0, 0}}
+> ndt |> Calendar.NaiveDateTime.after?(~N[2003-04-08 10:00:00])
 true
 ```
 
@@ -184,9 +173,8 @@ The time right now for a specified time zone:
 
 ```elixir
 cph = Calendar.DateTime.now! "Europe/Copenhagen"
-%Calendar.DateTime{abbr: "CEST", day: 5, hour: 21,
- min: 59, month: 10, sec: 24, std_off: 3600, timezone: "Europe/Copenhagen",
- usec: 678805, utc_off: 3600, year: 2014}
+%DateTime{calendar: Calendar.ISO, day: 14, hour: 5, microsecond: {496149, 6}, minute: 27, month: 6, second: 14, std_offset: 3600,
+ time_zone: "Europe/Copenhagen", utc_offset: 3600, year: 2016, zone_abbr: "CEST"}
 ```
 
 Get a DateTime struct for the 4th of October 2014 at 23:44:32 in the city of
@@ -195,26 +183,25 @@ Montevideo:
 ```elixir
 {:ok, mvd} = Calendar.DateTime.from_erl {{2014,10,4},{23,44,32}}, "America/Montevideo"
 {:ok,
- %Calendar.DateTime{abbr: "UYT", day: 4, hour: 23, min: 44, month: 10, sec: 32,
-  std_off: 0, timezone: "America/Montevideo", usec: nil, utc_off: -10800,
-  year: 2014}}
+ %DateTime{calendar: Calendar.ISO, day: 4, hour: 23, microsecond: {0, 0}, minute: 44, month: 10, second: 32, std_offset: 0,
+  time_zone: "America/Montevideo", utc_offset: -10800, year: 2014, zone_abbr: "UYT"}}
 ```
 
 A DateTime struct is now assigned to the variable `mvd`. Let's get a DateTime
 struct for the same time in the London time zone:
 
 ```elixir
-london = mvd |> Calendar.DateTime.shift_zone! "Europe/London"
-%Calendar.DateTime{abbr: "BST", day: 5, hour: 3, min: 44, month: 10, sec: 32,
- std_off: 3600, timezone: "Europe/London", usec: nil, utc_off: 0, year: 2014}
+london = mvd |> Calendar.DateTime.shift_zone!("Europe/London")
+%DateTime{calendar: Calendar.ISO, day: 5, hour: 3, microsecond: {0, 0}, minute: 44, month: 10, second: 32, std_offset: 3600,
+ time_zone: "Europe/London", utc_offset: 0, year: 2014, zone_abbr: "BST"}
 ```
 
 ...and then in UTC:
 
 ```elixir
-london |> Calendar.DateTime.shift_zone! "Etc/UTC"
-%Calendar.DateTime{abbr: "UTC", day: 5, hour: 2, min: 44, month: 10, sec: 32,
- std_off: 0, timezone: "Etc/UTC", usec: nil, utc_off: 0, year: 2014}
+london |> Calendar.DateTime.shift_zone!("Etc/UTC")
+%DateTime{calendar: Calendar.ISO, day: 5, hour: 2, microsecond: {0, 0}, minute: 44, month: 10, second: 32, std_offset: 0, time_zone: "Etc/UTC",
+ utc_offset: 0, year: 2014, zone_abbr: "UTC"}
 ```
 
 Transforming a DateTime to a string in ISO 8601 / RFC 3339 format:
@@ -246,9 +233,9 @@ Parsing an RFC 3339 timestamp as UTC:
 
 ```elixir
 {:ok, parsed} = Calendar.DateTime.Parse.rfc3339_utc "2014-10-04T23:44:32.4999Z"
-{:ok, %Calendar.DateTime{abbr: "UTC", day: 4, usec: 499900, hour: 23,
-        min: 44, month: 10, sec: 32, std_off: 0, timezone: "Etc/UTC",
-        utc_off: 0, year: 2014}}
+{:ok,
+ %DateTime{calendar: Calendar.ISO, day: 4, hour: 23, microsecond: {499900, 4}, minute: 44, month: 10, second: 32, std_offset: 0, time_zone: "Etc/UTC",
+  utc_offset: 0, year: 2014, zone_abbr: "UTC"}}
 # Format the parsed DateTime as ISO 8601 Basic
 parsed |> Calendar.DateTime.Format.iso8601_basic
 "20141004T234432Z"
@@ -258,24 +245,24 @@ Transform a DateTime struct to an Erlang style tuple:
 
 ```elixir
 cph |> Calendar.DateTime.to_erl
-{{2014, 10, 5}, {21, 59, 24}}
+{{2016, 6, 14}, {5, 27, 14}}
 ```
 
-Make a new `%Calendar.DateTime{}` struct in the future from a tuple by adding 1800 seconds.
+Make a new `%DateTime{}` struct in the future from a tuple by adding 1800 seconds.
 
 ```elixir
 Calendar.DateTime.from_erl!({{2014,10,4},{23,44,32}}, "Europe/Oslo") |> Calendar.DateTime.add(1800)
 {:ok,
- %Calendar.DateTime{abbr: "CEST", day: 5, hour: 0, min: 14, month: 10, sec: 32,
-  std_off: 3600, timezone: "Europe/Oslo", usec: nil, utc_off: 3600, year: 2014}}
+ %DateTime{calendar: Calendar.ISO, day: 5, hour: 0, microsecond: {0, 0}, minute: 14, month: 10, second: 32, std_offset: 3600,
+  time_zone: "Europe/Oslo", utc_offset: 3600, year: 2014, zone_abbr: "CEST"}}
 ```
 
 Create DateTime struct from :os.timestamp / erlang "now" format:
 
 ```
 > {1457, 641101, 48030} |> Calendar.DateTime.from_erlang_timestamp
-%Calendar.DateTime{abbr: "UTC", day: 10, hour: 20, min: 18, month: 3, sec: 21,
- std_off: 0, timezone: "Etc/UTC", usec: 48030, utc_off: 0, year: 2016}
+%DateTime{calendar: Calendar.ISO, day: 10, hour: 20, microsecond: {48030, 6}, minute: 18, month: 3, second: 21, std_offset: 0, time_zone: "Etc/UTC",
+ utc_offset: 0, year: 2016, zone_abbr: "UTC"}
 ```
 
 ## String formatting
