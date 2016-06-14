@@ -55,28 +55,6 @@ defmodule Calendar.DateTime.Parse do
     |> to_string
     %{cap | "year" => changed_year}
   end
-  defp two_to_four_digit_year(year, year_guessing_base) when year < 100 do
-    closest_year(year, year_guessing_base)
-  end
-  defp two_to_four_digit_year(year, _), do: year
-
-  defp closest_year(two_digit_year, year_guessing_base) do
-    two_digit_year
-    |> possible_years(year_guessing_base)
-    |> Enum.map(fn year -> {year, abs(year_guessing_base-year)} end)
-    |> Enum.min_by(fn {_year, diff} -> diff end)
-    |> elem(0)
-  end
-  defp possible_years(two_digit_year, year_guessing_base) do
-    centuries_for_guessing_base(year_guessing_base)
-    |> Enum.map(&(&1+two_digit_year))
-  end
-  # The three centuries closest to the guessing base
-  # if you provide e.g. 2015 it should return [1900, 2000, 2100]
-  defp centuries_for_guessing_base(year_guessing_base) do
-    base_century = year_guessing_base-rem(year_guessing_base, 100)
-    [base_century-100, base_century, base_century+100]
-  end
 
   @doc """
   Parses an RFC 2822 or RFC 1123 datetime string.
