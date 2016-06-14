@@ -7,9 +7,9 @@ defmodule Calendar.Mixfile do
      version: "0.16.0",
      elixir: "~> 1.4.0-dev or ~> 1.3.0 or ~> 1.3.0-rc.1",
      consolidate_protocols: false,
-     package: package,
-     description: description,
-     deps: deps]
+     package: package(),
+     description: description(),
+     deps: deps()]
   end
 
   def application do
