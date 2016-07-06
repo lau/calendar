@@ -303,7 +303,7 @@ defmodule Calendar.Date do
   end
 
   @doc """
-  DEPRICATED. Use `Calendar.Strftime.strftime!/3` instead - it works the same way.
+  DEPRECATED. Use `Calendar.Strftime.strftime!/3` instead - it works the same way.
   """
   def strftime!(date, string, lang \\ :en) do
     IO.puts :stderr, "Warning: strftime!/1 in Calendar.Date is deprecated." <>
