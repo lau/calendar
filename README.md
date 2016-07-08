@@ -16,7 +16,7 @@ Safe parsing and formatting of standard formats (ISO, RFC, Unix, JS etc.)
 plus strftime formatting. Easy and safe interoperability with erlang style
 date, time, datetime tuples. Extendable through protocols.
 
-Related packages are available for [i18n](https://github.com/padde/calendar_translations), [Ecto](https://github.com/lau/calecto) and [Phoenix](https://github.com/lau/phoenix_calendar) interoperability.
+Related packages are available for [i18n](https://github.com/padde/calendar_translations) and [Ecto](https://github.com/lau/calecto) interoperability.
 
 ## Getting started
 
@@ -341,21 +341,6 @@ Calendar 0.10.0 supports Tzdata ~> 0.5.1 as well as ~> 0.1.7
 
 With Tzdata 0.5.1 it is now necessary to have calendar in the application list
 as described above in the "Getting started" secion.
-
-## Name change from Kalends, upgrade instructions.
-
-For existing users of Kalends: Kalends has changed its name to Calendar. To upgrade:
-- In your code replace all instances of `Kalends` with `Calendar`
-- In your code replace all instances of `:kalends` with `:calendar`
-- In case you are also using Kalecto, it has changed its name to
-  [Calecto](https://github.com/lau/calecto). In a similair
-  fashion replace `Kalecto` with `Calecto` and `:kalecto` with `:calecto`
-- In your `mix.exs` file make sure you are specifying a valid version of :calendar
-
-## Known bugs
-
-There are no confirmed bugs as this is written. But if you do find a problem,
-please create an issue on the GitHub page: https://github.com/lau/calendar
 
 ## Trouble shooting
 
