@@ -156,10 +156,8 @@ defmodule Calendar.DateTime.Parse do
   defp int_and_microsecond_for_float(float) do
     float_as_string = Float.to_string(float, [decimals: 6, compact: false])
     {int, frac} = Integer.parse(float_as_string)
-    {int, {parse_unix_fraction(frac), 6}}
+    {int, parse_fraction(frac)}
   end
-  # recieves eg. ".987654321" returns microseconds. eg. 987654
-  defp parse_unix_fraction(string), do: String.slice(string, 1..6) |> String.ljust(6, ?0) |> Integer.parse |> elem(0)
 
   @doc """
   Parse JavaScript style milliseconds since epoch.
