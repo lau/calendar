@@ -5,6 +5,6 @@ defmodule DateTimeParseTest do
   doctest Parse
 
   test "microsecond precision is capped at 6" do
-    assert(unix!("1000000000.987654321").microsecond == {987654, 6})
+    assert(unix!("1000000000.123456789").microsecond == {123457, 6})
   end
 end

@@ -318,11 +318,11 @@ defmodule Calendar.DateTime.Parse do
   defp parse_fraction(""), do: {0, 0}
   # parse and return microseconds
   defp parse_fraction(string) do
-    usec = String.slice(string, 0..5)
-    |> String.ljust(6, ?0)
-    |> Integer.parse
-    |> elem(0)
-    {usec, min(String.length(string), 6)}
+    usec = String.slice(string, 0..6)   # Take 1 digit too many, so we can round
+      |> String.ljust(7, ?0)            # correctly if the fraction is long
+      |> Integer.parse
+      |> elem(0)
+    {round(usec/10), min(String.length(string), 6)}
   end
 
   defp parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time) do
