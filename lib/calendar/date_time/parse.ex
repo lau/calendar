@@ -128,6 +128,9 @@ defmodule Calendar.DateTime.Parse do
       iex> unix!("1000000000")
       %DateTime{zone_abbr: "UTC", day: 9, microsecond: {0, 0}, hour: 1, minute: 46, month: 9, second: 40, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2001}
 
+      iex> unix!("1000000000.010")
+      %DateTime{zone_abbr: "UTC", day: 9, microsecond: {10_000, 3}, hour: 1, minute: 46, month: 9, second: 40, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2001}
+
       iex> unix!(1_000_000_000.9876)
       %DateTime{zone_abbr: "UTC", day: 9, microsecond: {987600, 6}, hour: 1, minute: 46, month: 9, second: 40, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2001}
 
@@ -146,9 +149,8 @@ defmodule Calendar.DateTime.Parse do
     |> Calendar.DateTime.from_erl!("Etc/UTC", micro)
   end
   def unix!(unix_time_stamp) when is_binary(unix_time_stamp) do
-    unix_time_stamp
-    |> to_int
-    |> unix!
+    {int, frac} = Integer.parse(unix_time_stamp)
+    unix!(int) |> Map.put(:microsecond, parse_fraction(frac))
   end
 
   defp int_and_microsecond_for_float(float) do
@@ -312,6 +314,7 @@ defmodule Calendar.DateTime.Parse do
     parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time)
   end
 
+  defp parse_fraction("." <> frac), do: parse_fraction(frac)
   defp parse_fraction(""), do: {0, 0}
   # parse and return microseconds
   defp parse_fraction(string) do
@@ -319,7 +322,7 @@ defmodule Calendar.DateTime.Parse do
     |> String.ljust(6, ?0)
     |> Integer.parse
     |> elem(0)
-    {usec, String.length(string)}
+    {usec, min(String.length(string), 6)}
   end
 
   defp parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time) do
