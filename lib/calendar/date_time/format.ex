@@ -86,7 +86,7 @@ defmodule Calendar.DateTime.Format do
   @doc """
   Deprecated version of `iso8610_basic/1`
   """
-  def iso_8601_basic(dt), do: iso_8601_basic(dt)
+  def iso_8601_basic(dt), do: iso8601_basic(dt)
 
   @doc """
   Takes a DateTime.
