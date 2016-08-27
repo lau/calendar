@@ -270,90 +270,19 @@ defmodule Calendar.DefaultTranslations do
   def weekday_names(:en) do
     {:ok, ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] }
   end
-  def weekday_names(:da) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok, ["mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag", "søndag"] }
-  end
-  def weekday_names(:es) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok,  ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"] }
-  end
-  def weekday_names(:nl) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok, ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag"] }
-  end
 
   def weekday_names_abbr(:en) do
     {:ok, ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] }
-  end
-  def weekday_names_abbr(:da) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok, ["man", "tir", "ons", "tor", "fre", "lør", "søn"] }
-  end
-  def weekday_names_abbr(:es) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok,  ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"] }
-  end
-  def weekday_names_abbr(:nl) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok,  ["ma", "di", "wo", "do", "vr", "za", "zo"] }
   end
 
   def month_names(:en) do
     {:ok, ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] }
   end
-  def month_names(:da) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok, ["januar", "februar", "marts", "april", "maj", "juni", "juli", "august", "september", "oktober", "november", "december"]}
-  end
-  def month_names(:es) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok, ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre" ] }
-  end
-  def month_names(:nl) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok, ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december" ] }
-  end
 
   def month_names_abbr(:en) do
     {:ok, ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] }
   end
-  def month_names_abbr(:da) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok, ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"] }
-  end
-  def month_names_abbr(:es) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok, ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"] }
-  end
-  def month_names_abbr(:nl) do
-    IO.puts :stderr, "Warning: use of non English languages has been deprecated from core Calendar library. " <>
-                     "Please configure Calendar to use a library that provides translations. " <>
-                     Exception.format_stacktrace()
-    {:ok, ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"] }
-  end
+
   def date_format(:en), do: {:ok, "%Y-%m-%d"}
   def time_format(:en), do: {:ok, "%H:%M:%S"}
   def date_time_format(:en), do: {:ok, "%a %b %e %T %Y"}

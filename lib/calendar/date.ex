@@ -303,20 +303,6 @@ defmodule Calendar.Date do
   end
 
   @doc """
-  DEPRECATED. Use `Calendar.Strftime.strftime!/3` instead - it works the same way.
-  """
-  def strftime!(date, string, lang \\ :en) do
-    IO.puts :stderr, "Warning: strftime!/1 in Calendar.Date is deprecated." <>
-                     "The function has been moved so use Calendar.Strftime.strftime! instead. " <>
-                     Exception.format_stacktrace()
-    date = contained_date(date)
-    date_erl = date |> to_erl
-    {date_erl, {0, 0, 0}}
-    |> Calendar.NaiveDateTime.from_erl!
-    |> Calendar.Strftime.strftime!(string, lang)
-  end
-
-  @doc """
   Stream of dates after the date provided as argument.
 
       iex> days_after({2014,12,27}) |> Enum.take(6)

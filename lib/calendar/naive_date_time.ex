@@ -388,19 +388,6 @@ defmodule Calendar.NaiveDateTime do
     |>from_erl!(microsecond)
   end
 
-  @doc """
-  DEPRECATED. Use `Calendar.Strftime.strftime!/3` instead - it works the same way.
-  """
-  def strftime!(ndt, string, lang \\ :en) do
-    IO.puts :stderr, "Warning: strftime!/1 in Calendar.NaiveDateTime is deprecated." <>
-                     "The function has been moved so use Calendar.Strftime.strftime! instead. " <>
-                     Exception.format_stacktrace()
-    ndt
-    |> contained_ndt
-    |> to_date_time_utc
-    |> Calendar.DateTime.Format.strftime!(string, lang)
-  end
-
   defp contained_ndt(ndt_container) do
     Calendar.ContainsNaiveDateTime.ndt_struct(ndt_container)
   end

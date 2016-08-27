@@ -3,18 +3,6 @@ defmodule Calendar.DateTime.Format do
   @secs_between_year_0_and_unix_epoch 719528*24*3600 # From erlang calendar docs: there are 719528 days between Jan 1, 0 and Jan 1, 1970. Does not include leap seconds
 
   @doc """
-  Deprecated in this module: The function has instead been moved to the `Calendar.Strftime` module.
-  """
-  def strftime!(dt, string, lang\\:en) do
-    IO.puts :stderr, "Warning: strftime!/1 in Calendar.DateTime.Format is deprecated." <>
-                     "The function has been moved so use Calendar.Strftime.strftime! instead. " <>
-                     Exception.format_stacktrace()
-    dt
-    |> contained_date_time
-    |> Strftime.strftime!(string, lang)
-  end
-
-  @doc """
   Format a DateTime as an RFC 2822 timestamp.
 
   ## Examples
@@ -82,11 +70,6 @@ defmodule Calendar.DateTime.Format do
     |> String.replace(":", "")
     Strftime.strftime!(dt, "%Y%m%dT%H%M%S")<>offset_part
   end
-
-  @doc """
-  Deprecated version of `iso8610_basic/1`
-  """
-  def iso_8601_basic(dt), do: iso8601_basic(dt)
 
   @doc """
   Takes a DateTime.
