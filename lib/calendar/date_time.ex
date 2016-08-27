@@ -25,40 +25,52 @@ defmodule Calendar.DateTime do
   end
 
   @doc """
-  Takes a timezone name a returns a DateTime with the current time in
+  Takes a timezone name and returns a DateTime with the current time in
   that timezone. Timezone names must be in the TZ data format.
+
+  Raises in case of an incorrect time zone name.
 
   ## Examples
 
-      iex > DateTime.now! "UTC"
+      iex > Calendar.DateTime.now! "UTC"
       %DateTime{zone_abbr: "UTC", day: 15, hour: 2,
        minute: 39, month: 10, second: 53, std_offset: 0, time_zone: "UTC", utc_offset: 0,
        year: 2014}
 
-      iex > DateTime.now! "Europe/Copenhagen"
+      iex > Calendar.DateTime.now! "Europe/Copenhagen"
       %DateTime{zone_abbr: "CEST", day: 15, hour: 4,
        minute: 41, month: 10, second: 1, std_offset: 3600, time_zone: "Europe/Copenhagen",
        utc_offset: 3600, year: 2014}
   """
   def now!("Etc/UTC"), do: now_utc
   def now!(timezone) do
-    {now_utc_secs, microsecond} = now_utc |> gregorian_seconds_and_microsecond
-    period_list = TimeZoneData.periods_for_time(timezone, now_utc_secs, :utc)
-    period = hd period_list
-    now_utc_secs + period.utc_off + period.std_off
-    |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off, microsecond)
+    {:ok, datetime} = now(timezone)
+    datetime
   end
 
   @doc """
-  Deprecated version of `now!/1` with an exclamation point.
-  Works the same way as `now!/1`.
+  Takes a timezone name and returns a DateTime with the current time in
+  that timezone. The result is returned in a tuple tagged with :ok
 
-  In the future `now/1` will return a tuple with {:ok, [DateTime]}
+      iex > Calendar.DateTime.now! "Europe/Copenhagen"
+      {:ok, %DateTime{zone_abbr: "CEST", day: 15, hour: 4,
+       minute: 41, month: 10, second: 1, std_offset: 3600, time_zone: "Europe/Copenhagen",
+       utc_offset: 3600, year: 2014}}
+
+      iex> Calendar.DateTime.now "Invalid/Narnia"
+      :error
   """
+  @spec now(String.t) :: {:ok, DateTime.t} | :error
   def now(timezone) do
-    IO.puts :stderr, "Warning: now/1 is deprecated. Use now!/1 instead (with a !) " <>
-                     "In the future now/1 will return a tuple with {:ok, [DateTime]}\n" <> Exception.format_stacktrace()
-    now!(timezone)
+    try do
+      {now_utc_secs, microsecond} = now_utc |> gregorian_seconds_and_microsecond
+      period_list = TimeZoneData.periods_for_time(timezone, now_utc_secs, :utc)
+      period = hd period_list
+      {:ok, now_utc_secs + period.utc_off + period.std_off
+      |>from_gregorian_seconds!(timezone, period.zone_abbr, period.utc_off, period.std_off, microsecond) }
+    rescue
+      _ -> :error
+    end
   end
 
   @doc """
