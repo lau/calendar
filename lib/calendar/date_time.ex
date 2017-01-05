@@ -40,9 +40,9 @@ defmodule Calendar.DateTime do
        minute: 41, month: 10, second: 1, std_offset: 3600, time_zone: "Europe/Copenhagen",
        utc_offset: 3600, year: 2014}
   """
-  def now!("Etc/UTC"), do: now_utc
+  def now!("Etc/UTC"), do: now_utc()
   def now!(timezone) do
-    {now_utc_secs, microsecond} = now_utc |> gregorian_seconds_and_microsecond
+    {now_utc_secs, microsecond} = now_utc() |> gregorian_seconds_and_microsecond
     period_list = TimeZoneData.periods_for_time(timezone, now_utc_secs, :utc)
     period = hd period_list
     now_utc_secs + period.utc_off + period.std_off
