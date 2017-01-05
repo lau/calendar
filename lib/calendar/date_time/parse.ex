@@ -154,7 +154,7 @@ defmodule Calendar.DateTime.Parse do
   end
 
   defp int_and_microsecond_for_float(float) do
-    float_as_string = Float.to_string(float, [decimals: 6, compact: false])
+    float_as_string = :erlang.float_to_binary(float, [decimals: 6])
     {int, frac} = Integer.parse(float_as_string)
     {int, parse_fraction(frac)}
   end
