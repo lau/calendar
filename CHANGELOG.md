@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.17.0] - 2017-01-08
+
+### Fixed
+
+- Get rid of warnings in Elixir 1.4 (Lasse Ebert)
+
+### Changed
+
+- The function Calendar.DateTime.now/1 was previously deprecated. It has been changed
+  to returns the same as Calendar.DateTime.now!/1 but as a tuple tagged with :ok. Note that
+  this is a breaking change for those using the deprecated version in 0.16.1.
+  If you were using now/1 with earlier versions of Calendar, you could use now!/1 instead.
+
 ## [0.16.1] - 2016-08-25
 
 ### Added
