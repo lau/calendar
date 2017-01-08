@@ -42,7 +42,7 @@ defmodule Calendar.DateTime do
        minute: 41, month: 10, second: 1, std_offset: 3600, time_zone: "Europe/Copenhagen",
        utc_offset: 3600, year: 2014}
   """
-  def now!("Etc/UTC"), do: now_utc
+  def now!("Etc/UTC"), do: now_utc()
   def now!(timezone) do
     {:ok, datetime} = now(timezone)
     datetime

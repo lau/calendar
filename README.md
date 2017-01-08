@@ -24,7 +24,7 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.14.2"},  ]
+  [  {:calendar, "~> 0.16.1"},  ]
 end
 ```
 
@@ -43,9 +43,9 @@ Then run `mix deps.get` which will fetch Calendar via the hex package manager.
 ## Elixir versions earlier than 1.3
 
 If you are using an Elixir version earlier than 1.3, use Calendar version `~> 0.14.2`
-This version accepts the Calendar structs from earlier versions (e.g. `%Calendar.DateTime)
+This version accepts the Calendar structs from earlier versions (e.g. `%Calendar.DateTime`)
 And additionally when running on Elixir 1.3 or higher, it accepts the built in calendar
-types present in Elixir 1.3 (e.g. `%DateTime). But Calendar structs are always returned.
+types present in Elixir 1.3 (e.g. `%DateTime`). But Calendar structs are always returned.
 
 ## Types
 

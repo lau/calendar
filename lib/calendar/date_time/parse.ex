@@ -154,7 +154,7 @@ defmodule Calendar.DateTime.Parse do
   end
 
   defp int_and_microsecond_for_float(float) do
-    float_as_string = Float.to_string(float, [decimals: 6, compact: false])
+    float_as_string = :erlang.float_to_binary(float, [decimals: 6])
     {int, frac} = Integer.parse(float_as_string)
     {int, parse_fraction(frac)}
   end
@@ -277,6 +277,9 @@ defmodule Calendar.DateTime.Parse do
       iex> rfc3339("1996-12-19T16:39:57-8:00", "America/Los_Angeles")
       {:ok, %DateTime{zone_abbr: "PST", day: 19, hour: 16, minute: 39, month: 12, second: 57, std_offset: 0, time_zone: "America/Los_Angeles", utc_offset: -28800, year: 1996}}
 
+      iex> rfc3339("1996-12-19T16:39:57.1234-8:00", "America/Los_Angeles")
+      {:ok, %DateTime{zone_abbr: "PST", day: 19, hour: 16, minute: 39, month: 12, second: 57, std_offset: 0, time_zone: "America/Los_Angeles", utc_offset: -28800, year: 1996, microsecond: {123400, 4}}}
+
       iex> rfc3339("invalid", "America/Los_Angeles")
       {:bad_format, nil}
 
@@ -309,7 +312,7 @@ defmodule Calendar.DateTime.Parse do
       _   -> offset_in_secs
     end
     erl_date_time = erl_date_time_from_regex_map(mapped)
-    parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time)
+    parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time, parse_fraction(mapped["fraction"]))
   end
 
   defp parse_fraction("." <> frac), do: parse_fraction(frac)
@@ -323,11 +326,11 @@ defmodule Calendar.DateTime.Parse do
     {usec, min(String.length(string), 6)}
   end
 
-  defp parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time) do
+  defp parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time, fraction) do
     greg_secs = :calendar.datetime_to_gregorian_seconds(erl_date_time)
     new_time = greg_secs - offset_in_secs
     |> :calendar.gregorian_seconds_to_datetime
-    Calendar.DateTime.from_erl(new_time, "Etc/UTC")
+    Calendar.DateTime.from_erl(new_time, "Etc/UTC", fraction)
   end
 
   defp erl_date_time_from_regex_map(mapped) do

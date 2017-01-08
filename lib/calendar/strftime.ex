@@ -229,31 +229,31 @@ defmodule Calendar.Strftime do
   defp to_time(data), do: Calendar.ContainsTime.time_struct(data)
 
   defp weekday_names(lang) do
-    {:ok, data} = translation_module.weekday_names(lang)
+    {:ok, data} = translation_module().weekday_names(lang)
     data
   end
   defp weekday_names_abbr(lang) do
-    {:ok, data} = translation_module.weekday_names_abbr(lang)
+    {:ok, data} = translation_module().weekday_names_abbr(lang)
     data
   end
   defp month_names(lang) do
-    {:ok, data} = translation_module.month_names(lang)
+    {:ok, data} = translation_module().month_names(lang)
     data
   end
   defp month_names_abbr(lang) do
-    {:ok, data} = translation_module.month_names_abbr(lang)
+    {:ok, data} = translation_module().month_names_abbr(lang)
     data
   end
   defp date_format_for_lang(lang) do
-    {:ok, data} = translation_module.date_format(lang)
+    {:ok, data} = translation_module().date_format(lang)
     data
   end
   defp time_format_for_lang(lang) do
-    {:ok, data} = translation_module.time_format(lang)
+    {:ok, data} = translation_module().time_format(lang)
     data
   end
   defp date_time_format_for_lang(lang) do
-    {:ok, data} = translation_module.date_time_format(lang)
+    {:ok, data} = translation_module().date_time_format(lang)
     data
   end
   defp translation_module do
