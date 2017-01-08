@@ -1,20 +1,21 @@
-language: erlang
+language: elixir
 
 otp_release:
   - 18.1
 
+matrix:
+  include:
+    - otp_release: 18.3
+      elixir: 1.3.2
+    - otp_release: 18.3
+      elixir: 1.4.0-rc.1
+    - otp_release: 19.0
+      elixir: 1.4.0-rc.1
+
 sudo: false
 
 before_script:
-  - git clone https://github.com/elixir-lang/elixir.git
-  - cd elixir
-  - git checkout v1.3.0-rc.1
-  - make compile && cd ..
-  - export PATH=$PWD/elixir/bin:$PATH
-  - mix local.hex --force
-  - mix hex.info
-  - mix deps.get
-  - mix local.rebar --force
+  - mix deps.get --only test
 
 script:
   - mix test
