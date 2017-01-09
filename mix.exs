@@ -4,8 +4,8 @@ defmodule Calendar.Mixfile do
   def project do
     [app: :calendar,
      name: "Calendar",
-     version: "0.16.1",
-     elixir: "~> 1.4.0-dev or ~> 1.3.0 or ~> 1.3.0-rc.1",
+     version: "0.17.0",
+     elixir: "~> 1.4.0 or ~> 1.4.0-dev or ~> 1.3.0 or ~> 1.3.0-rc.1",
      consolidate_protocols: false,
      package: package(),
      description: description(),
@@ -29,21 +29,17 @@ defmodule Calendar.Mixfile do
        maintainers: ["Lau Taarnskov"],
        links: %{ "GitHub" => "https://github.com/lau/calendar"},
        files: ~w(lib priv mix.exs README* LICENSE*
-                    license* CHANGELOG* changelog* src tzdata) }
+                    CHANGELOG*) }
   end
 
   defp description do
     """
     Calendar is a datetime library for Elixir.
 
-    Providing explicit types for datetimes, dates and times.
-    Full timezone support via its sister package `tzdata`.
+    Timezone support via its sister package `tzdata`.
 
-    Safe parsing and formatting of standard formats (ISO, RFC, Unix, JS etc.)
-    plus strftime formatting. Easy and safe interoperability with erlang style
+    Safe parsing and formatting of standard formats (ISO, RFC, etc.), strftime formatting. Interoperability with erlang style
     datetime tuples. Extendable through protocols.
-
-    Related packages are available for i18n, Ecto and Phoenix interoperability.
     """
   end
 end
