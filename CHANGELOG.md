@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.17.1] - 2017-01-15
+
+### Fixed
+
+- Get rid of last warning in Elixir 1.4
+
 ## [0.17.0] - 2017-01-08
 
 ### Fixed
