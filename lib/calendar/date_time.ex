@@ -63,7 +63,7 @@ defmodule Calendar.DateTime do
   @spec now(String.t) :: {:ok, DateTime.t} | :error
   def now(timezone) do
     try do
-      {now_utc_secs, microsecond} = now_utc |> gregorian_seconds_and_microsecond
+      {now_utc_secs, microsecond} = now_utc() |> gregorian_seconds_and_microsecond
       period_list = TimeZoneData.periods_for_time(timezone, now_utc_secs, :utc)
       period = hd period_list
       {:ok, now_utc_secs + period.utc_off + period.std_off
