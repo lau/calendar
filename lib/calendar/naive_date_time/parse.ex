@@ -80,6 +80,10 @@ defmodule Calendar.NaiveDateTime.Parse do
       iex> iso8601("1996-12-19T16:39:57.123")
       {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: {123000, 3}}, nil}
 
+      # With fractional seconds
+      iex> iso8601("1996-12-19T16:39:57,123")
+      {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: {123000, 3}}, nil}
+
       # With Z denoting 0 offset
       iex> iso8601("1996-12-19T16:39:57Z")
       {:ok, %NaiveDateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, microsecond: {0, 0}}, 0}
@@ -124,7 +128,7 @@ defmodule Calendar.NaiveDateTime.Parse do
   end
 
   defp capture_iso8601_string(string) do
-    ~r/(?<year>[\d]{4})[^\d]?(?<month>[\d]{2})[^\d]?(?<day>[\d]{2})[^\d](?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})(\.(?<fraction>[\d]+))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):?(?<offset_mins>[\d]{2}))?/
+    ~r/(?<year>[\d]{4})[^\d]?(?<month>[\d]{2})[^\d]?(?<day>[\d]{2})[^\d](?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})([\.\,](?<fraction>[\d]+))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):?(?<offset_mins>[\d]{2}))?/
     |> Regex.named_captures(string)
   end
 
