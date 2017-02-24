@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.17.2] - 2017-02-23
+### Changed
+
+- NaiveDateTime and DateTime parsing of RFC3339 and ISO 8601 allows commas as the sign
+  for fractional seconds.
+
 ## [0.17.1] - 2017-01-15
 
 ### Fixed
