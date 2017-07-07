@@ -5,7 +5,7 @@ defmodule Calendar.Mixfile do
     [app: :calendar,
      name: "Calendar",
      version: "0.17.2",
-     elixir: "~> 1.4.0 or ~> 1.4.0-dev or ~> 1.3.0 or ~> 1.3.0-rc.1",
+     elixir: "~> 1.3",
      consolidate_protocols: false,
      package: package(),
      description: description(),
