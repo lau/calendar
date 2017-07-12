@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.17.3] - 2017-07-12
+### Changed
+
+- Allow Elixir versions ~1.3 in mix.exs, which means Elixir 1.5+ is allowed.
+
 ## [0.17.2] - 2017-02-23
 ### Changed
 
