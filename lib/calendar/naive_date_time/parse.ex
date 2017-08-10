@@ -38,7 +38,7 @@ defmodule Calendar.NaiveDateTime.Parse do
       {:ok, %NaiveDateTime{year: 2003, month: 4, day: 10, hour: 7, minute: 53, second: 3, microsecond: {0, 0}}}
   """
   def asctime(string) do
-    cap = string |> capture_asctime_string
+    cap = capture_asctime_string(string)
     month_num = month_number_for_month_name(cap["month"])
     Calendar.NaiveDateTime.from_erl({{cap["year"]|>to_int, month_num, cap["day"]|>to_int}, {cap["hour"]|>to_int, cap["min"]|>to_int, cap["sec"]|>to_int}})
   end
@@ -93,7 +93,7 @@ defmodule Calendar.NaiveDateTime.Parse do
       {:error, :invalid_datetime, nil}
   """
   def iso8601(string) do
-    captured = string |> capture_iso8601_string
+    captured = capture_iso8601_string(string)
     if captured do
       parse_captured_iso8601(captured, captured["z"], captured["offset_hours"], captured["offset_mins"])
     else

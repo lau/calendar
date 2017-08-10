@@ -22,9 +22,12 @@ defmodule Calendar.Strftime do
       iex> {17,10,20} |> Calendar.Time.from_erl! |> strftime!("%H:%M:%S")
       "17:10:20"
   """
-  def strftime!(dt, string, lang\\:en) do
-    parse_for_con_specs(string)
-    |> Enum.reduce(string, fn(conv_spec, new_string) -> String.replace(new_string, "%#{conv_spec}", string_for_conv_spec(dt, conv_spec, lang)) end)
+  def strftime!(dt, string, lang \\ :en) do
+    string
+    |> parse_for_con_specs
+    |> Enum.reduce(string, fn(conv_spec, new_string) ->
+      String.replace(new_string, "%#{conv_spec}", string_for_conv_spec(dt, conv_spec, lang))
+    end)
   end
 
   @doc """
@@ -165,9 +168,7 @@ defmodule Calendar.Strftime do
   defp string_for_conv_spec(dt, :X, lang), do: strftime! dt, time_format_for_lang(lang), lang
   defp string_for_conv_spec(dt, :c, lang), do: strftime! dt, date_time_format_for_lang(lang), lang
 
-  defp micro_seconds(dt) do
-    "#{dt.microsecond |> elem(0)}"
-  end
+  defp micro_seconds(dt), do: "#{elem(dt.microsecond, 0)}"
 
   defp pad(subject, len \\ 2, char \\ "0") do
     char = List.to_string([char])
@@ -219,12 +220,10 @@ defmodule Calendar.Strftime do
 
   defp x24h_to_12_h(0) do {12, :am} end
   defp x24h_to_12_h(12) do {12, :pm} end
-  defp x24h_to_12_h(hour) when hour >= 1 and hour < 12 do {hour, :am} end
-  defp x24h_to_12_h(hour) when hour > 12 do {hour - 12, :pm} end
+  defp x24h_to_12_h(hour) when hour >= 1 and hour < 12, do: {hour, :am}
+  defp x24h_to_12_h(hour) when hour > 12, do: {hour - 12, :pm}
 
-  defp day_of_the_week(dt) do
-    dt |> Calendar.Date.day_of_week
-  end
+  defp day_of_the_week(dt), do: Calendar.Date.day_of_week(dt)
 
   defp to_date(data), do: Calendar.ContainsDate.date_struct(data)
   defp to_time(data), do: Calendar.ContainsTime.time_struct(data)
