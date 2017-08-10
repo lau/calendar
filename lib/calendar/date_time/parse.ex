@@ -324,7 +324,7 @@ defmodule Calendar.DateTime.Parse do
   # parse and return microseconds
   defp parse_fraction(string) do
     usec = String.slice(string, 0..5)
-      |> String.ljust(6, ?0)
+      |> String.pad_trailing(6, "0")
       |> Integer.parse
       |> elem(0)
     {usec, min(String.length(string), 6)}

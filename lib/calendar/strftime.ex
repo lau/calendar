@@ -169,8 +169,9 @@ defmodule Calendar.Strftime do
     "#{dt.microsecond |> elem(0)}"
   end
 
-  defp pad(subject, len\\2, char\\?0) do
-    String.rjust("#{subject}", len, char)
+  defp pad(subject, len \\ 2, char \\ "0") do
+    char = List.to_string([char])
+    String.pad_leading("#{subject}", len, char)
   end
 
   defp z_offset_part(dt) do
