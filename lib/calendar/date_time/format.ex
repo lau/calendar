@@ -120,15 +120,18 @@ defmodule Calendar.DateTime.Format do
   defp rfc3330_microsecond_part({microsecond, _inherent_precision}, precision) when precision >= 1 and precision <=6 do
     ".#{microsecond |> pad(6)}" |> String.slice(0..precision)
   end
-  defp pad(subject, len\\2, char\\?0)
+
+  defp pad(subject, len \\ 2, char \\ "0")
   defp pad(subject, 2, _char) when is_integer(subject) and subject >= 10 and subject <= 99 do
-    subject |> Integer.to_string
+    Integer.to_string(subject)
   end
   defp pad(subject, len, char) when is_integer(subject) do
-    subject |> Integer.to_string |> pad(len, char)
+    subject
+    |> Integer.to_string
+    |> pad(len, char)
   end
   defp pad(subject, len, char) when is_binary(subject) do
-    String.rjust(subject, len, char)
+    String.pad_leading(subject, len, char)
   end
 
   @doc """
