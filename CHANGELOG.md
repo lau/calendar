@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.17.4] - 2017-08-12
+### Changed
+
+- Get rid of warnings in Elixir 1.5.
+
 ## [0.17.3] - 2017-07-12
 ### Changed
 
