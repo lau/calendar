@@ -109,7 +109,7 @@ defmodule Calendar.DateTime.Format do
     secs = abs(secs)
     hours = secs/3600.0 |> Float.floor |> trunc
     mins = rem(secs, 3600)/60.0 |> Float.floor |> trunc
-    "#{hours|>pad(2)}:#{mins|>pad(2)}"
+    "#{pad(hours, 2)}:#{pad(mins, 2)}"
   end
 
   defp rfc3330_microsecond_part(_, 0), do: ""
@@ -120,15 +120,18 @@ defmodule Calendar.DateTime.Format do
   defp rfc3330_microsecond_part({microsecond, _inherent_precision}, precision) when precision >= 1 and precision <=6 do
     ".#{microsecond |> pad(6)}" |> String.slice(0..precision)
   end
-  defp pad(subject, len\\2, char\\?0)
+
+  defp pad(subject, len \\ 2, char \\ "0")
   defp pad(subject, 2, _char) when is_integer(subject) and subject >= 10 and subject <= 99 do
-    subject |> Integer.to_string
+    Integer.to_string(subject)
   end
   defp pad(subject, len, char) when is_integer(subject) do
-    subject |> Integer.to_string |> pad(len, char)
+    subject
+    |> Integer.to_string
+    |> pad(len, char)
   end
   defp pad(subject, len, char) when is_binary(subject) do
-    String.rjust(subject, len, char)
+    String.pad_leading(subject, len, char)
   end
 
   @doc """
@@ -169,7 +172,9 @@ defmodule Calendar.DateTime.Format do
     rfc3339_offset_part(dt, dt.time_zone)
   end
   def rfc3339(dt, decimal_count) do
-    dt |> contained_date_time |> rfc3339(decimal_count)
+    dt
+    |> contained_date_time
+    |> rfc3339(decimal_count)
   end
 
   @doc """
@@ -184,7 +189,7 @@ defmodule Calendar.DateTime.Format do
       "Sat, 06 Sep 2014 09:09:08 GMT"
   """
   def httpdate(%DateTime{time_zone: "Etc/UTC"} = dt) do
-    dt |> Strftime.strftime!("%a, %d %b %Y %H:%M:%S GMT")
+    Strftime.strftime!(dt, "%a, %d %b %Y %H:%M:%S GMT")
   end
   def httpdate(dt) do
     dt
@@ -226,7 +231,9 @@ defmodule Calendar.DateTime.Format do
       1_000_000_000.0
   """
   def unix_micro(%DateTime{microsecond: {microsecond, _}} = date_time) when microsecond == 0 do
-    date_time |> unix |> Kernel.+(0.0)
+    date_time
+    |> unix
+    |> Kernel.+(0.0)
   end
   def unix_micro(%DateTime{} = date_time) do
     {microsecond, _} = date_time.microsecond
