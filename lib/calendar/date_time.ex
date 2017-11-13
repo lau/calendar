@@ -52,7 +52,7 @@ defmodule Calendar.DateTime do
   Takes a timezone name and returns a DateTime with the current time in
   that timezone. The result is returned in a tuple tagged with :ok
 
-      iex > Calendar.DateTime.now! "Europe/Copenhagen"
+      iex > Calendar.DateTime.now "Europe/Copenhagen"
       {:ok, %DateTime{zone_abbr: "CEST", day: 15, hour: 4,
        minute: 41, month: 10, second: 1, std_offset: 3600, time_zone: "Europe/Copenhagen",
        utc_offset: 3600, year: 2014}}
