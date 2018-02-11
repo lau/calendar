@@ -759,10 +759,15 @@ defmodule Calendar.DateTime do
 
       iex> Calendar.NaiveDateTime.from_erl!({{2014,10,15},{2,37,22}}) |> from_naive("Etc/UTC")
       {:ok, %DateTime{zone_abbr: "UTC", day: 15, microsecond: {0, 0}, hour: 2, minute: 37, month: 10, second: 22, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2014}}
+
+      iex> Calendar.NaiveDateTime.from_erl!({{2014,10,15},{2,37,22}}, {13, 13}) |> from_naive("Etc/UTC")
+      {:ok, %DateTime{zone_abbr: "UTC", day: 15, microsecond: {13, 13}, hour: 2, minute: 37, month: 10, second: 22, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2014}}
+
   """
   def from_naive(ndt, timezone) do
-    ndt |> Calendar.NaiveDateTime.to_erl
-    |> from_erl(timezone)
+    ndt
+    |> Calendar.NaiveDateTime.to_erl
+    |> from_erl(timezone, ndt.microsecond)
   end
 
   @doc """
