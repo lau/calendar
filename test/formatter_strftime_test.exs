@@ -22,6 +22,7 @@ defmodule FormatterStrfTimeTest do
     assert Strftime.strftime!(dt, "%B") == "November"
     assert Strftime.strftime!(dt, "%d") == "03"
     assert Strftime.strftime!(dt, "%e") == " 3"
+    assert Strftime.strftime!(dt, "%E") == "3"
     assert Strftime.strftime!(dt, "%f") == "123456"
     assert Strftime.strftime!(dt, "%u") == "1"
     assert Strftime.strftime!(dt, "%w") == "1"

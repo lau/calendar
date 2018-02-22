@@ -94,6 +94,7 @@ defmodule Calendar.Strftime do
   | %v               | VMS date. Equivalent of %e-%b-%Y.                               | _5-Feb-2015_                   |         ✓ |           |         |
   | %m               | Month as decimal number (01-12).                                | _01_ for January               |         ✓ |           |         |
   | %e               | Day of the month as decimal number. Leading space if 1-digit.   | _5_ for 2015-02-05             |         ✓ |           |         |
+  | %E               | Day of the month as decimal number.                             | _5_ for 2015-02-05             |         ✓ |           |         |
   | %d               | Day of the month as decimal number. Leading zero. (01-31).      | _05_ for 2015-02-05            |         ✓ |           |         |
   | %H               | Hour as decimal number using 24 hour clock (00-23).             | _08_ for 08:25                 |           |         ✓ |         |
   | %k               | Like %H, but with leading space instead of leading zero.        | _8_ for 08:25                  |           |         ✓ |         |
@@ -156,6 +157,7 @@ defmodule Calendar.Strftime do
   defp string_for_conv_spec(dt, :v, _) do strftime! dt, "%e-%b-%Y" end
   defp string_for_conv_spec(dt, :m, _) do dt=to_date(dt);"#{dt.month}"|>pad end
   defp string_for_conv_spec(dt, :e, _) do dt=to_date(dt);"#{dt.day}"|>pad(2, hd ' ') end
+  defp string_for_conv_spec(dt, :E, _) do dt=to_date(dt);"#{dt.day}" end
   defp string_for_conv_spec(dt, :d, _) do dt=to_date(dt);"#{dt.day}"|>pad end
   defp string_for_conv_spec(dt, :H, _) do dt=to_time(dt);"#{dt.hour}"|>pad end
   defp string_for_conv_spec(dt, :k, _) do dt=to_time(dt);"#{dt.hour}"|>pad(2, hd ' ') end
