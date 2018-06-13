@@ -184,7 +184,7 @@ Montevideo:
 {:ok, mvd} = Calendar.DateTime.from_erl {{2014,10,4},{23,44,32}}, "America/Montevideo"
 {:ok,
  %DateTime{calendar: Calendar.ISO, day: 4, hour: 23, microsecond: {0, 0}, minute: 44, month: 10, second: 32, std_offset: 0,
-  time_zone: "America/Montevideo", utc_offset: -10800, year: 2014, zone_abbr: "UYT"}}
+  time_zone: "America/Montevideo", utc_offset: -10800, year: 2014, zone_abbr: "-03"}}
 ```
 
 A DateTime struct is now assigned to the variable `mvd`. Let's get a DateTime

@@ -509,7 +509,7 @@ defmodule Calendar.DateTime do
   Example:
 
       iex> from_erl!({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo")
-      %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20, year: 2014, time_zone: "America/Montevideo", zone_abbr: "UYT", utc_offset: -10800, std_offset: 0}
+      %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20, year: 2014, time_zone: "America/Montevideo", zone_abbr: "-03", utc_offset: -10800, std_offset: 0}
   """
   def from_erl!(date_time, time_zone, microsecond \\ {0, 0}) do
     {:ok, result} = from_erl(date_time, time_zone, microsecond)
@@ -534,7 +534,7 @@ defmodule Calendar.DateTime do
       iex> from_erl({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo")
       {:ok, %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20,
                               year: 2014, time_zone: "America/Montevideo",
-                              zone_abbr: "UYT",
+                              zone_abbr: "-03",
                               utc_offset: -10800, std_offset: 0, microsecond: {0, 0}} }
 
     Switching from summer to wintertime in the fall means an ambigous time.
@@ -543,10 +543,10 @@ defmodule Calendar.DateTime do
       {:ambiguous, %Calendar.AmbiguousDateTime{possible_date_times:
         [%DateTime{day: 9, hour: 1, minute: 1, month: 3, second: 1,
                            year: 2014, time_zone: "America/Montevideo",
-                           zone_abbr: "UYST", utc_offset: -10800, std_offset: 3600},
+                           zone_abbr: "-02", utc_offset: -10800, std_offset: 3600},
          %DateTime{day: 9, hour: 1, minute: 1, month: 3, second: 1,
                            year: 2014, time_zone: "America/Montevideo",
-                           zone_abbr: "UYT", utc_offset: -10800, std_offset: 0},
+                           zone_abbr: "-03", utc_offset: -10800, std_offset: 0},
         ]}
       }
 
@@ -564,7 +564,7 @@ defmodule Calendar.DateTime do
       iex> from_erl({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo", {987654, 6})
       {:ok, %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20,
                               year: 2014, time_zone: "America/Montevideo",
-                              zone_abbr: "UYT",
+                              zone_abbr: "-03",
                               utc_offset: -10800, std_offset: 0, microsecond: {987654, 6}} }
 
   """
@@ -646,13 +646,13 @@ defmodule Calendar.DateTime do
       iex> from_erl_total_off({{2014, 9, 26}, {17, 10, 20}}, "America/Montevideo", -10800, 2)
       {:ok, %DateTime{day: 26, hour: 17, minute: 10, month: 9, second: 20,
                               year: 2014, time_zone: "America/Montevideo",
-                              zone_abbr: "UYT",
+                              zone_abbr: "-03",
                               utc_offset: -10800, std_offset: 0, microsecond: {2, 6}} }
 
       iex> from_erl_total_off({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo", -7200, 2)
       {:ok, %DateTime{day: 9, hour: 1, minute: 1, month: 3, second: 1,
                     year: 2014, time_zone: "America/Montevideo", microsecond: {2, 6},
-                           zone_abbr: "UYST", utc_offset: -10800, std_offset: 3600}
+                           zone_abbr: "-02", utc_offset: -10800, std_offset: 3600}
       }
   """
   def from_erl_total_off(erl_dt, timezone, total_off, microsecond\\{0,0}) do
@@ -674,7 +674,7 @@ defmodule Calendar.DateTime do
       iex> from_micro_erl_total_off({{2014, 3, 9}, {1, 1, 1, 2}}, "America/Montevideo", -7200)
       {:ok, %DateTime{day: 9, hour: 1, minute: 1, month: 3, second: 1,
                     year: 2014, time_zone: "America/Montevideo", microsecond: {2, 6},
-                           zone_abbr: "UYST", utc_offset: -10800, std_offset: 3600}
+                           zone_abbr: "-02", utc_offset: -10800, std_offset: 3600}
       }
   """
   def from_micro_erl_total_off({{year, mon, day}, {hour, min, sec, microsecond}}, timezone, total_off) do
