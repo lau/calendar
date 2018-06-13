@@ -768,8 +768,8 @@ defmodule Calendar.DateTime do
   @doc """
   Takes a DateTime and returns a NaiveDateTime
 
-      iex> Calendar.DateTime.from_erl!({{2014,10,15},{2,37,22}}, "UTC", 0.55) |> to_naive
-      %NaiveDateTime{day: 15, microsecond: 0.55, hour: 2, minute: 37, month: 10, second: 22, year: 2014}
+      iex> Calendar.DateTime.from_erl!({{2014,10,15},{2,37,22}}, "UTC", 55) |> to_naive
+      %NaiveDateTime{day: 15, microsecond: {55, 6}, hour: 2, minute: 37, month: 10, second: 22, year: 2014}
   """
   def to_naive(dt) do
     dt |> to_erl
