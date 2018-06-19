@@ -321,6 +321,125 @@ defmodule Calendar.DateTime.Parse do
     parse_rfc3339_as_utc_with_offset(offset_in_secs, erl_date_time, parse_fraction(mapped["fraction"]))
   end
 
+
+  @doc """
+  Parses an RFC 5545 datetime string of FORM #2 (UTC) or #3 (with time zone identifier)
+
+  ## Examples
+
+  FORM #2 with a Z at the end to indicate UTC
+
+      iex> rfc5545("19980119T020321Z")
+      {:ok, %DateTime{calendar: Calendar.ISO, day: 19, hour: 2, microsecond: {0, 0}, minute: 3, month: 1, second: 21, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 1998, zone_abbr: "UTC"}}
+
+  FORM #3 has a time zone identifier
+
+      iex> rfc5545("TZID=America/New_York:19980119T020000")
+      {:ok, %DateTime{calendar: Calendar.ISO, day: 19, hour: 2, microsecond: {0, 0}, minute: 0, month: 1, second: 0, std_offset: 0, time_zone: "America/New_York", utc_offset: -18000, year: 1998, zone_abbr: "EST"}}
+
+
+  From RFC 5455: "If, based on the definition of the referenced time zone, the local
+  time described occurs more than once (when changing from daylight
+  to standard time), the DATE-TIME value refers to the first
+  occurrence of the referenced time.  Thus, TZID=America/New_York:20071104T013000
+  indicates November 4, 2007 at 1:30 A.M. EDT (UTC-04:00)."
+
+      iex> rfc5545("TZID=America/New_York:20071104T013000")
+      {:ok, %DateTime{calendar: Calendar.ISO,
+               day: 4, hour: 1, microsecond: {0, 0}, minute: 30, month: 11, second: 0,
+               std_offset: 3600, time_zone: "America/New_York", utc_offset: -18000, year: 2007,
+               zone_abbr: "EDT"}}
+
+      iex> rfc5545("TZID=America/New_York:19980119T020000.123456")
+      {:ok, %DateTime{calendar: Calendar.ISO, day: 19, hour: 2, microsecond: {123456, 6}, minute: 0, month: 1, second: 0, std_offset: 0, time_zone: "America/New_York", utc_offset: -18000, year: 1998, zone_abbr: "EST"}}
+
+
+  RFC 5545 : "If the local time described does not occur (when
+      changing from standard to daylight time), the DATE-TIME value is
+      interpreted using the UTC offset before the gap in local times.
+      Thus, TZID=America/New_York:20070311T023000 indicates March 11,
+      2007 at 3:30 A.M. EDT (UTC-04:00), one hour after 1:30 A.M. EST
+      (UTC-05:00)."
+
+  The way this is implemented:
+  When there is a gap for "spring forward" the difference between the two offsets before and after is added.
+  E.g. usually the difference in offset between summer and winter time is one hour. Then one hour is added.
+
+      iex> rfc5545("TZID=America/New_York:20070311T023000")
+      {:ok, %DateTime{calendar: Calendar.ISO,
+               day: 11, hour: 3, microsecond: {0, 0}, minute: 30, month: 3, second: 0,
+               std_offset: 3600, time_zone: "America/New_York", utc_offset: -18000, year: 2007,
+               zone_abbr: "EDT"}}
+  """
+  def rfc5545(
+        <<year::4-bytes, month::2-bytes, day::2-bytes, ?T, hour::2-bytes, min::2-bytes,
+          sec::2-bytes, ?Z>>
+      ) do
+    {{year |> to_int, month |> to_int, day |> to_int},
+     {hour |> to_int, min |> to_int, sec |> to_int}}
+    |> Calendar.DateTime.from_erl("Etc/UTC")
+  end
+
+  def rfc5545("TZID=" <> string) do
+    [tz, iso8601] = String.split(string, ":")
+    {:ok, dt, nil} = Calendar.NaiveDateTime.Parse.iso8601(iso8601)
+
+    case Calendar.DateTime.from_erl(Calendar.NaiveDateTime.to_erl(dt), tz, dt.microsecond) do
+      {:ambiguous, %Calendar.AmbiguousDateTime{possible_date_times: possible_date_times}} ->
+        # Per the RFC, if the datetime happens more than once, choose the first one.
+        # The first one is the one with the highest total offset. So they are sorted by
+        # total offset (UTC and standard offsets) and the highest value is chosen.
+        chosen_dt =
+          possible_date_times
+          |> Enum.sort_by(fn dt -> dt.utc_offset + dt.std_offset end)
+          |> List.last()
+        {:ok, chosen_dt}
+
+      {:error, :invalid_datetime_for_timezone} ->
+        most_recent_datetime_before_gap(dt, tz)
+
+      not_ambiguous ->
+        not_ambiguous
+    end
+  end
+
+  defp most_recent_datetime_before_gap(naive_datetime, time_zone) do
+    case Calendar.DateTime.from_erl(
+           Calendar.NaiveDateTime.to_erl(naive_datetime),
+           time_zone,
+           naive_datetime.microsecond
+         ) do
+      {:ok, naive_datetime} ->
+        # If there is no gap, just return the valid DateTime
+        {:ok, naive_datetime}
+
+      {:error, :invalid_datetime_for_timezone} ->
+        dt_before =
+          naive_datetime
+          # We assume there is a gap and there is no previous gap 26 hours before
+          |> NaiveDateTime.add(-3600 * 26)
+          |> NaiveDateTime.to_erl()
+          |> Calendar.DateTime.from_erl!(time_zone, naive_datetime.microsecond)
+
+        dt_after =
+          naive_datetime
+          # We assume there is a gap and there is no additional gap 26 hours after
+          |> NaiveDateTime.add(3600 * 26)
+          |> NaiveDateTime.to_erl()
+          |> Calendar.DateTime.from_erl!(time_zone, naive_datetime.microsecond)
+
+        offset_difference =
+          (dt_before.utc_offset + dt_before.std_offset) -
+            (dt_after.utc_offset + dt_after.std_offset)
+          |> abs
+
+        naive_datetime
+        |> NaiveDateTime.add(offset_difference)
+        |> NaiveDateTime.to_erl()
+        |> Calendar.DateTime.from_erl(time_zone, naive_datetime.microsecond)
+    end
+  end
+
   defp parse_fraction("." <> frac), do: parse_fraction(frac)
   defp parse_fraction("," <> frac), do: parse_fraction(frac)
   defp parse_fraction(""), do: {0, 0}

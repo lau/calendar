@@ -265,6 +265,47 @@ defmodule Calendar.DateTime.Format do
     |> DateTime.to_unix(:millisecond)
   end
 
+  @doc """
+  Formats a DateTime according to [RFC5545](https://tools.ietf.org/html/rfc5545).
+
+  ## Examples
+
+  FORM #2 is used for UTC DateTimes.
+
+      iex> {:ok, datetime, _} = "1998-01-19 07:00:00Z" |> DateTime.from_iso8601
+      iex> Calendar.DateTime.Format.rfc5545(datetime)
+      "19980119T070000Z"
+
+  FORM #3 (WITH LOCAL TIME AND TIME ZONE REFERENCE) is used for non-UTC datetimes
+
+      iex> {:ok, cph_datetime} = Calendar.DateTime.from_naive(~N[2001-09-09T03:46:40.985085], "Europe/Copenhagen")
+      iex> Calendar.DateTime.Format.rfc5545(cph_datetime)
+      "TZID=Europe/Copenhagen:20010909T034640.985085"
+
+      iex> {:ok, ny_datetime} = Calendar.DateTime.from_naive(~N[1998-01-19T02:00:00], "America/New_York")
+      iex> Calendar.DateTime.Format.rfc5545(ny_datetime)
+      "TZID=America/New_York:19980119T020000"
+  """
+  def rfc5545(%DateTime{} = datetime) do
+    # Convert datetime to NaiveDateTime for compatability with Elixir 1.3's NaiveDateTime.to_iso8601
+    naive_datetime_string =
+      datetime
+      |> Calendar.DateTime.to_naive()
+      |> NaiveDateTime.to_iso8601()
+      |> String.replace(":", "")
+      |> String.replace("-", "")
+
+    add_timezone_part_for_rfc5545(datetime, naive_datetime_string)
+  end
+
+  defp add_timezone_part_for_rfc5545(%DateTime{time_zone: "Etc/UTC"}, naive_datetime_string) do
+    naive_datetime_string <> "Z"
+  end
+
+  defp add_timezone_part_for_rfc5545(datetime, naive_datetime_string) do
+    "TZID=" <> datetime.time_zone <> ":" <> naive_datetime_string
+  end
+
   defp contained_date_time(dt_container) do
     Calendar.ContainsDateTime.dt_struct(dt_container)
   end
