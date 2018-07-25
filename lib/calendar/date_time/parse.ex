@@ -233,6 +233,9 @@ defmodule Calendar.DateTime.Parse do
       iex> rfc3339_utc("fooo")
       {:bad_format, nil}
 
+      iex> rfc3339_utc("1996-12-19T16:39:57")
+      {:bad_format, nil}
+
       iex> rfc3339_utc("1996-12-19T16:39:57Z")
       {:ok, %DateTime{year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
@@ -347,7 +350,7 @@ defmodule Calendar.DateTime.Parse do
   end
 
   defp parse_rfc3339_string(rfc3339_string) do
-    ~r/(?<year>[\d]{4})[^\d]?(?<month>[\d]{2})[^\d]?(?<day>[\d]{2})[^\d](?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})([\.\,](?<fraction>[\d]+))?(?<z>[zZ])?((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):?(?<offset_mins>[\d]{2}))?/
+    ~r/(?<year>[\d]{4})[^\d]?(?<month>[\d]{2})[^\d]?(?<day>[\d]{2})[^\d](?<hour>[\d]{2})[^\d]?(?<min>[\d]{2})[^\d]?(?<sec>[\d]{2})([\.\,](?<fraction>[\d]+))?((?<z>[zZ])|((?<offset_sign>[\+\-])(?<offset_hours>[\d]{1,2}):?(?<offset_mins>[\d]{2})))/
     |> Regex.named_captures(rfc3339_string)
   end
 end
