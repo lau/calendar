@@ -262,7 +262,7 @@ defmodule Calendar.DateTime.Format do
   def js_ms(date_time) do
     date_time
     |> contained_date_time
-    |> DateTime.to_unix(:millisecond)
+    |> DateTime.to_unix(:milliseconds)
   end
 
   defp contained_date_time(dt_container) do
