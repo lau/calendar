@@ -1,5 +1,13 @@
 # Changelog
 
+### Changed
+- Allows using Tzdata version ~1.0.0-rc.1
+
+## Fixed
+
+- Fix loss of microsecond resolution when using DateTime.from_naive/2. thanks to jamesotron
+- Fix error when using Calendar.DateTime.Parse.rfc3339_utc/1 with missing offset. thanks to erikreedstrom
+
 ## [0.17.4] - 2017-08-12
 ### Changed
 
