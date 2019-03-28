@@ -95,9 +95,8 @@ defmodule Calendar.TimeZoneData do
 
   ## Example:
 
-      iex> TimeZoneData.leap_seconds |> Enum.take(3)
-      [%DateTime{zone_abbr: "UTC", day: 31, hour: 23, minute: 59, month: 12, second: 60, std_offset: 0, time_zone: "Etc/UTC", microsecond: {0, 0}, utc_offset: 0, year: 1971},
-       %DateTime{zone_abbr: "UTC", day: 30, hour: 23, minute: 59, month: 6, second: 60, std_offset: 0, time_zone: "Etc/UTC", microsecond: {0, 0}, utc_offset: 0, year: 1972},
+      iex> TimeZoneData.leap_seconds |> Enum.take(2)
+      [%DateTime{zone_abbr: "UTC", day: 30, hour: 23, minute: 59, month: 6, second: 60, std_offset: 0, time_zone: "Etc/UTC", microsecond: {0, 0}, utc_offset: 0, year: 1972},
        %DateTime{zone_abbr: "UTC", day: 31, hour: 23, minute: 59, month: 12, second: 60, std_offset: 0, time_zone: "Etc/UTC", microsecond: {0, 0}, utc_offset: 0, year: 1972}]
   """
   def leap_seconds do
@@ -115,8 +114,8 @@ defmodule Calendar.TimeZoneData do
 
   ## Example:
 
-      iex> TimeZoneData.leap_seconds_erl |> Enum.take(3)
-      [{{1971, 12, 31}, {23, 59, 60}}, {{1972, 6, 30}, {23, 59, 60}}, {{1972, 12, 31}, {23, 59, 60}}]
+      iex> TimeZoneData.leap_seconds_erl |> Enum.take(2)
+      [{{1972, 6, 30}, {23, 59, 60}}, {{1972, 12, 31}, {23, 59, 60}}]
   """
   def leap_seconds_erl, do: TZSource.leap_seconds
 end
