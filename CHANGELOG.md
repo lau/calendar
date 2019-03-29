@@ -1,9 +1,6 @@
 # Changelog
 
 ## [0.17.5] - 2019-03-28
-### Changed
-- Allows using Tzdata version ~1.0.0-rc.1
-
 ## Fixed
 
 - Fix loss of microsecond resolution when using DateTime.from_naive/2. thanks to jamesotron
