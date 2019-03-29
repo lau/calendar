@@ -1,5 +1,6 @@
 # Changelog
 
+## [0.17.5] - 2019-03-28
 ### Changed
 - Allows using Tzdata version ~1.0.0-rc.1
 

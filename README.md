@@ -16,7 +16,7 @@ Safe parsing and formatting of standard formats (ISO, RFC, Unix, JS etc.)
 plus strftime formatting. Easy and safe interoperability with erlang style
 date, time, datetime tuples. Extendable through protocols.
 
-Related packages are available for [i18n](https://github.com/padde/calendar_translations) and [Ecto](https://github.com/lau/calecto) interoperability.
+Related packages are available for [i18n](https://github.com/padde/calendar_translations) interoperability.
 
 ## Getting started
 
@@ -24,11 +24,9 @@ Add Calendar as a dependency to an Elixir project by adding it to your mix.exs f
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.17.2"},  ]
+  [  {:calendar, "~> 0.17.5"},  ]
 end
 ```
-
-(If you use Elixir 1.3, version ~> 0.16.0 is recommended)
 
 Also add `calendar` to the list of applications in the mix.exs file:
 
@@ -301,20 +299,6 @@ Calendar.Time.from_erl!({12, 30, 59}) |> Calendar.Strftime.strftime "%a %d.%m.%y
 
 Documentation can be found at http://hexdocs.pm/calendar/
 
-## Ecto
-
-If you want to use Calendar with Ecto, there is a library for that:
-Calecto https://github.com/lau/calecto
-
-This makes it easy to save the different types of time and date
-representations to a database. And later work with them in an easy and
-safe manner.
-
-## Phoenix
-
-If you want to use Calendar with Phoenix, there is a library that
-takes care of that: https://github.com/lau/phoenix_calendar
-
 ## Raison d'être
 
 The purpose of Calendar is to have an easy to use library for handling
@@ -335,13 +319,6 @@ Calendar examples.
 
 [![Talk from ElixirConf 2015](http://img.youtube.com/vi/keUbVvMJeKY/0.jpg)](http://www.youtube.com/watch?v=keUbVvMJeKY)
 
-## Upgrading from versions earlier than 0.10.0
-
-Calendar 0.10.0 supports Tzdata ~> 0.5.1 as well as ~> 0.1.7
-
-With Tzdata 0.5.1 it is now necessary to have calendar in the application list
-as described above in the "Getting started" secion.
-
 ## Trouble shooting
 
 Problem: an error like this occours:
@@ -355,7 +332,7 @@ Problem: an error like this occours:
 ```
 
 Solution: add :calendar to the application list in the mix.exs file of your
-project. Refer to the "Getting started" section of this readme.
+project.
 
 ## License
 
