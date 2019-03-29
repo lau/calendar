@@ -2,14 +2,16 @@ defmodule Calendar.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :calendar,
-     name: "Calendar",
-     version: "0.17.5",
-     elixir: "~> 1.3",
-     consolidate_protocols: false,
-     package: package(),
-     description: description(),
-     deps: deps()]
+    [
+      app: :calendar,
+      name: "Calendar",
+      version: "0.17.5",
+      elixir: "~> 1.3",
+      consolidate_protocols: false,
+      package: package(),
+      description: description(),
+      deps: deps()
+    ]
   end
 
   def application do
@@ -19,15 +21,18 @@ defmodule Calendar.Mixfile do
   def deps do
     [
       {:tzdata, "~> 0.5.20 or ~> 0.1.201603"},
-     ]
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+    ]
   end
 
   defp package do
-    %{ licenses: ["MIT"],
-       maintainers: ["Lau Taarnskov"],
-       links: %{ "GitHub" => "https://github.com/lau/calendar"},
-       files: ~w(lib priv mix.exs README* LICENSE*
-                    CHANGELOG*) }
+    %{
+      licenses: ["MIT"],
+      maintainers: ["Lau Taarnskov"],
+      links: %{"GitHub" => "https://github.com/lau/calendar"},
+      files: ~w(lib priv mix.exs README* LICENSE*
+                    CHANGELOG*)
+    }
   end
 
   defp description do
