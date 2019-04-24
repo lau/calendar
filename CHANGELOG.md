@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.17.6] - 2019-04-23
+## Added
+
+- tzdata dependency version ~> 1.0 allowed
+
 ## [0.17.5] - 2019-03-28
 ## Fixed
 
