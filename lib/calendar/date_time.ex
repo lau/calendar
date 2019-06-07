@@ -13,7 +13,7 @@ defmodule Calendar.DateTime do
   The functions in this module can be used to create and transform
   DateTime structs.
   """
-  alias Calendar.TimeZoneData
+  alias Tzdata, as: TimeZoneData
   require Calendar.Date
   require Calendar.Time
 
@@ -838,7 +838,7 @@ defmodule Calendar.DateTime do
   # Validate time part of a datetime
   # The date and timezone part is only used for leap seconds
   defp valid_time_part_of_datetime(date, {h, m, 60}, "Etc/UTC") do
-    TimeZoneData.leap_seconds_erl |> Enum.member?({date, {h, m, 60}})
+    TimeZoneData.leap_seconds |> Enum.member?({date, {h, m, 60}})
   end
   defp valid_time_part_of_datetime(date, {h, m, 60}, timezone) do
     {tag, utc_datetime} = from_erl({date, {h, m, 59}}, timezone)
