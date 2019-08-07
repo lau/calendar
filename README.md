@@ -1,12 +1,6 @@
 Calendar
 =======
 
-[![Build
-Status](https://travis-ci.org/lau/calendar.svg?branch=master)](https://travis-ci.org/lau/calendar)
-[![Deps Status](https://beta.hexfaktor.org/badge/all/github/lau/calendar.svg)](https://beta.hexfaktor.org/github/lau/calendar)
-[![Inline docs](http://inch-ci.org/github/lau/calendar.svg)](http://hexdocs.pm/calendar/)
-[![Hex Version](http://img.shields.io/hexpm/v/calendar.svg?style=flat)](https://hex.pm/packages/calendar)
-
 Calendar is a datetime library for Elixir.
 
 Providing explicit types for datetimes, dates and times.
@@ -18,43 +12,66 @@ date, time, datetime tuples. Extendable through protocols.
 
 Related packages are available for [i18n](https://github.com/padde/calendar_translations) interoperability.
 
+[Documentation is available on hexdocs.](http://hexdocs.pm/calendar/)
+
+## Elixir standard library
+
+Since the Calendar library was started, a lot of functionality previously only available in the Calendar library is now also available in the Elixir standard library. With Elixir 1.8 and later you can do time zone conversion in the [DateTime module of the Elixir standard library](https://hexdocs.pm/elixir/DateTime.html) provided you are using the [tzdata library](https://github.com/lau/tzdata#getting-started).
+
+Certain features like more advanced formatting are not yet available in the Elixir standard library. In these case this library is useful.
+
 ## Getting started
 
 Add Calendar as a dependency to an Elixir project by adding it to your mix.exs file:
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 0.17.5"},  ]
+  [  {:calendar, "~> 0.18.0"},  ]
 end
-```
-
-Also add `calendar` to the list of applications in the mix.exs file:
-
-```elixir
-  def application do
-    [applications: [:logger, :calendar]]
-  end
 ```
 
 Then run `mix deps.get` which will fetch Calendar via the hex package manager.
 
-## Elixir versions earlier than 1.3
-
-If you are using an Elixir version earlier than 1.3, use Calendar version `~> 0.14.2`
-This version accepts the Calendar structs from earlier versions (e.g. `%Calendar.DateTime`)
-And additionally when running on Elixir 1.3 or higher, it accepts the built in calendar
-types present in Elixir 1.3 (e.g. `%DateTime`). But Calendar structs are always returned.
-
 ## Types
 
-Calendar has 4 basic types of structs:
+Since Elixir 1.3 the types used are now built into the Elixir standard library.
 
-* `Calendar.Date` - a simple date without time e.g. `2015-12-24`
-* `Calendar.Time` - a simple time without a date e.g. `14:30:00` or `15:21:12.532985`
-* `Calendar.NaiveDateTime` - datetimes without timezone information e.g. `2015-12-24 14:30:00`
-* `Calendar.DateTime` - datetimes where the proper timezone name is known e.g. `2015-12-24 14:30:00` in `America/New_York` or `2015-12-24 17:30:00` in `Etc/UTC`
+* `Date` - a simple date without time e.g. `2015-12-24`
+* `Time` - a simple time without a date e.g. `14:30:00` or `15:21:12.532985`
+* `NaiveDateTime` - datetimes without timezone information e.g. `2015-12-24 14:30:00`
+* `DateTime` - datetimes where the proper timezone name is known e.g. `2015-12-24 14:30:00` in `America/New_York` or `2015-12-24 17:30:00` in `Etc/UTC`
 
-Note: In Elixir 1.3 those types will be included in Elixir without the `Calendar.` part prepended.
+## String formatting
+
+Calendar has polymorphic string formatting that does not get you into
+trouble by silently using fake data.
+
+If you need a well known format, such as RFC 3339 the `DateTime.Format` and
+`NaiveDateTime.Format` modules have functions for a lot of those. In case you
+want to do something custom or want to format simple `Date`s or `Time`s, you
+can use the `Strftime` module. It uses formatting strings already known from
+the strftime "standard".
+
+The strftime function takes all the struct types: Date, Time, DateTime,
+NaiveDateTime and datetime tuples. You just have to make sure that the
+conversion specs (the codes with the %-signs) are appropriate for whatever is
+input.
+
+```elixir
+# a Date struct works fine with these conversion specs (%a, %d, %m, %y)
+# because they just require a date
+Calendar.Date.from_erl!({2014,9,6}) |> Calendar.Strftime.strftime "%a %d.%m.%y"
+{:ok, "Sat 06.09.14"}
+# A tuple like this is treated as a NaiveDateTime and also works because
+# it contains a date.
+{{2014,9,6}, {12, 13, 34}} |> Calendar.Strftime.strftime "%a %d.%m.%y"
+{:ok, "Sat 06.09.14"}
+# Trying to use date conversion specs and passing a Time struct results in an
+# error because a Time struct does not have the year or any other of the
+# data necessary for the string "%a %d.%m.%y"
+Calendar.Time.from_erl!({12, 30, 59}) |> Calendar.Strftime.strftime "%a %d.%m.%y"
+{:error, :missing_data_for_conversion_spec}
+```
 
 ## Polymorphism and protocols
 
@@ -263,41 +280,17 @@ Create DateTime struct from :os.timestamp / erlang "now" format:
  utc_offset: 0, year: 2016, zone_abbr: "UTC"}
 ```
 
-## String formatting
-
-Calendar has polymorphic string formatting that does not get you into
-trouble by silently using fake data.
-
-If you need a well known format, such as RFC 3339 the `DateTime.Format` and
-`NaiveDateTime.Format` modules have functions for a lot of those. In case you
-want to do something custom or want to format simple `Date`s or `Time`s, you
-can use the `Strftime` module. It uses formatting strings already known from
-the strftime "standard".
-
-The strftime function takes all the struct types: Date, Time, DateTime,
-NaiveDateTime and datetime tuples. You just have to make sure that the
-conversion specs (the codes with the %-signs) are appropriate for whatever is
-input.
-
-```elixir
-# a Date struct works fine with these conversion specs (%a, %d, %m, %y)
-# because they just require a date
-Calendar.Date.from_erl!({2014,9,6}) |> Calendar.Strftime.strftime "%a %d.%m.%y"
-{:ok, "Sat 06.09.14"}
-# A tuple like this is treated as a NaiveDateTime and also works because
-# it contains a date.
-{{2014,9,6}, {12, 13, 34}} |> Calendar.Strftime.strftime "%a %d.%m.%y"
-{:ok, "Sat 06.09.14"}
-# Trying to use date conversion specs and passing a Time struct results in an
-# error because a Time struct does not have the year or any other of the
-# data necessary for the string "%a %d.%m.%y"
-Calendar.Time.from_erl!({12, 30, 59}) |> Calendar.Strftime.strftime "%a %d.%m.%y"
-{:error, :missing_data_for_conversion_spec}
-```
-
 ## Documentation
 
 Documentation can be found at http://hexdocs.pm/calendar/
+
+
+## Elixir versions earlier than 1.3
+
+If you are using an Elixir version earlier than 1.3, use Calendar version `~> 0.14.2`
+This version accepts the Calendar structs from earlier versions (e.g. `%Calendar.DateTime`)
+And additionally when running on Elixir 1.3 or higher, it accepts the built in calendar
+types present in Elixir 1.3 (e.g. `%DateTime`). But Calendar structs are always returned.
 
 ## Raison d'être
 
