@@ -4,6 +4,11 @@
 ## Changed
 
 - Deprecated the Calendar.TimeZoneData module. The Tzdata library can be used instead.
+- Requires a minimum of Elixir version 1.4 instead of previously 1.3
+
+## Fixed
+
+- No longer has a deprecation warning for `deprecated time unit: :milliseconds` in newer Elixir versions
 
 ## [0.17.6] - 2019-04-23
 ## Added
