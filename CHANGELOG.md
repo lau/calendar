@@ -1,9 +1,10 @@
 # Changelog
 
-## [0.18.0-dev] - 2019-08-06
+## [0.18.0] - 2019-08-07
 ## Changed
 
 - Deprecated the Calendar.TimeZoneData module. The Tzdata library can be used instead.
+- Deprecated the Calendar.DateTime.TzPeriod module
 - Requires a minimum of Elixir version 1.4 instead of previously 1.3
 
 ## Fixed
