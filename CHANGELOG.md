@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.18.0-dev] - 2019-08-06
+## Changed
+
+- Deprecated the Calendar.TimeZoneData module. The Tzdata library can be used instead.
+
 ## [0.17.6] - 2019-04-23
 ## Added
 
