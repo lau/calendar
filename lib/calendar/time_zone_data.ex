@@ -1,6 +1,6 @@
 defmodule Calendar.TimeZoneData do
   alias Tzdata, as: TZSource
-  @moduledoc deprecated: "Use the Tzdata library directly instead"
+  @moduledoc "Deprecated: use the Tzdata library directly instead"
 
   @doc """
   A list of pre-compiled periods for a given zone name.
