@@ -1,20 +1,9 @@
 defmodule Calendar.DateTime.TzPeriod do
-  alias Calendar.TimeZoneData
-
-  @moduledoc """
-  DateTime.TzPeriod is for getting information about timezone periods.
-  A timezone period is an invention for Calendar, which is a period where the
-  offsets are the same for a given time zone. For instance during summer time
-  in London where Daylight Saving Time is in effect. The period would be from
-  the beginning of summer time until the fall where DST is no longer in effect.
-
-  The functions in this module lets you get the time instance where a period
-  begins and when the next begins, terminating the existing period.
-  """
+  @moduledoc deprecated: "use the Tzdata module instead"
 
   defp timezone_period(date_time) do
     utc_greg_secs = date_time |> Calendar.DateTime.shift_zone!("Etc/UTC") |> Calendar.DateTime.gregorian_seconds
-    period_list = TimeZoneData.periods_for_time(date_time.time_zone, utc_greg_secs, :utc);
+    period_list = Tzdata.periods_for_time(date_time.time_zone, utc_greg_secs, :utc);
     hd period_list
   end
 
@@ -51,6 +40,7 @@ defmodule Calendar.DateTime.TzPeriod do
             %DateTime{zone_abbr: "CEST", day: 26, hour: 3, microsecond: {0, 0}, minute: 0, month: 3, second: 0, std_offset: 3600,
              time_zone: "Europe/Copenhagen", utc_offset: 3600, year: 2000}}
   """
+  @deprecated "This function will be removed in future versions. Copy the Calendar.DateTime.TzPeriod module if you still need it in future versions."
   def next_from(date_time) do
     period = date_time |> timezone_period
     case is_integer(period.until.utc) do
@@ -83,6 +73,7 @@ defmodule Calendar.DateTime.TzPeriod do
       iex> Calendar.DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> from
       {:unlimited, :min}
   """
+  @deprecated "This function will be removed in future versions. Copy the Calendar.DateTime.TzPeriod module if you still need it in future versions."
   def from(date_time) do
     period = date_time |> timezone_period
     case is_integer(period.from.utc) do
@@ -105,6 +96,7 @@ defmodule Calendar.DateTime.TzPeriod do
       iex> Calendar.DateTime.from_erl!({{1800,1,1},{0,0,0}},"Atlantic/Reykjavik") |> prev_from
       {:error, :already_at_first}
   """
+  @deprecated "This function will be removed in future versions. Copy the Calendar.DateTime.TzPeriod module if you still need it in future versions."
   def prev_from(date_time) do
     {tag, val} = from(date_time)
     case tag do
@@ -141,6 +133,7 @@ defmodule Calendar.DateTime.TzPeriod do
             %DateTime{zone_abbr: "EST", day: 6, hour: 1, microsecond: {0, 0}, minute: 0, month: 11, second: 0, std_offset: 0, time_zone: "America/New_York",
              utc_offset: -18000, year: 2016}]
   """
+  @deprecated "This function will be removed in future versions. Copy the Calendar.DateTime.TzPeriod module if you still need it in future versions."
   def stream_next_from(date_time) do
     Stream.unfold(next_from(date_time), fn {tag, date_time} -> if tag == :ok do {date_time, date_time |> next_from} else nil end end)
   end
@@ -167,6 +160,7 @@ defmodule Calendar.DateTime.TzPeriod do
             %DateTime{zone_abbr: "EDT", day: 10, hour: 3, microsecond: {0, 0}, minute: 0, month: 3, second: 0, std_offset: 3600, time_zone: "America/New_York",
              utc_offset: -18000, year: 2013}]
   """
+  @deprecated "This function will be removed in future versions. Copy the Calendar.DateTime.TzPeriod module if you still need it in future versions."
   def stream_prev_from(date_time) do
     Stream.unfold(from(date_time), fn {tag, date_time} -> if tag == :ok do {date_time, date_time |> prev_from} else nil end end)
   end
