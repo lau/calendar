@@ -1,5 +1,5 @@
 defmodule Calendar.DateTime.TzPeriod do
-  @moduledoc deprecated: "use the Tzdata module instead"
+  @moduledoc "Deprecated: use the Tzdata module instead"
 
   defp timezone_period(date_time) do
     utc_greg_secs = date_time |> Calendar.DateTime.shift_zone!("Etc/UTC") |> Calendar.DateTime.gregorian_seconds
