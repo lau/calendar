@@ -1,7 +1,7 @@
 defmodule Calendar.Mixfile do
   use Mix.Project
 
-  @version "0.18.0"
+  @version "1.0.0-rc0"
 
   def project do
     [
@@ -34,7 +34,7 @@ defmodule Calendar.Mixfile do
       licenses: ["MIT"],
       maintainers: ["Lau Taarnskov"],
       links: %{"GitHub" => "https://github.com/lau/calendar"},
-      files: ~w(lib priv mix.exs README* LICENSE*
+      files: ~w(lib mix.exs README* LICENSE*
                     CHANGELOG*)
     }
   end

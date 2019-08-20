@@ -1,6 +1,6 @@
 # Changelog
 
-## under development
+## [1.0.0-rc0] - 2019-08-20
 ## Changed
 
 - Removed deprecated Calendar.DateTime.TzPeriod. See version 0.18.0 for alternatives
