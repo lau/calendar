@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.0-rc1] - 2019-08-22
+## Added
+
+- Added RFC 5455 DateTime formatting and parsing
+
 ## [1.0.0-rc0] - 2019-08-20
 ## Changed
 
