@@ -89,6 +89,7 @@ defmodule Calendar.Strftime do
   | %R               | Time in 24 hour notation excluding seconds. Equivalent of %H:%M.| _19:25_                        |           |         ✓ |         |
   | %T               | Time in 24 hour notation. Equivalent of %H:%M:%S.               | _19:25:41_                     |           |         ✓ |         |
   | %F               | Date in ISO 8601 format. Equivalent of %Y-%m-%d.                | _2015-02-05_                   |         ✓ |           |         |
+  | %X               | Time in in format _for provided language_                       | _7:25 PM_                      |           |         ✓ |         |
   | %x               | Date in in format _for provided language_                       | _05/02/2015_                   |         ✓ |           |         |
   | %c               | Date and time in format _for provided language_                 | _Wed Jan 13 11:34:10 2016_     |         ✓ |         ✓ |         |
   | %v               | VMS date. Equivalent of %e-%b-%Y.                               | _5-Feb-2015_                   |         ✓ |           |         |
