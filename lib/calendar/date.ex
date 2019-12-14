@@ -555,6 +555,25 @@ defmodule Calendar.Date do
   def sunday?(date), do: day_of_week(date) == 7
 
   @doc """
+  The name of the month as a string.
+  Takes a language code as the second argument. Defaults to :en for English.
+
+  ## Examples
+
+      iex> {2015, 7, 6} |> month_name # July
+      "July"
+      iex> {2015, 2, 7} |> month_name # February
+      "February"
+      iex> {2015, 11, 5} |> month_name # November
+      "November"
+  """
+  def month_name(date, lang \\ :en) do
+    date
+    |> contained_date
+    |> Calendar.Strftime.strftime!("%B", lang)
+  end
+
+  @doc """
 
   ## Examples
 
