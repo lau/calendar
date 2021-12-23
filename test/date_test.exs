@@ -15,7 +15,7 @@ defmodule DateTest do
     assert to_erl(%SomethingThatContainsDate{}) == {2015, 1, 1}
   end
 
-  test "Using a tuple as an argument to a function that expects an argument implenting Calendar.ContainsDate" do
+  test "Using a tuple as an argument to a function that expects an argument implementing Calendar.ContainsDate" do
     assert to_erl({2015, 1, 1}) == {2015, 1, 1}
   end
 

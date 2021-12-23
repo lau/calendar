@@ -248,7 +248,7 @@ defmodule Calendar.DateTime.Parse do
       iex> rfc3339_utc("1996-12-19T16:39:57-08:00")
       {:ok, %DateTime{year: 1996, month: 12, day: 20, hour: 0, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
-      # No seperation chars between numbers. Not RFC3339, but we still parse it.
+      # No separation chars between numbers. Not RFC3339, but we still parse it.
       iex> rfc3339_utc("19961219T163957-08:00")
       {:ok, %DateTime{year: 1996, month: 12, day: 20, hour: 0, minute: 39, second: 57, time_zone: "Etc/UTC", zone_abbr: "UTC", std_offset: 0, utc_offset: 0}}
 
