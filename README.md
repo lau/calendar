@@ -314,7 +314,7 @@ Calendar examples.
 
 ## Trouble shooting
 
-Problem: an error like this occours:
+Problem: an error like this occurs:
 
 ```
 ** (exit) an exception was raised:

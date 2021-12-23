@@ -141,7 +141,7 @@ defmodule Calendar.DateTime.Format do
   The decimal_count integer defines the number fractional second digits.
   The decimal_count must be between 0 and 6.
 
-  Fractional seconds are not rounded up, but rather trucated.
+  Fractional seconds are not rounded up, but rather truncated.
 
   ## Examples
 
@@ -287,7 +287,7 @@ defmodule Calendar.DateTime.Format do
       "TZID=America/New_York:19980119T020000"
   """
   def rfc5545(%DateTime{} = datetime) do
-    # Convert datetime to NaiveDateTime for compatability with Elixir 1.3's NaiveDateTime.to_iso8601
+    # Convert datetime to NaiveDateTime for compatibility with Elixir 1.3's NaiveDateTime.to_iso8601
     naive_datetime_string =
       datetime
       |> Calendar.DateTime.to_naive()

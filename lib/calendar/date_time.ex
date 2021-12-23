@@ -450,7 +450,7 @@ defmodule Calendar.DateTime do
   end
 
   # When we have a list of 2 periods, return the one where UTC offset
-  # and standard offset matches. The is used for instance during ambigous
+  # and standard offset matches. The is used for instance during ambiguous
   # wall time in the fall when switching back from summer time to standard
   # time.
   # If there is just one period, just return the only period in the list
@@ -485,7 +485,7 @@ defmodule Calendar.DateTime do
   end
 
   @doc """
-  Takes an erlang style 3 touple timestamp with the form:
+  Takes an erlang style 3 tuple timestamp with the form:
   {megasecs, secs, microsecs}
 
   This is the form returned by the Erlang function `:erlang.timestamp()`
@@ -520,7 +520,7 @@ defmodule Calendar.DateTime do
   Takes an Erlang-style date-time tuple and additionally a timezone name.
   Returns a tuple with a tag and a DateTime struct.
 
-  The tag can be :ok, :ambiguous or :error. :ok is for an unambigous time.
+  The tag can be :ok, :ambiguous or :error. :ok is for an unambiguous time.
   :ambiguous is for a time that could have different UTC offsets and/or
   standard offsets. Usually when switching from summer to winter time.
 
@@ -537,7 +537,7 @@ defmodule Calendar.DateTime do
                               zone_abbr: "-03",
                               utc_offset: -10800, std_offset: 0, microsecond: {0, 0}} }
 
-    Switching from summer to wintertime in the fall means an ambigous time.
+    Switching from summer to wintertime in the fall means an ambiguous time.
 
       iex> from_erl({{2014, 3, 9}, {1, 1, 1}}, "America/Montevideo")
       {:ambiguous, %Calendar.AmbiguousDateTime{possible_date_times:
@@ -613,7 +613,7 @@ defmodule Calendar.DateTime do
          minute: min, second: sec, time_zone: timezone, zone_abbr: period.zone_abbr,
          utc_offset: period.utc_off, std_offset: period.std_off, microsecond: microsecond } }
   end
-  # When a time is ambigous (for instance switching from summer- to winter-time)
+  # When a time is ambiguous (for instance switching from summer- to winter-time)
   defp from_erl_periods({{year, month, day}, {hour, min, sec}}, timezone, periods, microsecond) when length(periods) == 2 do
     possible_date_times =
     Enum.map(periods, fn period ->
