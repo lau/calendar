@@ -1,6 +1,13 @@
 Calendar
 =======
 
+[![Build Status](https://travis-ci.org/lau/calendar.svg?branch=master)](https://travis-ci.org/lau/calendar)
+[![Hex Version](https://img.shields.io/hexpm/v/calendar.svg)](https://hex.pm/packages/calendar)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/calendar/)
+[![Total Download](https://img.shields.io/hexpm/dt/calendar.svg)](https://hex.pm/packages/calendar)
+[![License](https://img.shields.io/hexpm/l/calendar.svg)](https://github.com/lau/calendar/blob/master/LICENSE)
+[![Last Updated](https://img.shields.io/github/last-commit/lau/calendar.svg)](https://github.com/lau/calendar/commits/master)
+
 Calendar is a datetime library for Elixir.
 
 Providing explicit types for datetimes, dates and times.
@@ -22,11 +29,13 @@ Certain features like more advanced formatting are not yet available in the Elix
 
 ## Getting started
 
-Add Calendar as a dependency to an Elixir project by adding it to your mix.exs file:
+Add `Calendar` as a dependency to an Elixir project by adding it to your `mix.exs` file:
 
 ```elixir
 defp deps do
-  [  {:calendar, "~> 1.0.0"},  ]
+  [
+    {:calendar, "~> 1.0.0"},
+  ]
 end
 ```
 
@@ -324,9 +333,12 @@ Problem: an error like this occours:
         lib/tzdata/release_reader.ex:13: Tzdata.ReleaseReader.simple_lookup/1
 ```
 
-Solution: add :calendar to the application list in the mix.exs file of your
+Solution: add `:calendar` to the application list in the `mix.exs` file of your
 project.
 
-## License
+## Copyright and License
 
-Calendar is released under the MIT license. See the LICENSE file.
+Copyright (c) 2014 Lau Taarnskov
+
+This work is free. You can redistribute it and/or modify it under the
+terms of the MIT License. See the [LICENSE.md](./LICENSE.md) file for more details.
